@@ -373,6 +373,10 @@ class wxModel extends model{
             preg_match_all($pattern, $content, $m);
             return $m;
     }
+    /**
+     * 获取文章内容
+     * @return mixed
+     */
     public function getContent(){
         $sql = "select * from t_wxrss";
         $stmt = $this->dbh->query($sql);
