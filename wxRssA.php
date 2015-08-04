@@ -373,7 +373,13 @@ class wxModel extends model{
             preg_match_all($pattern, $content, $m);
             return $m;
     }
-
+    public function getContent(){
+        $sql = "select * from t_wxrss";
+        $stmt = $this->dbh->query($sql);
+        $arr = $stmt->fetchAll();
+//        var_dump($arr);
+        return $arr;
+    }
 
 
 
