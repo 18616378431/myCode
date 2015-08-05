@@ -1,0 +1,56 @@
+PHP引入命名空间 无法使用的问题 报错！
+
+环境
+使用的是ThinkPHP3.2.2，发现命名空间出现问题，无法使用！
+文件
+#/Application/Common/Common/Api/WebServer.php
+namespace Common\Api;
+class WebServer {
+
+    public function demo(){
+        var_dump( __NAMESPACE__ );
+        var_dump( __FILE__ , __LINE__ );            
+    }
+}
+
+#/Application/Home/Controller/InitController.class.php
+namespace Home\Controller;
+use Think\Controller;
+use Common\Api;
+class IndexController extend Controller {
+
+    public function index(){
+        //引入了 /Application/Common/Common/Api/WebServer.php
+        load('Common.Api.WebServer');
+    }
+}
+#/Application/Home/Controller/IndexController.class.php
+namespace Home\Controller;
+class IndexController extend InitController {
+
+    public function index(){
+        $demo = new WebServer();
+        var_dump( $demo->demo() );
+    }
+}
+报错
+#访问 HomeController 控制器的 index模块报错提示：
+Class 'Home\Controller\WebServer' not found
+•	php
+ 
+•	命名空间
+•	链接
+ 
+•	评论
+ 
+•	更多
+默认排序时间排序
+1 个回答
+答案对人有帮助，有参考价值1答案没帮助，是错误的答案，答非所问
+ h2ero 124 2014年08月05日 回答 • 2014年08月07日 更新
+<?php
+#/Application/Home/Controller/IndexController.class.php
+use \Common\Api; 然后 new WebServer();
+#或者
+new \Common\Api\WebServer();
+
