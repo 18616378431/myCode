@@ -1,0 +1,11 @@
+//printf¡∑œ∞
+//#include<stdio.h>
+//
+//int main(void)
+//{
+//	printf("(1)ÕÙΩ®øµ£°\n");
+//	printf("(2)ÕÙ \nΩ®øµ \n");
+//	printf("(3)ÕÙ");
+//	printf("Ω®øµ \n");
+//	return 0;
+//}
