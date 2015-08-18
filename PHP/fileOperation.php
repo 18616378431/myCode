@@ -15,7 +15,7 @@ function getExtend($file_name){
 }
 /**
  * 只保留文件夹中的目标文件
- * @param $dir
+ * @param $dir 目标目录的相对或绝对路径
  */
 function clear($dir){
     $dirPath = realpath($dir);//目标目录的绝对路径
