@@ -26,7 +26,7 @@ function clear($dir){
         $file = $dirPath . DIRECTORY_SEPARATOR . $fileName;
         if (is_dir($file)) {//是文件夹则递归
             clear($file);
-            rmdir($file);//注释即保留目录结构，不注释则只保留目标文件
+            @rmdir($file);//注释即保留目录结构，不注释则只保留目标文件
         } else {
             $arr = array('c', 'h','ico','jpg','png','wav','mp3');//要保留的文件类型
             $rs = getExtend($file);//获取后缀
