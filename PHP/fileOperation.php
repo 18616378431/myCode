@@ -26,7 +26,7 @@ function clear($dir){
         $file = $dirPath . DIRECTORY_SEPARATOR . $fileName;
         if (is_dir($file)) {
             clear($file);
-            rmdir($file);
+            rmdir($file);//注释即保留目录结构，不注释则只保留目标文件
         } else {
             $arr = array('c', 'h','ico','jpg','png','wav','mp3');
             $rs = getExtend($file);
