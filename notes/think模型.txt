@@ -1,0 +1,68 @@
+1.模型类的命名规则是除去表前缀的数据表名称，采用驼峰法命名，并且首字母大写，然后加上模型层的名称（默认定义是Model）
+2.数据表名称属性定义
+	protected $tablePrefix = "t_";//如果config文件中未定义表前缀,则该处设置该model对应的标前缀
+    protected $tableName = "user";//如果该类的名称和数据表名称不一致,该处设置其对应表名
+    protected $trueTableName = "t_user";//前两个设置无效,则使用表全称
+    protected $dbName = "verify";//model对应的数据库和配置文件不一致时使用
+3.模型实例化:$User = new \Home\Model\UserModel();
+			带参数实例化
+			$User = new \Home\Model\UserModel('blog','think_',$connection);
+									个参数分别为模型名，数据表前缀，数据库连接信息(1.字符串方法;2.数组3.配置定义)
+4.D方法实例化:$User = D('User');
+			$User = new \Home\Model\UserModel();
+			$User->getDbFields();//获取数据库字段名称
+			要实例的模型不存在时，D函数会尝试实例化公共模块下面的\Common\Model\UserModel 类。
+			D方法的参数就是模型的名称，并且和模型类的大小写定义是一致的
+			D方法可以自动检测模型类，如果存在自定义的模型类，则实例化自定义模型类，如果不存在，则会实例化系统的\Think\Model				基类，同时对于已实例化过的模型，不会重复去实例化。
+			D方法还可以支持跨模块调用，需要使用：
+			//实例化Admin模块的User模型
+			D('Admin/User');
+			//实例化Extend扩展命名空间下的Info模型
+			D('Extend://Editor/Info');
+5.实例化空模型
+	$Model = new Model();
+	$Model->query('SELECT * FROM think_user WHERE status = 1');
+6.关闭字段缓存 'DB_FIELDS_CACHE'=>false 模型类的getDbFields方法来获取当前数据对象的全部字段信息
+7.手动定义数据表字段的名称:protected $fields = array('id', 'username', 'email', 'age','_pk'=>'id',
+		'_type'=>array('id'=>'bigint','username'=>'varchar','email'=>'varchar','age'=>'int'));
+	_pk表示定义当前数据表的主键名,_type定义字段的类型
+8.数据库连接:
+			可以在模型中定义单独的数据库连接信息，实例化时自动应用该数据库连接信息'DB_DSN'
+			protected $connection = 'mysql://root:1234@localhost:3306/thinkphp#utf8';
+			模型定义单独的数据库连接信息后，PAGE_TRACE无法捕获SQL
+			在配置文件中定义'DB_CONFIG1','DB_CONFIG2',可以在模型中直接获取赋值
+			protected $connection = 'DB_CONFIG2';
+			模型定义时可以制定数据库连接，模型实例化时也可以指定数据库连接
+			$User = M('User','other_','mysql://root:1234@localhost/demo#utf8'); 
+			$User = M('User','other_','DB_CONFIG2'); 
+9.切换数据库:数据库编号用数字格式，对于已经调用过的数据库连接，是不需要再传入数据库连接信息的，
+			系统会自动记录。对于默认的数据库连接，内部的数据库编号是0
+			Model类的db方法实现,Db方法调用后返回当前的模型实例，直接可以继续进行模型的其他操作
+			$this->db(1,"mysql://root:123456@localhost:3306/test")->query("查询SQL");
+			定义过一次db方法后，动态切换	$this->db(1)->query("查询SQL");
+			切换到默认数据库				$this->db(0);
+			在配置文件中定义了多个'DB_CONFIG1',则
+			$this->db(1,"DB_CONFIG1")->query("查询SQL");
+			$this->db(2,"DB_CONFIG2")->query("查询SQL");
+			如果切换数据库之后，数据表和当前不一致的话，可以使用table方法指定要操作的数据表：
+			$this->db(1)->table("top_user")->find();
+10.命名范围:命名范围功能，主要涉及到模型类的_scope属性定义和scope连贯操作方法的使用
+			'命名范围标识'=>array(
+     	   		'属性1'=>'值1',
+     	   		'属性2'=>'值2',
+			)
+			$Model->scope('normal')->select();
+			同时使用多个命名范围
+			$Model->scope('normal,latest')->select();
+			系统支持默认命名范围,即'default' => array(
+												'where' => array('status' => 1),
+												'limit' => 10,
+											),
+			$Model->scope()->select();//调用默认命名范围default
+			$Model->normal(array('limit'=>5))->select();//直接调用命名范围
+11.				
+			
+
+
+			
+
