@@ -1,0 +1,275 @@
+MYSQL 命令行
+1.查看mysql版本:mysql -v
+2.修改mysql密码:mysqladmin -u root -p 'newpassword'
+3.删除mysql匿名用户:mysql -u root -p => use mysql; =>delete from user where User = ''; => quit; => mysqladmin -u root -p reload;
+4.创建mysql数据库:create database DBNAME;
+5.mysql权限管理:
+	授权 => GRANT privileges(权限:[all授权全部权限、usage创建无权限用户]select,insert,index,alter,drop等) on 			ITEM(数据库、表、字段:books.*) to USER_NAME(授权对象) WITH GRANT OPTIONS;
+	取消权限 REVOKE privileges on ITEM from USER_NAME
+6.创建数据表:
+	create table customers
+	(
+		customerid int unsigned not null auto_increment primary key,
+		name char(50) not null,
+		address char(100) not null,
+		city char(50) not null
+	);
+
+7.显示数据库:show databases;显示库中表:show tables;显示表内容:describe TABLE_NAME;
+8.创建索引:create [UNIQUE|FULLTEXT] index INDEX_NAME on TABLE_NAME(INDEX_COLUMN_NAME[(length)][ASC|DESC],...);
+						索引文本字段													该字段的前length个字符将被索引,升序、降序
+9.msyql标识符:Database(数据库)、Table(表)、Column(列)、Index(索引)、Alias(别名)
+10.查看包含目录和数据文件的位置:mysql -h 127.0.0.1 -u root -p variables;
+
+11.插入语句:insert into TABLE[(column1,column2,column3,...)] values(value1,value2,value3,...);
+			部分数据插入:insert into TABLE set FILED_NAME1 = 'a',FILED_NAME2 = 'b',FILED_NAME3 = 'c';
+12.insert关键字:LOW_PRIORITY => 数据不是从表格读出时系统必须等待并稍后插入
+			   DELAYED      => 插入的数据将被缓存,服务器忙可以继续其他查询，不必等待插入
+			   IGNORE       => 插入导致重复唯一键的纪录行，纪录将被自动忽略
+			   在insert语句末尾添加 ON DUPLICATE KEY UPDATE expression(update表达式，使用update语句修改重复值)
+13.查询语句:select [options]items [into file_details] from TABLES [where CONDITIONS] [group by GROUP_TYPE] [having WHERE_DEFINNITION] [order by 					ORDER_TYPE] [limit LIMIT_CRITERIA] [procedure PROC_NAME(arguments)] [lock OPTIONS];
+14.条件查询:where子句比较运算符:=,>,<,>=,<=,!=/<>,IS NOT NULL,IS NULL,BETWEEN AND,IN,NOT IN,LIKE,NOT LIKE,REGEXP
+15.多表查询
+	(1)双表关联:select orders.orderid,orders.amount,orders.date from customers,orders where customers.name = 'Julie Smith' and 				customers.customerid = orders.customerid;
+				完全关联(full jion):表名称之间的逗号等价于INNER JOIN/CROSS JOIN(表的笛卡尔乘积，表之间进行全排列运算)
+			EG:(查询Julie Smith所购买图书的作者...)
+					select customers.name as buyer,books.author,books.title,book_reviews.review from 					customers,orders,order_items,books,book_reviews where customers.name = 'Julie Smith' and customers.customerid = 					orders.customerid and orders.orderid = order_items.orderid and order_items.isbn = books.isbn and books.isbn = 					book_reviews.isbn;
+			多库查询:DB_NAME.DB_TABLE_NAME.COLUMN_NAME,逗号分隔
+	(2)关联多个表:等价关联
+					select customers.name from books,customers,order_items,orders where books.title like '%Java%' and books.isbn = 					order_items.isbn and order_items.orderid = orders.orderid and orders.customerid = customers.customerid;
+	(3)查找不匹配行:左关联 => 右表中没有匹配行，则添加空行;右关联 => 用于查找要避免的值
+					{1}ON 语法 后添加关联条件 
+					[无订单用户]select cs.customerid,cs.name,od.orderid from customers as cs left join orders as od on cs.customerid 					＝ od.customerid;
+					{2}USING 语法 无需指定关联项所属表，必须具有相同字段名称
+					select cs.customerid,cs.name from customers as cs left join orders as od using (customerid) where od.orderid is 					null;
+	(4)表的别名(Aliases):
+					[多重结果，笛卡尔乘积表]select cs1.name as cs1name,cs2.name as cs2name,cs1.city from customers as cs1,customers 					as cs2 where cs1.city = cs2.city and cs1.name != cs2.name;
+	(5)关联总结:
+					[1].笛卡尔乘积(全排列) 无where条件
+					[2].完全关联 		同上
+					[3].交叉关联			同上，可加CROSS JOIN,INNER JOIN
+					[4].内部关联			有where条件
+					[5].等价关联			where子句关联，使用'='类匹配不同表中的行
+					[6].左关联			LEFT JOIN 匹配前后，右表无匹配项添加NULL行;RIGHT JOIN查询类似
+					
+16.按特定顺序获取数据:order by 子句对数据进行排序,默认升序,asc升序，desc降序
+					EG:select name,city from customers order by name desc;
+
+17.分组与合计:常用函数:
+					AVG(列) 		平均值	EG:select avg(amount) from orders;
+					COUNT(项目)		指定一列，给出本列非空(NULL)值的列数，列前加上DISTINCT,得到本列不同值的列数，若自定count(*)，将得到包									含空值(NULL)的行在内的行数
+					MIN(列)			指定列的最小值
+					MAX(列)			指定列的最大值
+					STD(列)			指定列的标准背离值
+					STDDEV(列)		与STD(列)相同
+					SUN(列)			指定列的所有值的和
+18.查询子句:	GROUP BY子句:改变了合计函数的行为,获取每个customerid的平均值,而不是所有amount的平均值;在group 						by子句出现的列必须出现在select子句中;[以每个group by 后列为单位进行分组，在分组内进行合计函数计算]
+						EG:select customerid,avg(amount) from orders group by customerid;
+			HAVING子句:可以直接放在GROUP BY子句之后，类似于只用于分组与合计的WHERE子句
+						EG:select customerid,avg(amount) from orders group by customerid having avg(amount) > 50;
+			LIMIT子句:指定输出中哪些行可以返回,带有两个参数,起始行号和返回行数，行号索引开始位置为0
+						EG:select name from customers limit 2,3;
+19.使用子查询:
+			[1]基本的子查询:一个嵌套在另一个查询内部的查询
+				EG:select customerid,amount from orders where amount = (select max(amount) from orders);
+				等价 =>  select customerid,amount from orders order by amount desc limit 0,1;
+			[2]子查询和操作符:都可以出现的where后的比较操作符之后，IN可省略＝
+				ANY 	select c1 from t1 where c1 > ANY (select c1 from t2);子查询的任何比较条件为true，返回true
+				IN		select c1 from t1 where c1 IN (select c1 from t2);等价ANY
+				SOME	select c1 from t1 where c1 > SOME (select c1 from t2);ANY的别名
+				ALL		select c1 from t1 where c1 > ALL (select c1 from t2);所有比较条件为true才返回true
+			[3]关联子查询:EXISTS,关联子查询中，内部查询可以使用外部查询的结果;查询匹配外部行的内部行,子查询中存在任何匹配行，EXISTS返回				true，没有任何匹配行NOT EXISTS返回true
+				EG:select isbn,title from books where not exists (select * from order_items where order_items.isbn = books.isbn);
+			[4]行子查询:将返回整行，可以与外部查询的整行进行比较，通常用来在一个表中查找在于另一个表的行
+				EG:select c1,c2,c3 from t1 where (c1,c2,c3) in (select c1,c2,c3 from t2);
+			[5]使用子查询作为临时表:在外部查询FROM的子句中进行子查询,子查询的输出作为临时表，可以有效地查询子查询的输出，必须为子查询的				结果定义一个别名
+				EG:select * from (select customerid,name from customers where city = 'Box Hill') as box_hill_table;
+20.更新数据库的记录:UPDATE语句,格式update [LOW_PRIORITY] [IGNORE] TABLE_NAME set column1 = expression1,column2 = expression2... 					[where CONDITION] [order by ORDER_CRITERIA] [limit NUMBER];
+					更新名为TABLE_NAME的表，设置每列的名称和表达式,通过where子句限制update语句影响的范围,limit限制影响的行数，order 					by通常在limit子句的连接中使用,LOW_PRIORITY/IGNORE等同INSERT语句中使用
+					EG:update books set price =  price * 1.1;
+						update customers set address = '250 Olsens Road' where customerid = 4;
+21.创建后修改表:ALTER语句,格式alter table[IGNORE] TABLE_NAME alteration[,alteration...];
+				指定了IGNORE子句，进行的修改可能产生重复的主键，第一个重复的主键将进入修改后的表，其他重复的主键将被删除
+				若没有指定IGNORE子句，操作将失败并且被回滚
+				ADD[COLUMN] column_description[FIRST|AFTER column] => 指定地方添加新列，默认最后一列之后,column_description与create语句一致
+				ADD[COLUMN](column_description,column_description,...) => 在表尾添加一个或多个新列
+				ADD INDEX[index](column) 							=> 在指定的一列或几列添加表的索引
+				ADD [CONSTRAINT[symbol]] PRIMARY KEY(column,...) 	=> 自定一列或几列为表主键,CONSTRAINT针对使用外键的表
+				ADD UNIQUE [CONSTRAINT CONSTRAINT[symbol]] [index](column,...) => 																在指定的一列或几列添加一个唯一的表索引,针对使用外键的InnoDB表
+				ADD [CONSTRAINT[symbol]] FOREIGN KEY [index](index_col,...) [reference_definition] => 为InnoDB表添加外键
+				ALTER [COLUMN]column{SET DEFAULT value|DROP DEFAULT} => 添加或删除特定列的默认值
+				CHANGE [COLUMN]column new_column_description =>改变名为column的列，添加所列出的描述，可用于改变列的名称
+				MODIFY [COLUMN]column_description =>类似于CHANGE，可用于修改列类型，而不是名称
+				DROP [COLUMN]column => 删除指定的列
+				DROP PRIMARY KEY => 删除主索引(不是列)
+				DROP INDEX index => 删除指定的索引
+				DROP FOREIGN KEY => 删除外键(不是列)
+				DISABLE KEYS => 禁用索引更新
+				ENABLE KEYS => 开启索引更新
+				RENAME [AS] new_table_name => 重命名一个表
+				ORDER BY col_name => 以特定的顺序的行重新创建表
+				CONVERT TO CHARACTER SET cs COLLATE c  => 将所有文本转换为指定字符集和排序
+				[DEFAULT] CHARACTER SET cs COLLATE c => 设置默认的字符集和排序
+				DISCARD TABLESPACE => 删除InnoDB表的可能表空间文件
+				IMPORT TABLESAPCE => 为InnoDB表创建可能的表空间文件
+				table_options => 允许重新设置表选项,类似CREATE TABLE语法
+				EG:改变表字段宽度 => alter table customers modify name char(70) not null;
+					添加列:alter table orders add tax float(6,2) after amount;
+					删除列:alter table orders drop tax;
+22.删除数据库中的记录:DELETE语句,格式delete [LOW_PRIORITY] [QUICK] [IGNORE] from TABLE [where CONDITION] [order by order_cols] [limit 						number];
+					QUICK子句可以使得该操作对MyISAM表的操作更快
+23.表的删除:DROP TABLE table;删除表及表的所有行
+24.删除整个数据库:DROP DATABASE database;
+
+25.使用PHP从WEB访问数据库:实例化数据库连接对象 => $db = new mysqli('localhost','bookorama','bookorama123','books');返回对象
+26.字符过滤与格式转义:trim()函数过滤空白字符,addslashes()函数对数据进行转义,stripslashes()函数进行反转义,get_magic_quotes_gpc()		函数检查系统的指令是否开启,若该配置已启用,数据将自动转义，显示数据之前，必须对数据进行反转义stripslashes()
+27.连接数据库:	{1}[面向对象方法]:$db = new mysqli('localhost','bookorama','bookorama123','books');返回对象
+					择数据库:$db->select_db(dbname);
+					构建SQL语句:$query = "select * from books where ".$searchType." like '%".$earchTerm."%'";
+					查询:$result = $db->query($query);返回结果对象
+					获取返回的行数:$num_result = $result->num_rows;
+					$row=$result->fetch_assoc();//该函数接受结果集中的每一行，并以一个相关数组返回该行，每个关键词为属性名，每个值							为数组中相应的值
+			 	{2}[面向过程方法]:$db = mysqli_connect('localhost','bookorama','bookorama123','books');返回资源
+					择数据库:mysqli_select_db(db_resource,dbname);
+					查询:$result = mysqli_query($db,$query);返回结果资源
+					获取返回的行数:$num_result = mysqli_num_rows($result);//传递结果标识符
+					$row = mysqli_fetch_assoc($result);
+				{3}从标识符中获取查询结果:[1]$row = $result->fetch_row($result);
+						 $row = mysqli_fetch_row($result);//将结果取回到列举数组中(mysql_fetch_array())
+					   [2]$row = $result->fetch_object();
+						 $row = mysqli_fetch_object($result);//将结果取回到对象中
+						 使用对象反问属性方式获取值:$row->title;
+				{4}断开连接:$result->free();$db->close();/mysqli_free_result($result);mysqli_close($db);
+					
+28.获取影响行数:	查询数据(select):$row = $result->num_rows;/$row = mysqli_num_rows($result);
+				增删改:(insert,delete,update):$db->affected_rows;/mysqli_affected_rows();
+29.Prepared语句:对于执行大量具有不同数据的相同查询时可以提高执行速度,免受sql注入风险
+				向mysql发送一个需要执行的查询模板，然后再单独发送数据，可以向相同的prepared语句发送大量相同数据
+				[1]prepared插入:
+					$query = "insert into books(isbn,author,title,price) VALUES (?,?,?,?)";
+    				$stmt = $db->prepare($query);//mysqli_stmt_prepare();构建一个语句对象或需要用来完成实际处理的资源
+   				$stmt->bind_param("sssd",$isbn,$author,$title,$price);//mysqli_stmt_bind_param();告诉PHP哪些变量该被问好所替代，第一个参数为格式化字符串，即每个参数的类型，字符串's',双精度'd',整数'i',blob 'b',该参数后必须列出与问号数量相等的变量，它们将依次被替换
+    				$stmt->execute();//mysqli_stmt_execute();执行查询
+    				echo $stmt->affected_rows." book inserted into database.";
+    				$stmt->close();
+				[2]prepared查询:
+					绑定结果:$stmt->bind_result($isbn,$author,$title,$price);//mysqli_bind_result();提供希望填充的结果列表
+					获取结果集中的每行数据:$stmt->fetch();//mysqli_stmt_fetch();结果集下一行的列将填充到绑定变量中
+					执行查询:$stmt->execute();
+					循环中使用:$stmt->fetch();//每次被调用都会获取下一行的结果,并绑定到4个变量中,可以在相同的脚本中使用mysqli_stmt_bind_param(),
+					mysqli_stmt_bind_result();
+30.PHP与数据库交互的其他接口:Oracle,MicroSoft SQL Server,PostgreSQL
+	[1]ODBC:开放数据库连接,只具有任何函数集的有限功能，要兼容所有数据库久不能使用任何数据库的特殊功能
+	[2]PEAR MDB2:PHP附带函数库外的可供使用的数据库抽象类,允许为不同的数据库类型使用相同的函数名称
+		require_once ('MDB2.php');//包含
+		    $user = 'bookorama';
+		    $pass = 'bookorama123';
+		    $host = 'localhost';
+		    $db_name = 'books';
+		    $dsn = "mysqli://$user:$pass@$host/$db_name";
+		    $db = &MDB2::connect($dsn);//连接数据库
+		    if(MDB2::isError($db)){//检测db连接
+		        echo $db->getMessage();
+		        exit;
+		    }
+		    $query = "select * from books where ".$searchType." like '%".$searchTerm."%'";
+		    $result = $db->query($query);
+		    if(MDB2::isError($result)){//检测结果集
+		        echo $db->getMessage();
+		        exit;
+		    }
+		    $num_results = $result->numRows();//获取结果行
+		    for($i = 0;$i < $num_results;$i++){
+		        $row = $result->fetchRow(MDB2_FETCHMODE_ASSOC);//MDB2_FETCHMODE_ASSOC以相关数组方式返回结果行
+		       	...
+		    }
+		    $db->disconnect();
+	
+31.mysql中保存权限的6个表[授权表]:user,host,db,tables_priv,column_priv,procs_priv,用来确定用户身份以及允许执行特定的操作,
+	范围字段指定用户、主机、数据库,权限字段指定用户在该范围内可以执行哪些操作
+	user、host表用于确定用户是否可以连接mysql服务器，
+	db、host用于确定用户可以访问哪些数据库，
+	table_priv用于确定用户可以使用数据库中的哪些表，
+	column_priv用于确定用户可以访问表中的哪些列，
+	procs_priv用于确定用户可以执行哪些存储过程
+32.user表的权限为全局权限,
+	普通股用户的权限保存在db和host表中，db表确定哪些用户可以访问哪些主机和数据库，此表给出的权限应用于特定行中指定的任意数据库,
+	host表是db表的补充，每条记录都指定了每个用户－主机对的权限
+	table_priv:存储表级别权限
+	column_priv:存储列级别权限
+	procs_priv:存储过程权限
+33.访问控制:MYSQL如何使用grant表 => 	[1]连接验证:MYSQL根据user表中的数据进行验证用户是否有权限连接数据库,用户名为空则匹配所有用户，主机名可以用通配符(%)指定，%匹配所有主机，也可以用作主机名的一部分，%.ttt.aaa.cn,匹配所有以.ttt.aaa.cn结尾的主机,如果主机名为空，MYSQL讲引用host表，找到匹配的user和host对
+									[2]请求验证:建立一个连接后，MYSQL每一个请求的权限，首先检查user表的全局权限，然后检查db和host表，如果没有足够权限将检查table_priv表，最后检查column_priv
+34.更新权限:	[1]连接后，flush privileges;
+			[2]命令行中,mysqadmin flush-privileges
+			[3]mysqadmin reload
+			下次连接时讲进行权限检查
+
+35.用户权限(grant):	PROESS:可用于查看其他用户正在做什么，输入了什么以及密码
+					FILE:可用来读写操作系统中的文件
+					SHUTDOWN:
+					RELOAD:
+36.加强安全性:在host表中使用IP地址而不是域名来提高安全性能,可以在DNS位置避免错误问题和黑客入侵,可以通过启动mysql后台程序--skip-name-resolve选项加强，即所有		主机列的值必须是IP地址或本地主机
+37.SHOW语句:[未指定数据库(mysql监视器)] => 
+					show tables from books(DATABASE); 
+					show columns from orders from books; 
+					show columns from books.orders;
+					show grants for books;
+
+38.使用EXPLAIN理解查询的工作过程:使用方法:
+									[1]explain TABLE;输出结果类似于show column from TABLE;
+									[2]使用explain查看mysql是如何解释并执行一个select查询，在select语句之前加上explain,且该语句未进行真正的查询
+										(1)id:select语句的id号
+										(2)select_type:查询类型
+										(3)table:完成查询所需的表
+										(4)type:解释表在查询关联中是如何使用的
+										(5)rows:列出执行连接所必需扫描的行数，乘积即为总行数
+										(6)possible_keys列出了mysql可能用来连接表的关键字
+										(7)key:mysql实际使用的关键字，可以为NULL
+										(8)key_len:所用关键字的长度
+										(9)ref:用来从表中选择列而必须与关键字一起使用的列
+										(10)extra:该列告诉我们连接是如何执行的
+39.关联优化器检查关键字的分布:使用myisamchk或ANALYZE TABLE 语句对关联进行优化,使其效率更高
+							可以使用如下命令调用:
+								myisamchk --analyze pathtomysqldatabase/table;
+							通过在命令行上列出所有连接对多个表进行查询
+								myisamchk --analyze pathtomysqldatabase/*.MYI;
+							运行以下命令检查所有数据库的所有表
+								myisamchk --analyze pathtomysqldatabase/*/*.MYI;
+							在mysql监视程序中运行ANALYZE TABLAE语句列出所有表
+								analyze table CUSTOMERS,ORDERS,ORDER_ITEMS,BOOKS;
+							为表创建一个索引
+								alter table(表) add index(列)
+								
+40.数据库的优化:	[1]设计优化：使用最小化冗余的设计思想来实现，也可以使用最小的列数据类型来实现，尽可能地使NULL最少，主键尽可能地短,尽量避免使用可变(varchar					,text,blob)长度列
+				[2]权限：通过简化权限来提高查询速度
+				[3]表的优化：表在多次使用后会变得支离破碎，可以使用(OPTIMIZE TABLE tableName)来修复，或者在命令提示符下myisamchk -r 					table,使用myisamchk工具对该表索引和数据进行排序，myisamchk --sort-index --sort-records=1 pathtomysqldatadirectory/*/*.MYI
+				[4]使用索引：在需要提高查询速度的地方使用索引，简化碎银，不创建不需要的索引，运行EXPALAIN命令查看该索引是否正在使用中
+				[5]使用默认值：在尽可能的地方使用列的默认值,只在与默认值不同的时候才插入数据，这样可以减少insert语句所花费的时间
+41.备份mysql数据库:	[1]复制数据文件时使用LOCK TABLE命令锁定这些表,LOCK TABLE table lock_type[,table 						lock_type],每个表必须是表名称，lock_type可以是read或write,对于备份来说只需要read锁，执行备份之前必须执行FLUSH 						TABLES;命令确保对索引所作的任何修改将写入到磁盘，执行备份时用户和脚本还可以执行只读查询
+					[2]使用mysql_dump命令，在操作系统命令行下使用，mysqldump --opt --all-databases > 						all.sql,将所有用来重新构建SQL数据库所需内容全部导出到一个sql文件中
+					[3]使用mysqlhotcopy脚本:mysqlhotcopy database /path/for/backup
+42.恢复mysql数据库:使用第一种方法备份，则使用myisamchk -r 						命令进行修复，使用第二种方法进行备份，则首先必须在导出文件中执行查询，可以将数据库重新构建至导出该文件时的状态，还应该将数据库更新至保						存在二进制日志文件中的状态，可以运行如下命令 => mysqlbinlog hostname-bin.[0-9]* | mysql
+43.实现复制:是允许提供相同数据库的多个数据库服务器的技术，可以载入共享并提高系统可靠性，如果一个服务器停止工作，还有其他服务器还能继续工作，基本			思想就是设置一个主从服务器，一个主服务器，几个从服务器，每个从服务器都镜像了主服务器，当最初设置了从服务器后，可以在任何时候在主服务				器上复制所有数据的快照，这样从服务器将请求来自主服务器的更新，主服务器将传输通过其二进制日志而执行的查询细节，而从服务器可以重新将				这些查询应用于他们的数据,使用这种设置的常规方法是在主服务器应用写查询，在从服务器应用读查询，要设置主从服务器架构，主服务器必须开启			二进制日志记录必须在主从服务器的my.ini/my.cnf中设置,[mysqld] lon-bin server-id=1,
+			(1)开启二进制日志记录(2)为主服务器设置serverid，id号唯一
+		[1]设置主从服务器:在主服务器上必须为从服务器设置用来连接主服务器的用户,从服务器的这个特殊的权限级别称作复制从服务器，如果使用LOAD 			DATA FROM MASTER命令传输数据，该用户嗨需要RELOAD、SUPER、SELECT权限,在主服务器上创建从服务的用户 => 
+			grant replication slave on *.* to 'rep_slave' @ '%'identified by 'password'
+		[2]执行初始的数据传输:LOAD DATA FROM MASTER传输过程会锁定主服务器上的表，这种传输需要一定的时间,只有myisam表使用该方法
+			flush tables with read lock;清空表，使用读锁原因是必须在获得快照时记录服务器在二进制中的位置
+			show master status;显示主服务器状态
+			unlock tables;获得快照并去除表的锁定
+		[3]设置一个或多个从服务器:如果获得数据库的快照，可以在从服务器上安装，在从服务器上执行如下所示查询 => 
+			change master to 
+			master-host = 'server',主服务器名称
+			master-user = 'user',主服务器上grant语句的用户名
+			master-password = 'password',密码
+			master-log-file = 'logfile',来自show master status语句
+			master-log-pos = logpos,
+			start slave;
+			如果没有获得快照，可以在运行以上查询后执行:load data from master;
+			
+					
+
+
+
+
