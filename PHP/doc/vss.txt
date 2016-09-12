@@ -1,0 +1,139 @@
+VSS中我们处理的所有文档都叫文件操作：
+check out , check in , undo check out , view
+
+存储在VSS数据库中的所有文件的集合 ，类似于“文件夹”操作：文件的add , delete , edit , share
+	工作文件夹 working folder 
+
+版本控制工具VSS使用介绍
+分类：项目管理
+ （16210）  （0）
+什么是版本控制？
+1.怎样对研发项目进行整体管理　　
+2.项目开发小组的成员之间如何以一种有效的机制进行协调　　
+3.如何进行对小组成员各自承担的子项目的统一管理　　
+4.如何对研发小组各成员所作的修改进行统一汇总　　
+5.如何保留修改的轨迹，以便撤销错误的改动
+6. 对在研发过程中形成的软件的各个版本如何进行标识，管理及差异识辨 
+版本控制工具介绍
+•Starteam
+是一个集合了版本控制、构建管理（Build Management）和缺陷跟踪系统为一体的软件，并且具有强大的图形界面，易学易用；但管理复杂、维护困难。2002年底被Borland公司收购。
+•PVCSVersion Manager
+ 是美国的MERANT公司软件配置管理工具PVCS 家族中的一个组成部分，它能够实现源代码、可执行文件、应用文件、图形文件和文档的版本管理；它能安全地支持软件并行开发，对多个软件版本的变更进行有效的控制管理。  
+•ClearCase(CC)
+是ROSE构件的一部分，目前最牛的配置管理工具，主要应用于复杂的产品发放、分布式团队合作、并行的开发和维护任务。可以控制word, excel,powerpoint , visio等文件格式，对于不认识的格式可以自己定义一种类型来标识。
+•VisualSourceSafe （ VSS ）
+简单易用、方便高效、与Windows操作系统及微软开发工具高度集成。
+•ConcurrentVersions System （ CVS ）
+是开发源码的并发版本系统,它是目前最流行的面向软件开发人员的源代码版本管理解决方案。它可用于各种平台，包括 Linux 、Unix和 Windows NT/2000/XP等等。
+Visual SourceSafe (VSS)概述
+	提供了完善的版本和配置管理功能，以及安全保护和跟踪检查功能 
+	同 Visual Basic、Visual C++、Visual FoxPro 等开发环境以及 Microsoft Office 应用程序集成在一起 
+	简单工作原理
+ 
+
+VSS中的几个重要概念
+	文件 file
+           VSS中我们处理的所有文档都叫文件操作：check out , check in , undo check out , view
+	项目 project
+        存储在VSS数据库中的所有文件的集合 ，类似于“文件夹”操作：文件的add , delete , edit , share
+	工作文件夹 working folder 
+         在我们的本地机上。是我们真正用于处理文档的地方
+VSS的基本操作（一个例子）
+
+•按小组熟悉版本控制工具VSS的使用
+1、每个小组选出一个管理员，在服务器端创建数据库并把小组的各个成员加入其中。
+2、管理员登陆到VSS客户端，创建新的文件夹(“SE实训”)，并添加文件（取名为“通讯录”的word文档）和文件夹（“共享的文档”）。
+3 、管理员登陆VSS服务端设置用户访问文件夹的权限。
+4、每个小组成员登陆到VSS中，把各自的文件加到“共享的文档”中。
+5、每个小组成员获得VSS中所有文件的最新版本。
+6、每个小组成员编辑和查看VSS中的文件：在“通讯录”中编辑自己的通讯方式；查看其他组员添加的文件。
+VSS管理员建立数据库（一）
+进入Visual SourceSafe 6.0 Admin
+选择Tools------->>Create Database，名为“SEGroup1”
+ 
+
+VSS管理员建立数据库（二）
+
+ 
+
+VSS管理员创建用户并设定密码(一)
+
+打开刚才建立的数据库SEGroup1：
+选择Users ------>open SourceSafe Database
+ 
+
+VSS管理员创建用户并设定密码(二)
+
+创建用户：选择Users ------>add User
+ 
+VSS管理员创建用户并设定密码(三)
+设定密码：选择Users ------->Change Password
+ 
+
+登陆VSS
+进入Microsoft Visual SourceSafe 6.0 
+ 
+
+修改密码
+修改密码：选择Tools ------>Change Password
+ 
+
+创建新的文件夹
+选中要创建新文件夹的项目（上级文件夹）
+选择File --------->Create Project
+ 
+
+添加文件夹
+选中要创建新文件夹的项目（上级文件夹）
+选择File -------->Add Files
+ 
+
+添加文件
+选中要创建新文件夹的项目（上级文件夹）
+选择File --------->Add Files
+ 
+创建工作文件夹
+选择File ---->Set Working Folder
+ 
+
+查看文件
+在文件列表中选中要查看的文件 
+选择Edit ------->View File 或右单击鼠标选择View
+
+ 
+
+修改和编辑文件（一）
+在文件列表中选中要修改和编辑的文件 
+选择Edit ------>Edit File 或 右单击鼠标选择 Edit
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+原理还是比较简单的，希望对想了解VSS的有一定的帮助。又是一年的冬天了，各位博友要多注意保暖哦。
+
+
