@@ -4,7 +4,7 @@ MYSQL 命令行
 3.删除mysql匿名用户:mysql -u root -p => use mysql; =>delete from user where User = ''; => quit; => mysqladmin -u root -p reload;
 4.创建mysql数据库:create database DBNAME;
 5.mysql权限管理:
-	授权 => GRANT privileges(权限:[all授权全部权限、usage创建无权限用户]select,insert,index,alter,drop等) on 			ITEM(数据库、表、字段:books.*) to USER_NAME(授权对象) WITH GRANT OPTIONS;
+	授权 => GRANT privileges(权限:[all授权全部权限、usage创建无权限用户]select,insert,index,alter,drop等) on ITEM(数据库、表、字段:books.*) to USER_NAME(授权对象) WITH GRANT OPTION;
 	取消权限 REVOKE privileges on ITEM from USER_NAME
 6.创建数据表:
 	create table customers
