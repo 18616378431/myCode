@@ -1,4 +1,0 @@
-读取一个文件
-中文可用
-英文呢
-I'm a good boy,I can do what I want!
