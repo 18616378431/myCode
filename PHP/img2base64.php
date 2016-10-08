@@ -27,7 +27,16 @@ if(!empty($_FILES)){
 //    $txt = base64_encode($data);
 //    file_put_contents('zhuanhuan.txt',$txt);
 
-
+//多文件上传,将每个文件信息整理进同一数组
+//    for($i = 0;$i < count($_FILES['file']['tmp_name']);$i++){
+//        $newarr[$i][] = $_FILES['file']['name'][$i];
+//        $newarr[$i][] = $_FILES['file']['type'][$i];
+//        $newarr[$i][] = $_FILES['file']['tmp_name'][$i];
+//        $newarr[$i][] = $_FILES['file']['error'][$i];
+//        $newarr[$i][] = $_FILES['file']['size'][$i];
+//    }
+//    echo "<pre>";
+//    print_r($newarr);
 
 
 //    file_put_contents('zhuanhuan.txt',img2base64($_FILES['file']['tmp_name']));
