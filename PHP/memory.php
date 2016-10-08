@@ -1,4 +1,4 @@
-
+<?php
 $start = time();
 $startM = memory_get_usage();//此处程序开始时分配的内存
 
@@ -12,3 +12,4 @@ function convert($size)
 $endM = memory_get_usage();//此处程序结束时分配的内存
 $end = time();
 占用的内存为".convert($endM-$startM)
+?>
