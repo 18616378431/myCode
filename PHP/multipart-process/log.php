@@ -1,7 +1,8 @@
 <?php
 echo "PID:".getmypid()."\n";
-echo "¿ªÊ¼Ê±¼ä:".$start = date('Y-m-d H:i:s')."\n";
+echo "å¼€å§‹æ—¶é—´:".$start = date('Y-m-d H:i:s')."\n";
 
 sleep(2);
 
-echo "½áÊøÊ±¼ä:".$end = date('Y-m-d H:i:s')."\n";
+echo "ç»“æŸæ—¶é—´:".$end = date('Y-m-d H:i:s')."\n";
+
