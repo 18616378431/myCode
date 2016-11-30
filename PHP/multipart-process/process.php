@@ -19,7 +19,7 @@ $success = $failure = 0;
 
 //启动2个进程
 for($i = 0;$i < 17;$i++){
-    $command = "$phpPath $destPHPFile >> $logFile &";
+    $command = "$phpPath $destPHPFile >> $logFile &";//添加&符号程序后台运行
     echo "进程".$i."开启时间".date('Y-m-d H:i:s')."\n";
     $pstart = time();
     $resource = popen($command,'r');
@@ -31,6 +31,7 @@ for($i = 0;$i < 17;$i++){
     }else{
         $failure++;
     }
+    $cmd = 'ps -ef | grep "log.php" | grep -v "grep" | wc -l';//shell命令获取执行脚本进程数量
     while(shell_exec($cmd) >= 6){//包含一个启动进程，子进程为6-1
         sleep(1);
     }
