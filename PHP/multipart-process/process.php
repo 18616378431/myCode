@@ -32,10 +32,10 @@ for($i = 0;$i < 17;$i++){
         $failure++;
     }
     $cmd = 'ps -ef | grep "log.php" | grep -v "grep" | wc -l';//shell命令获取执行脚本进程数量
-    while(shell_exec($cmd) >= 6){//包含一个启动进程，子进程为6-1
-        sleep(1);
+    while(shell_exec($cmd) >= 5){//5进程并发运行
+	sleep(1);
     }
-	usleep(300);//延迟300ms，防止同时创建文件夹冲突导致程序失败
+    usleep(300);//延迟300ms，防止同时创建文件夹冲突导致程序失败
 }
 
 $end = time();
