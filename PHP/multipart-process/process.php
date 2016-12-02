@@ -37,7 +37,10 @@ for($i = 0;$i < 17;$i++){
     }
     usleep(300);//延迟300ms，防止同时创建文件夹冲突导致程序失败
 }
-
+$cmd = 'ps -ef | grep "log.php" | grep -v "grep" | wc -l';//shell命令获取执行脚本进程数量
+while(shell_exec($cmd) >= 1){//等待全部进程执行完毕
+	sleep(1);
+}
 $end = time();
 echo "成功启动".$success."个进程\n";
 echo "失败启动".$failure."个进程\n";
