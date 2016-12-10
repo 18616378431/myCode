@@ -9,7 +9,7 @@ if(!is_dir($mydir)){
     }
 }
 
-sleep(2);
+sleep(10);
 
 echo "结束时间:".$end = date('Y-m-d H:i:s')."\n";
 

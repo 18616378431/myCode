@@ -10,7 +10,7 @@ ini_set('memory_limit','2048M');
 
 $start = time();
 
-$phpPath = '/usr/local/php/bin/php';
+$phpPath = ' /usr/bin/php';
 $destPHPFile = 'log.php';
 $logFile = 'log.txt';
 
@@ -33,13 +33,13 @@ for($i = 0;$i < 17;$i++){
     }
     $cmd = 'ps -ef | grep "log.php" | grep -v "grep" | wc -l';//shell命令获取执行脚本进程数量
     while(shell_exec($cmd) >= 5){//5进程并发运行
-	sleep(1);
+	shell_exec('wait');
     }
     usleep(300);//延迟300ms，防止同时创建文件夹冲突导致程序失败
 }
 $cmd = 'ps -ef | grep "log.php" | grep -v "grep" | wc -l';//shell命令获取执行脚本进程数量
 while(shell_exec($cmd) >= 1){//等待全部进程执行完毕
-	sleep(1);
+	shell_exec('wait');
 }
 $end = time();
 echo "成功启动".$success."个进程\n";
