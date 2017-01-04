@@ -10,7 +10,7 @@ function get_line( $file_name , $start , $limit )//从0开始，读取$limit行
         $ret[] = trim($f->current());
 //        $ret .= $f->current();
         $f->next();
-        if($fp->eof()){
+        if($f->eof()){
             array_pop($ret);  
             break;  
         }
