@@ -9,7 +9,7 @@
 
 $data = file_get_contents("test.txt");
 $start = microtime(true);
-$filesize = filesize("test.txt")/2014;//计算结果为kb
+$filesize = filesize("test.txt")/1024;//计算结果为kb
 echo "<!--".$data."-->";
 $end = microtime(true);
 $duration = ($end-$start);
