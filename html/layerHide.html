@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>弹层之外点击消失</title>
+    <script type="text/javascript" src="js/jquery-1.4.1.min.js"></script>
+    <script type="text/javascript" language="JavaScript">
+        $(function(){
+            $(document).bind("click",function(e){
+                var target  = $(e.target);
+                if(target.closest(".tardiv").length == 0){
+                    $(".tardiv").hide();
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<div class="tardiv" style="width: 200px;height: 200px;background: #EEEEEE;">
+    div块
+</div>
+</body>
+</html>
