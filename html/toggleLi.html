@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slow</title>
+    <script src="./../js/jquery-1.4.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".mt_l li:last-child").click(function(){
+                $(this).children("span").toggleClass('on');
+                $(this).parents(".mt").next(".d").slideToggle("slow");
+            });
+        });
+    </script>
+    <style>
+        .on{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="exrt">
+    <div class="mt">
+        <ul class="mt_l">
+            <li><span class="view on1">查看进度1<em></em></span></li>
+            <li><span class="view on1">查看进度2<em></em></span></li>
+            <li><span class="view on1">查看进度3<em></em></span></li>
+        </ul>
+    </div>
+    <div class="d" style="height:200px;width: 200px;background-color: #00a0e9;display: none;">
+        1
+    </div>
+    <div class="mt">
+        <ul class="mt_l">
+            <li><span class="view on1">查看进度1<em></em></span></li>
+            <li><span class="view on1">查看进度2<em></em></span></li>
+            <li><span class="view on1">查看进度3<em></em></span></li>
+        </ul>
+    </div>
+    <div class="d" style="height:200px;width: 200px;background-color: #00a0e9;display: none;">
+        2
+    </div>
+    <div class="mt">
+        <ul class="mt_l">
+            <li><span class="view on1">查看进度1<em></em></span></li>
+            <li><span class="view on1">查看进度2<em></em></span></li>
+            <li><span class="view on1">查看进度3<em></em></span></li>
+        </ul>
+    </div>
+    <div class="d" style="height:200px;width: 200px;background-color: #00a0e9;display: none;">
+        3
+    </div>
+</div>
+</body>
+</html>
