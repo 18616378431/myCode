@@ -1,0 +1,8 @@
+5.5.4文件末尾条件
+
+1.检测到EOF,即文件末尾,cin.eof(),返回true,否则返回false
+2.eofbit或failbit被设置为1,cin.fail()返回true,否则返回false,同cin.eof()用法
+3.cin.clear()可以清除EOF标记,使输入继续
+4.cin.get(char);返回cin对象，cin对象在需要bool值得地方转换为bool类型
+5.cin的另一个版本,char ch = cin.get();返回字符ASCII码,文件末尾为EOF或-1
+6.二维数组使用嵌套循环进行遍历
