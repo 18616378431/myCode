@@ -201,3 +201,42 @@
 		必须是友元,但没有访问ostream的私有成员,将ostream对象做为整体使用
 		所以该函数并不一定必须是ostream类的友元
 			
+ [2]<<的第二种重载版本
+	(1)cout << trip;
+		这样可行,但重新定义的<<操作符与cout一起使用时不允许将输出拼接起来
+		通常cout是可以拼接的
+		int x = 5,y = 8;
+		cout << x << y;等同于(cout << x) << y;
+		iostream定义中,要求<<操作符左边是ostream对象,因为cout是ostream对象,
+		表达式cout << x满足要求
+		因为表达式cout << x位于y左侧,所以输出语句也要求该表达式是一个ostream对象
+		因此ostream类将operator<<()函数实现返回一个ostream对象
+		具体的说,该例子返回调用对象cout,因此表达式cout << x本身是一个ostream对象
+		而可以位于<<操作符的左侧
+	(2)可以对友元函数使用相同的方法,使其返回ostream对象的引用
+		ostream & operator<< (ostream & os,const Time & t)
+		{
+			os << t.hours << "hours," << t.minutes << "minutes";
+			return os;
+		}
+		返回类型为引用,程序开始执行传递了一个对象引用,函数的返回结果就是传递给它的对象
+		cout << trip;被转换为operator<< (cout,trip);返回cout对象
+		则可以使用cout << "Trip time = " << trip << "(Tuesday)\n";
+		分步解析该表达式
+		首先cout << "Trip time = ";调用ostream中的<<定义,显示字符串并返回cout对象
+		表达式被返回的cout对象替代变成
+		cout << trip << "(Tuesday)\n";
+		接下来程序使用Time对象的友元函数重载操作符<<的定义,显示trip的值
+		并返回cout对象,则语句变成
+		cout << "(Tuesday)\n";
+		现在使用ostream中用于字符串的定义<<,来显示最后一个字符串
+		operator<< ()版本还可用于将输出写入到文件
+		eg:	#include<fstream>
+			ofstream fout;
+			fout.open("file.txt");
+			Time trip(12,40);
+			fout << trip;
+		其中最后一条语句将转换为
+		operator<< (fout,trip);
+	(3)类继承的引用,基类可以指向派生类,ostream引用可以指向ostream和ofstream对象
+		一般可使用友元函数重载操作符<<显示对象内容
