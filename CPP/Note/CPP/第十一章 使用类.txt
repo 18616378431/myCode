@@ -270,4 +270,22 @@
 5.使用构造函数会产生临时对象,然后将临时对象赋值给对象
 	eg:	Vector shove =  Vector(100,300);
 6.使用-im命令选项来使编译器自动搜索数学库
+
+11.5.1 使用状态成员
+1.描述对象所处状态的成员称为状态成员(state member)
+2.数学函数在使用角度时以弧度为单位,角度和弧度之间的转换
+	eg:	//弧度转换为角度系数
+		const double Rad_to_deg = 57.2957795130823;
+		//弧度转换为角度
+		ang = rad / Rad_to_deg;
+		//角度转换为弧度
+		rad = ang * Rad_to_deg;
+		//极坐标转换为直角坐标
+		x = mag * cos(ang);//ang为角度
+		y = mag * sin(ang);//ang为角度
+		//直角坐标转换为极坐标
+		mag = sqrt(x * x + y * y);
+		ang = atan2(y,x);
+		
+
 	
