@@ -369,5 +369,51 @@
 		当且仅当转换不存在二义性时,才会进行这两步转换
 		如果类还定义了Stonewt(long)编译器将拒绝这些语句
 		int可被转换为long或double,调用存在二义性
+
+11.6.1 程序说明
+1.赋值给Stonewt对象的值为int时,将int转化哪位double,再调用构造函数进行隐式转换
+	eg:	Stonewt taft = 325;
+2.将int传递给接收Stonewt参数的函数时,先寻找接收int参数的构造函数,
+	不存在则寻找接收的其他内置类型的构造函数,找到则将int转换为相应类型
+	然后调用构造函数进行隐式转换
+
+11.6.2 转换函数
+1.构造函数只适用于从某种类型到类类型的转换,
+2.要进行相反的转换,必须使用特殊的C++操作符函数--转换函数
+3.转换函数是用户定义的强制类型转换,可以像强制类型转换那样使用它们
+4.如果定义了Stonewt到double的转换函数,就可以使用下面的转换
+	eg:	Stonewt wolfe(285,7);
+		double host = double(wolfe);//第一种句法
+		double thinker = (double)wolfe;//第二种句法
+	也可以让编译器决定如何做
+		Stonewt wells(20,3);
+		double star = wells;//隐式使用转换函数
+		编译器发现右侧是Stonewt对象,左侧是double类型,
+		首先查看是否定义了与此匹配的转换函数
+		如果没有则报错,指出无法将Stonewt赋值为double
+5.创建转换函数,创建转换为typeName的函数
+		eg:	operator typeName();
+		typeName指出了要转换的类型
+	注意
+	[1]转换函数必须是类方法
+	[2]转换函数不能指定返回类型
+	[3]转换函数不能有参数
+		eg:	转换为double的函数原型
+			operator double();
+		转换函数必须是类方法意味着其必须由类对象调用,
+		从而告知函数要转换的值,因此不需要参数
+	添加转换函数原型:
+		operator int()const;
+		operator double()const;
+		Stonewt::operator int()const
+		{
+			return int(pounds + 0.5);
+		}
+		Stonewt::operator double()const
+		{
+			return pounds;
+		}
+		
+
 		
 	
