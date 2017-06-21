@@ -414,6 +414,40 @@
 			return pounds;
 		}
 6.转换函数虽然没有声明返回类型,也将返回所需的值
-
+7.与cout配合使用未进行显式强制类型转换,程序不会自动进行转换
+	eg:	double p_wt = poppins;//隐式类型转换
+		cout << poppins << " int(pounds).\n";//显式强制转换
+		cout << poppins << " pounds.\n";
+8.当类定义了多种类型转换时,未指出要转换为哪种类型,编译器将报告二义性转换
+	如果类只定义了一种类型的转换,编译器将自动默认使用该转换函数进行转换
+	[1]如果类只定义了一种转换,转换时转换的类型不是类中定义的,编译器将使用这个转换函数,
+	并将结果转换为目标类型
+	[2]如果类中定义了多个转换函数,当将类转换为非类定义的类型时,将导致二义性
+	eg:	poppins 类中只定义了double,那么隐式转换将先转换为double,然后将double赋值给long
+		long imb = poppins;
+		poppins 定义了double、int,转换为long时将导致二义性
+		long imb = poppins;//报错
+	[3]类定义了多个转换函数时,仍然可以使用显式强制类型转换指出要使用哪个转换函数
+	eg:	两种强制类型转换表示法
+		long gone = int(poppins);
+		long gone = (int)poppins;
+9.转换函数存在的问题:
+	[1]可能在用户不希望转换时进行了转换
+	[2]关键字explicit不能用于转换函数
+	[3]可使用功能相同的非转换函数替换转换函数即可
+		eg:	Stonewt::operator int()const{return int(pounds + 0.5);}
+			使用下面进行替换
+			int Stonewt::Stone_to_Int()cosnt{return int(pounds + 0.5);}
+			这样下面的语句将是非法的
+			int plb = poppins;
+			如果需要这样的转换,可以使用
+			int plb = poppins.Stone_to_Int();
+	[4]应谨慎地使用转换函数,通常选择仅在显式调用才会执行的函数
+10.C++为类提供的类型转换:
+	[1]只有一个参数的类构造函数用于将类型与该参数相同的值转换为类类型
+		在类构造函数中使用explicit关键字可防止隐式转换,只允许显式转换
+	[2]被称为转换函数的特殊类成员操作符函数,用于将类对象转换为其他类型
+		转换函数是类成员,没有返回类型,没有参数,格式为operator typeName()
+		typeName是类要转换的类型,将类赋值给typeName类型变量
+		或强制类型转换为typeName类型,转换函数将自动被调用
 		
-	
