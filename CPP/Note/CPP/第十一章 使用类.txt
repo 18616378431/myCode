@@ -450,4 +450,94 @@
 		转换函数是类成员,没有返回类型,没有参数,格式为operator typeName()
 		typeName是类要转换的类型,将类赋值给typeName类型变量
 		或强制类型转换为typeName类型,转换函数将自动被调用
-		
+
+11.6.3 转换函数和友元函数
+1.都以类对象的参数的重载成员函数和友元函数不能同时存在
+	提供了方法定义或友元函数可以使用下面的方法
+	eg:	方法
+		Stonewt Stonewt::operator+ (const Stonewt & st)const
+		{
+			double pds = pounds + st.pounds;
+			Stonewt sum(pds);
+			return sum;
+		}
+		友元函数
+		Stonewt operator+ (const Stonewt & st1,const Stonewt & st2)const
+		{
+			double pds = st1.pounds + st2.pounds;
+			Stonewt sum(pds);
+			return sum;
+		}
+2.重载了加法操作符的对象可以这样做
+	eg:	Stonewt jennySt(9,12);
+		Stonewt bennySt(12,8);
+		Stonewt total;
+		total = jennySt + bennySt;
+3.提供了double的构造函数Stonewt(double)可以这样使用
+	eg:	Stonewt jennySt(9,12);
+		double kennyD = 176.0;
+		Stonewt total;
+		total = jennySt + kennyD;
+		//double会调用构造函数转换为Stonewt类对象
+4.只有友元函数才允许将double放在+操作符前面
+	eg:	Stonewt jennySt(9,12);
+		double pennyD = 146.0;
+		Stonewt total;
+		total = pennyD + jennySt;
+5.将2中加法操作转换为函数调用
+	eg:	total = jennySt.operator+ (bennySt);
+		或
+		total = operator+ (jennySt + bennySt);
+	上述转换实参类型都和形参匹配,成员函数是通过Stonewt对象调用的
+6.将3中加法操作符转换为函数调用
+	eg:	total = jennySt.operator+ (kennyD);
+		或
+		total = operator+ (jennySt,kennyD);
+	成员函数通过Stonewt对象调用,每个方法都存在double参数,
+	会隐式调用double构造函数将double转换为Stonewt对象
+7.在6中情况下定义了operator double();函数将造成混乱,
+	该函数提供另一种解释方式,编译器将jennySt转换为double并进行加法操作
+	而不是将doule转换为Stonewt对象
+	过多的转换函数将导致二义性
+8.将4中加法操作转换为函数调用
+	eg:	total = operator+ (pennyD + jennySt);//友元函数
+		第一个参数为double,将调用double构造函数将其转换为Stonewt对象,
+		编译器不会先将pennyD转换为Stonewt对象,然后调用成员函数
+		这里将对参数进行转换,double转换为Stonewt对象
+		然后执行友元函数内容
+9.将加法定义为友元将更容易实现程序自动类型转换,
+	原因是两个参数都为函数参数且类型匹配
+10.要将double与Stonewt对象相加,
+	[1]可以定义将其加法操作定义为友元函数
+		让Stonewt的double构造函数将double转换为Stonewt对象
+		这种方法以来与隐式构造函数转换,内存开销和时间消耗较大
+		eg:	Stonewt operator+ (double x)const;
+	[2]将加法操作符重载为使用double参数的成员方法
+		这种方法使程序较长,耗时短,内存开销小
+		eg:	friend Stonewt operator+ (double x,const Stonewt & st);
+11.在main前调用Bootstrap函数,这可以修改程序第一个执行的入口
+	在main之前执行Bootstrap函数,以为程序的前期执行做准备
+	全局对象将在main执行之前创建,可以实现这种需求
+	可以创建一个类,其默认构造函数将调用所有bootstrap函数
+	eg:	声明一个具有默认构造函数的类,
+		并在默认构造函数调用其要初始化数据的函数
+		然后在main函数前面实例化这个类,
+		便达到了在main执行前进行一些初始化操作
+		class Test
+		{
+		private:
+			...
+		public:
+			Test()
+			{
+				GetData1();//various
+				GetData2();//bootstrap
+				GetData3();//functions
+			}
+		};
+		//main.c
+		Test t;
+		int main()
+		{
+			...
+		}
