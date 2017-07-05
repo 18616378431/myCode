@@ -109,5 +109,47 @@
 		sports.str指向的字符串被sailor的析构函数释放,
 		然后执行sports的析构函数释放str指向的内存将导致错误
 		delete [] sports.str;
+7.使用显式复制构造函数来解决问题
+	[1]在类设计中解决隐式复制构造函数产生的问题,可以使用显式复制构造函数进行深度复制(deep copy)
+		复制构造函数复制字符串并将副本的地址赋给str成员,而不仅仅是复制字符串的地址
+		这样每个对象都有自己的字符串,而不是引用另一个对象的字符串
+		调用析构函数都将释放不同的字符串,而不会试图释放已释放的字符串
+		eg: 编写StringBad的复制构造函数:
+			StringBad::StringBad(const StringBad & st)
+			{
+				num_strings++;
+				len = st.len;
+				str = new char[len + 1];
+				std::strcpy(str,st.str);
+				std::cout << num_strings << ":\"" << str << "\" object created\n";
+			}
+	[2]必须使用显式复制构造函数原因在于,一些类使用new初始化的、指向数据的指针,
+		而不是数据本身,直接用其进行初始化仅会进行浅复制
+	[3]	深复制与浅复制
+		(1)如果类中包含new初始化的指针成员,应当定义一个复制构造函数,以复制指针指向的数据,
+			而不是仅仅复制指针,这称为深度复制
+		(2)复制的另一种形式(成员复制或浅复制)只是复制指针的值,浅复制仅浅浅地复制指针的信息,
+			不会复制指针指向的数据
+8.赋值操作符:ANSI C允许结构赋值,C++允许对象赋值,C++是通过自动为类重载赋值操作符实现的
+	类的赋值操作符原型:Class_name & Class_name::operator= (const Class_name &);
+	它接受并返回一个指向对象的引用
+	eg: StringBad的复制操作符原型
+		StringBad & StringBad::operator= (const StringBad &);
+	[1]何时使用赋值操作符
+		(1)将已有的对象赋值给另一个对象时,将使用重载的赋值操作符
+		eg:	StringBad headline1("Celery Stalks at Midnight");
+			...
+			StringBad knot;
+			knot = headline1;//赋值操作符被调用
+		(2)初始化对象时并不一定会调用赋值操作符
+		eg:	StringBad metoo = knot;//使用赋值构造函数,可能使用赋值操作符
+		该实现可能分两步执行:
+			|1|调用复制构造函数创建临时对象,通过赋值将临时对象的值复制到新对象中
+	[2]赋值操作符的功能
+		与复制构造函数相似,赋值操作符的隐式实现也对成员进行逐个复制(浅复制)
+		如果成员本身就是对象,则程序将使用为这个类定义的赋值操作符来复制该成员,
+		静态数据陈冠不受影响
+		
+			
 		
 		
