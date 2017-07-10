@@ -184,6 +184,70 @@
 	赋值操作符是仅能由类成员来重载的操作符
 	赋值操作不创建新对象,不需要同步num_strings静态变量
 	
+12.1.3 改进后的新String类
+添加赋值构造函数和赋值操作符,使类能够正确管理类对象使用的内存
+
+1.修订后的默认构造函数:
+	String::String()
+	{
+		len = 0;
+		str = new char[1];
+		str[0] = '\0';
+	}
+	[1]为什么使用new char[1];而不是new char;
+		两者在内存分配上是相同的
+		区别是前者与析构函数兼容,后者不兼容
+		析构函数包含delete [] str;其对应的应为new char[n];
+	[2]delete []与new []初始化的指针和空指针都兼容
+		eg:	str = new char[1];
+			str[0] = '\0';
+			等价于
+			str = 0;//设置str为空指针
+	[3]以其他方式初始化的指针,使用delete []时结果是不确定的
+		eg:	char words[15] = "bad idea";
+			char * p1 = words;
+			char * p2 = new char;
+			char * p3;
+			delete [] p1;//未定义行为
+			delete [] p2;//未定义行为
+			delete [] p3;//未定义行为
+2.比较成员函数:
+	[1]使用strcmp()函数进行字符串大小比较
+		第一个字符串位于第二个之前,operator< ()返回true
+		strcmp:	(1)第一个参数位于第二个参数之前,返回负值
+				(2)两个字符串相同,返回0
+				(3)第一个参数位于第二个参数之后,返回正值
+		eg:	bool operator< (const String & st1,const String & st2)
+			{
+				if(std::strcmp(st1.str,st2.str) < 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+				//简化
+				return (std::strcmp(st1.str,st2.str) < 0);
+			}
+			bool operator> (const String & st1,const String & st2)
+			{
+				return st2.str < st1.str;
+			}
+			bool operator== (const String & st1,const String & st2)
+			{
+				return (std:strcmp(st1.str,st2.str) == 0);
+			}
+	[2]使用友元有助于将String对象与C风格的字符串比较
+		eg: String answer;
+			if("love" == answer)
+			将被转换为
+			if(operator== ("love",answer))
+			编译器将使用构造函数将代码转换为
+			if(operator== (String("love"),answer))
+			这将于原型匹配
+			
+	
 		
 		
 			
