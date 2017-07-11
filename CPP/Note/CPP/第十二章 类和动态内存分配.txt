@@ -246,10 +246,42 @@
 			编译器将使用构造函数将代码转换为
 			if(operator== (String("love"),answer))
 			这将于原型匹配
-			
-	
+3.使用中括号表示法来访问字符:
+	[1]标准C字符串可以使用中括号来访问字符
+	[2]C++中两个中括号组成一个操作符--中括号操作符,可以使用方法重载operator[] ()该操作符
+	[3]二元C++操作符位于两个操作数之间,对于中括号操作符,一个操作数位于第一个中括号前
+		另一个位于两个中括号之间
+		eg:	2 + 5//二元操作符
+			city[0],city是第一个操作数,[]是操作符,0是第二个操作数
+	[4]String对象opera
+		String opera(The Magic Flute");
+		opera[4]将转换为函数调用
+		opera.operator[] (4)
+		其匹配operator[] (int i)
+		中括号重载实现
+		char & String::operator[] (int i)
+		{
+			return str[i];
+		}
+		有了如上定义
+		cout << opera[4];将转换为
+		cout << opera.operator[] (4);
+		返回类型为char &便可以给特定的元素赋值
+	[5]String means("might");
+		means[0] = 'r';
+		公有方法可访问私有数据
+		转换为函数调用为means.operator[] (0) = 'r';其等价于means.str[0] = 'r';
 		
-		
-			
+	[6]假如有常量对象
+		const String answer("futile");
+		如果只有上述operator[] (int i)定义,下面的赋值语句将出错
+		cout << answer[1];//编译时错误
+		因为answer是常量,上述方法无法确保不修改数据
+	[7]在重载时,C++将区分常量和非常量函数的特征标
+		可以提供另一个常量重载成员函数,供常量对象使用
+		const char & String::operator[] (int i)const
+		{
+			return str[i];
+		}
 		
 		
