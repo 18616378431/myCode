@@ -283,5 +283,36 @@
 		{
 			return str[i];
 		}
-		
-		
+4.静态成员函数:
+	[1]可以将成员函数声明为静态的(在函数声明前加上static关键字)
+		(1)不能通过对象来调用静态成员函数
+		(2)静态成员函数不能使用this指针
+		(3)静态成员函数实在公有部分声明的,则可以使用类名加上作用域解析操作符来调用
+		eg:	为String类添加静态成员函数
+			static int HowMany(){return num_strings;}
+			其调用方法如下
+			int count = String::HowMany();
+		(4)静态成员函数不与特定的对象关联,只能使用静态数据成员
+			eg:	HowMany可以使用num_strings静态数据成员,但不可访问str和len
+	[2]可以使用静态成员函数设置类级(classwide)标记,以控制类某些接口的行为
+		eg:	类级可以控制显式类内容的方法所使用的格式
+5.进一步重载赋值操作符:
+	[1]使用构造函数将普通字符串转换为对象,创建临时对象和释放临时对象将导致效率问题
+		eg:	String name;
+			char temp[40];
+			cin..getline(temp,40);
+			name = temp;
+			(1)上述语句将调用构造函数String(const char *)创建临时对象
+			(2)然后将临时对象的内容复制到name中
+			(3)程序调用析构函数释放临时对象
+	[2]更好的实现(不适用构造函数进行转换)
+		eg:	String & String::operator= (const char * s)
+			{
+				delete [] str;
+				len = std::strlen(s);
+				str = new char[len + 1];
+				std::strcpy(str,s);
+				return *this;
+			}
+			必须释放str之前占有的内存,并重新分配足够的空间
+			
