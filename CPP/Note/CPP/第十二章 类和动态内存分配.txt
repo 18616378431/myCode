@@ -333,4 +333,34 @@
 		(4)返回指向调用对象的引用
 	[7]delete释放不是new分配的内存时,结果是不确定的
 	
+12.1.5 有关返回对象的说明
+返回对象的方式:
+	[1]返回指向对象的引用
+	[2]指向对象的const引用
+	[3]const对象
+1.返回指向const对象的引用
+	[1]函数返回对象将调用复制构造函数,返回引用不会
+	[2]引用指向的对象应在调用函数中存在
+	[3]参数都为const引用,返回值应为const引用才匹配
+	[4]返回引用效率更高
+	eg:	const Vector & Max(const Vector & v1,const Vector & v2)
+		{
+			if(v1.magval() > v2.magval())
+				return v1;
+			else
+				return v2;
+		}
+2.返回指向非const对象的引用
+	[1]operator= ()的返回值(调用对象)用于连续赋值,
+		返回引用可避免该函数调用复制构造函数创建新的对象
+		返回非const,使得程序可对其进行修改
+		eg:	String s1("count");
+			String s2,s3;
+			s3 = s2 = s1;
+			s3 = s2.operator= (s1);//将该调用的返回值赋给s3
+	[2]operator<< ()的返回值(ostream &)用于串接输出
+		该重载返回值必须是ostream &,不能是ostream
+		使用返回类型为ostream将调用ostream的复制构造函数
+		而ostream没有公有的复制构造函数
+		cout对象已存在调用函数的作用域内,因此可以返回其引用
 	
