@@ -403,3 +403,17 @@
 	[2]如果方法或函数要返回一个没有公有复制构造函数类的对象,
 		则其必须返回指向对象的引用
 	[3]重载操作符可返回对象或其引用,优先引用,效率高,其次返回对象
+
+12.1.6 使用指向对象的指针
+1.指向对象的指针不需要使用new来分配内存
+	eg:	String * po = new String("test");
+2.使用new初始化对象
+	eg:	(1)Class_name *pclass = new Class_name(value);
+			Class_name为类,value为Type_name类型
+		(2)该操作将调用构造函数
+			Class_name(Type_name);
+		(3)调用复制构造函数
+			Class_name(cosnt Type_name & v);			
+		(4)Class_name *pclass = new Class_name;
+			该操作将调用默认构造函数
+		
