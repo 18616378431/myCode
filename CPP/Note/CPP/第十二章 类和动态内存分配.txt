@@ -406,7 +406,7 @@
 
 12.1.6 使用指向对象的指针
 1.指向对象的指针不需要使用new来分配内存
-	eg:	String * po = new String("test");
+	eg:	String * po = new String(sayings[choice]);
 2.使用new初始化对象
 	eg:	(1)Class_name *pclass = new Class_name(value);
 			Class_name为类,value为Type_name类型
@@ -416,4 +416,20 @@
 			Class_name(cosnt Type_name & v);			
 		(4)Class_name *pclass = new Class_name;
 			该操作将调用默认构造函数
-		
+3.再谈new和delete
+	(1)类中在构造函数使用new分配内存,在析构函数中使用delete释放内存
+	(2)类对象的静态成员独立于对象被保存
+		eg:	String * po = new String(sayings[choice]);
+			Act nice;//static
+			Act *pt = new Act;//动态对象
+			Act up;//局部作用域的对象
+	(3)new分配了用于保存对象的内存,创建对象将调用构造函数,构造函数分配用于保存字符串的内存
+	(4)这样分配的内存时单个的,使用delete释放内存,当释放对象占用内存时将调用析构函数释放str,len占用的内存
+	(5)执行到语句块末尾时,将调用Object obj;的析构函数
+	(6)delete po;时将调用po指向对象的析构函数
+	(7)执行到整个程序的末尾时,将调用静态对象的析构函数
+	
+以下情况将调用析构函数:
+	(1)如果对象是动态变量,则当执行完定义该对象的程序块时,将调用该对象的析构函数
+	(2)如果对象是静态变量(外部、静态、静态外部、来自名称空间),程序结束时将调用对象的析构函数
+	(3)如果对象是new创建的,则仅当显式调用delete删除对象时,其析构函数才会被调用
