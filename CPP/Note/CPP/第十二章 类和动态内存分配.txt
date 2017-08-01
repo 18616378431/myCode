@@ -454,3 +454,38 @@
 	(6)可以对对象指针应用解除引用操作符(*)来获得对象
 		eg:	if(sayings[i] < *first)
 				first = &sayings[i];
+3.再谈布局new操作符
+	[1]使用布局new操作符为后来的对象分配内存时,将从内存块起始位置覆盖原有内容
+		eg:	char *buffer = new char[BUF];
+			JustTesting *pc1,*pc3;
+			pc1 = new (buffer) JustTesting;
+			pc2 = new JustTesting("Heap1",20);
+			pc3 = new (buffer) JustTesting("Bad Idea",6);
+			pc4 = new JustTesting("heap2",10);
+			pc3的内容将覆盖pc1的内容,内存的起始位置相同
+	[2]使用delete操作符释放new分配的内存将调用对象的析构函数
+		使用delete释放申请的块内存缓冲区时,不会调用在缓冲区内的对象的析构函数
+		eg:	delete p2;
+			delete pc4;
+			这将调用pc2,pc4的析构函数
+			delete []buffer;
+			这不会调用pc1,pc3的析构函数
+	[3]需手动管理用于布局new操作符的内存单元,要使用两个不同的缓冲区,只需提供不同的起始地址即可
+		并确保这两个缓冲区不重叠
+		eg:	pc1 = new (buffer) JustTesting;
+			pc3 = new (buffer + sizeof(JustTesting)) JustTesting("Better Idea",6);
+	[4]使用布局new操作符来为对象分配内存,必须确保其析构函数被调用
+		(1)在堆中创建的对象可以这样调用其析构函数
+			delete pc2;
+			使用布局new操作符创建的对象不能使用delete释放
+			下面的实例时错误的
+			delete pc1;//error
+			delete pc3;//error
+		(2)delete可与常规new操作符配合使用,但不能与布局new操作符配合使用
+			new/delete系统不知道布局new操作符对内存做了什么
+			无法在释放缓冲区时自动调用对象的析构函数
+			这时需要显式调用对象的额析构函数
+			eg:	pc1->~JustTesting();
+				pc3->~JustTesting();
+		
+			
