@@ -489,5 +489,42 @@
 				pc3->~JustTesting();
 	[5]仅当所有对象都被删除时,才能释放用于存储这些对象的缓冲区
 		缓冲区内的对象的释放顺序应与创建顺序相反,后创建的对象可能依赖于先创建的对象
+
+12.1.7 复习各种技术
+1.重载<<操作符
+	使用友元定义重载<<操作符
+	eg:	friend std::ostream operator<< (std::ostream & os,const className & cn);
+		std::ostream operator<< (std::ostream & os,const className & cn)
+		{
+			os << ...;//something
+			return os;//返回cout对象以便连贯操作
+		}
+2.转换函数
+	[1]要将单个值转换为类类型需定义如下构造函数
+	eg:	className(typeName value);
+		className为类名,typeName为类型名称
+	[2]要将类类型转换为其他类型需定义如下转换函数(类成员函数)
+	eg:	operator typeName();
+		operator double();//类转换为double值,该函数返回相应的类型
+		可以在声明类构造函数时使用explicit将构造函数声明为显式的
+		以便不会发生隐式调用的隐式转换
+3.期构造函数使用new的类
+	[1]对于指向的内存是由new分配的所有类成员,都应在析构函数中对其使用delete释放内存
+	[2]如果类析构函数使用delete释放类成员指向的内存,每个构造函数都应使用new来初始化指针或置NULL
+	[3]new/delete,new []/delete [],new/delete成对出现
+	[4]定义一个分配内存的复制构造函数,这样程序能够将一个对象初始化为另一个对象
+		eg:	className(cosnt className &);
+	[5]应定义一个重载赋值操作符的成员函数
+		m_cPointer//类指针成员,类型为typeName
+		eg:	className & className::operator= (const className & cn)
+			{
+				if(this == &cn)
+					return *this;
+				delete [] m_cPointer;
+				//获取cn.m_cPointer指向的内存块的大小,size
+				m_cPointer = new typeName[size];
+				//将cn.m_cPointer指向的内存的内容拷贝至m_cPointer指向的内存
+				return *this;
+			}
 		
 			
