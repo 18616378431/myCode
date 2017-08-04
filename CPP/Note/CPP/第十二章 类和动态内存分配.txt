@@ -526,5 +526,12 @@
 				//将cn.m_cPointer指向的内存的内容拷贝至m_cPointer指向的内存
 				return *this;
 			}
-		
-			
+
+12.2 队列模拟
+1.队列是一种抽象的数据类型(Adbtract Data Type,ADT)
+2.队列可存储有序的项目序列
+3.新的项目添加到队尾,可从队首删除项目
+4.队列像栈,但栈在同一端进行添加和删除,栈是后进先出(LIFO,Last In First Out)的结构
+5.队列是先进先出的结构(FIFO,First In First Out)
+
+	
