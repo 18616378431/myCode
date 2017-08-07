@@ -534,4 +534,61 @@
 4.队列像栈,但栈在同一端进行添加和删除,栈是后进先出(LIFO,Last In First Out)的结构
 5.队列是先进先出的结构(FIFO,First In First Out)
 
+12.2.1 队列类
+队列的特征:
+	[1]队列存储有序的项目序列
+	[2]队列所能容纳的项目数有一定的限制
+	[3]能够创建空队列
+	[4]能够检查队列是否为空
+	[5]能投检查队列是否已满
+	[6]能够在队尾添加项目
+	[7]能够从队首删除项目
+	[8]能够确认队列中的项目数
+1.Queue类的接口
+	根据公有接口特征
+	eg:	class Queue
+		{
+			enum {Q_SIZE = 10};
+		private:
+			//TODO
+		public:
+			Queue(int qs = Q_SIZE);
+			~Queue();
+			bool isempty()const;
+			bool isfull()const;
+			int queuecount()const;
+			bool enqueue(const Item & item);
+			bool dequeue(Item & item);
+		};
+2.Queue类的实现
+	链表实现队列:链表由节点序列构成,每一个节点都包括要保存的数据及指向下一个节点的指针
+	使用下面的结构表示节点
+	eg:	struct Node
+		{
+			Item item;
+			struct Node * next;
+		};
+	单链表实现的队列
+	队列类的私有部分:
+	eg:	class Queue
+		{
+		private:
+			//class scope definitions
+			struct Node{Item item;struct Node * next;};
+			enum{Q_SIZE = 10};
+			//private class members
+			Node * front;	//pointer to front of Queue
+			Node * near;	//pointer to rear of Queue
+			int items;		//current number of items in Queue
+			const int qsize;//maximum number of items in Queue
+		public:
+			//TODO
+		};
+		嵌套结构的struct类成员,使其作用域为整个类,避免了与类外其他定义冲突
+		可以将类成员声明为结构类型或指向结构的指针类型
+		如果嵌套类型声明在私有部分,则仅能在类内使用
+		如果嵌套结构声明为类公有部分,则可在类外使用作用域解析操作符使用被声明的类型
+		eg:	Node被声明为公有部分,则可在类外使声明其类型的变量
+			Queue::Node test;
+			
 	
