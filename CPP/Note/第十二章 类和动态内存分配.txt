@@ -508,7 +508,7 @@
 		operator double();//类转换为double值,该函数返回相应的类型
 		可以在声明类构造函数时使用explicit将构造函数声明为显式的
 		以便不会发生隐式调用的隐式转换
-3.期构造函数使用new的类
+3.其构造函数使用new的类
 	[1]对于指向的内存是由new分配的所有类成员,都应在析构函数中对其使用delete释放内存
 	[2]如果类析构函数使用delete释放类成员指向的内存,每个构造函数都应使用new来初始化指针或置NULL
 	[3]new/delete,new []/delete [],new/delete成对出现
@@ -590,5 +590,97 @@
 		如果嵌套结构声明为类公有部分,则可在类外使用作用域解析操作符使用被声明的类型
 		eg:	Node被声明为公有部分,则可在类外使声明其类型的变量
 			Queue::Node test;
-			
-	
+3.类方法
+	[1]成员初始化列表:在执行到构造函数体之前进行初始化,即创建对象时进行初始化
+		创建对象的流程为先为成员分配内存,然后执行构造函数体
+		成员初始化列表由逗号分隔的初始化列表组成(前面带冒号)
+		位于参数列表的右括号之后,函数体左花括号之前
+		eg:	Queue::Queue(int qs):qsize(qs)
+			{
+				front = rear = NULL;
+				items = 0;
+			}
+		初值可以是常量或构造函数的参数列表中的参数
+		这种方法并不限于初始化常量
+		eg:	Queue::Queue(int qs):qsize(qs),front(NULL),rear(NULL),items(0)
+			{
+			}
+		只有构造函数可以使用这种初始化列表
+		对于const成员必须使用这种方法
+		被声明为引用的成员也必须使用初始化列表进行初始化,因为这与const数据类似,只能在被创建时进行初始化
+		eg:	class Agency{...};
+			class Agent
+			{
+				Agency & belong;//必须使用成员初始化列表进行初始化
+			};
+			Agent::Agent(Agency & a):belong(a){...}
+		简单数据成员使用初始化列表和在构造函数体内进行赋值没有区别
+		对于本身就是类对象的成员,使用成员初始化列表效率更高
+		
+	[2]	{1}注意事项
+			(1)成员初始化列表只能用于构造函数
+			(2)必须使用这种格式初始化非静态const数据成员
+			(3)必须使用这种格式初始化引用数据成员
+		{2}数据成员被初始化的顺序与它们在类声明中出现的顺序相同,与初始化器中的顺序无关
+		{3}不能将成员初始化列表的句法用于构造函数之外的其他类方法
+	[3]成员初始化列表的方式也可用于内置类型
+		eg:	int games = 162;
+			double talks = 2.71828;
+			=>
+			int games(162);
+			double talks(2.17828);
+	[4]判断队列是否满、是否空、队列中项目数量
+		(1)items == qsize则为满
+		(2)items == 0则为空
+		(3)return items;则为队列中项目数量
+	[5]入队
+		eg:	bool enqueue(const Item & item)
+			{
+				if(isfull())
+					return false;
+				Node * add = new Node;
+				if(add == NULL)
+					return false;
+				add->item = item;
+				add->next = NULL;
+				items++;
+				if(front == NULL)
+				{
+					front = add;
+				}
+				else
+				{
+					rear->next = add;
+				}
+				rear = add;
+				return true;
+			}
+			入队步骤
+			(1)队满则结束
+			(2)创建新节点,创建失败则结束
+			(3)在节点中放入正确的值,
+			(4)将项目计数+1
+			(5)将节点附加到队尾
+	[6]出队
+		eg:	bool Queue:dequeue(Item & item)
+			{
+				if(front == NULL)
+					return false;
+				item = front->item;
+				items--;
+				Node * temp = front;
+				front = front->next;
+				delete temp;
+				if(items == 0)
+					rear = NULL;
+				return true;
+			}
+		出队步骤
+		(1)队列空则结束
+		(2)将队列的第一个香米复制给调用函数传递过来的引用参数
+		(3)将项目计数-1
+		(4)保存front节点的位置以供后续删除
+		(5)让节点出队,将front指向其下一个节点
+		(6)删除以前的第一个节点
+		(7)如果链表为空,将尾指针rear设置为NULL
+		
