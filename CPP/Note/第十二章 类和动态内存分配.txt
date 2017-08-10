@@ -683,4 +683,36 @@
 		(5)让节点出队,将front指向其下一个节点
 		(6)删除以前的第一个节点
 		(7)如果链表为空,将尾指针rear设置为NULL
+4.是否需要其他类方法
+	[1]类需要一个显式的析构函数在类过期时删除所有剩余节点
+		eg:	Queue::~Queue()
+			{
+				Node * temp;
+				while(front != NULL)
+				{
+					temp = front;
+					front = front->next;
+					delete temp;
+				}
+			}
+	[2]需要显式复制构造函数和深度复制的重载赋值操作符
+		eg:	复制的对象的头尾指针仍指向原对象的链表头尾,两个对象共享一个链表
+			添加删除节点将修改共享链表
+	[3]避免自动调用的默认复制构造函数和默认重载赋值操作符,将赋值构造函数和赋值操作符设置为私有
+		eg:	class Queue
+			{
+			private:
+				Queue(const Queue & q):qsize(0){...}
+				Queue & operator= (const Queue & q){return *this;}
+			};
+		这样做有两个作用:
+			(1)避免了将来自动生成默认方法定义
+			(2)方法为私有的,不能被外部调用,这样就可在编译期捕获错误
+			(3)定义其对象不允许被复制的类时,这种方法很有用
+			(4)按值传递对象时,复制构造函数将被调用
+			(5)复制构造函数还被用于创建其他临时对象
+		eg: Queue snick(nip);//not allowed
+			tuck = nip;//not allowed
+			
+			
 		
