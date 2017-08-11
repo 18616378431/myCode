@@ -713,6 +713,26 @@
 			(5)复制构造函数还被用于创建其他临时对象
 		eg: Queue snick(nip);//not allowed
 			tuck = nip;//not allowed
+
+12.2.2 Customer类
+1.设计客户类模拟ATM队列
+	eg:	class Customer
+		{
+		private:
+			long arrive;		//arrive time for customer
+			int processtime;	//processing time for customer
+		public:
+			Customer(){arrive = processtime = 0;}
+			void set(long when);
+			long when()const{return arrive;}
+			int ptime()const{return processtime;}
+		};
+		void Customer::set(long when)
+		{
+			processtime = std::rand() % 3 + 1;
+			arrive = when;
+		}
+		
 			
 			
 		
