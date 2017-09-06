@@ -13,3 +13,31 @@
 
 13.1 一个简单的基类
 1.从一个类派生出另一个类时,原始类称为基类,继承类称为派生类
+
+13.1.1 派生一个类
+1.类的派生
+	eg:	class RatedPlayer:public TableTennisPlayer
+		{
+		private:
+			unsigned int rating;//add a data member
+		public:
+			RatedPlayer(unsigned int r = 0,
+					const char * fn = "none",
+					const char * ln = "none",
+					bool ht = false);
+			RatedPlayer(unsigned int r,TableTennisPlayer & tp);
+			unsigned int Rating(){return rating;}
+			void ResetRating(unsigned int r){rating = r;}
+		};
+	[1]冒号指出RatedPlayer类的基类是TableTennisPlayer类
+	[2]TableTennisPlayer是一个公有基类,这被称为公有派生
+	[3]派生类对象包含基类对象
+	[4]使用公有派生,基类的公有成员将成为派生类的公有成员,
+		基类的私有部分也将成为派生类的一部分
+		但只能通过基类的公有和保护方法访问
+2.派生类特征:
+	[1]派生类对象存储了基类的数据成员(派生类继承了基类的实现)
+	[2]派生类对象可以使用基类的方法(派生类继承了基类的接口)
+3.需要在继承中添加什么
+	[1]派生类需要自己的构造函数
+	[2]派生类可以根据需要添加额外的数据成员和成员函数\
