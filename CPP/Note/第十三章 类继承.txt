@@ -1,4 +1,4 @@
-142十三章 类继承
+第十三章 类继承
 
 1.函数库通常不提供源代码,即使提供了源代码在根据特定需求进行修改时也有一定的风险
 2.类库包含的数据表示和类方法,比函数库提供了更完整的程序包
@@ -95,4 +95,47 @@
 	eg:	声明
 		RatedPlayer(unsigned int r = 0,const char * fn = "none",const char * ln = "none",bool ht = false);
 		实现
-		RatedPlayer::RatedPlayer(unsigned int r,const char * fn,const char * ln ,bool ht):TableTennisPlayer(fn,ln,ht)
+		RatedPlayer::RatedPlayer
+		(unsigned int r,const char * fn,const char * ln ,bool ht):TableTennisPlayer(fn,ln,ht)
+
+13.2 派生类和基类之间的特殊关系
+1.基类与派生类的特殊关系
+	[1]派生类对象可以使用基类方法,条件是方法不是私有的
+	[2]基类指针可以在不需要显式类型转换的情况下指向派生类对象
+	[3]基类引用可以不需要显式类型转换的情况下引用派生类对象
+	[4]基类的引用或指针只能调用基类方法,不能使用基类引用或指针调用派生类方法
+	[5]通常C++要求引用或指针的类型与赋给的类型匹配,但这一规则对继承来说是例外
+		这种例外是单向的,不可以将基类对象和地址赋给派生类引用或指针
+		即派生类的指针或引用不可以指向基类
+	eg:	(1)基类引用指向派生类
+		RatedPlayer rplayer1(1140,"Mallory","Duck",true);
+		TableTennisPlayer & rt = rplayer1;
+		TableTennisPlayer & pt = &rplayer1;
+		rt.Name();//引用调用基类方法
+		pt->Name();//指针调用基类方法
+		
+		(2)派生类引用或指针不可以指向基类对象
+		TableTennisPlayer player("Betsy","Bloop",true);
+		RatedPlayer & rr = player;//not allowed
+		RatedPlayer * pr = &player;//not allowed
+		
+		(3)引用兼容性属性也能够将基类对象初始化为派生类对象
+		RatedPlayer olaf1(1840,"Olaf1","Loaf",true);
+		TableTennisPlayer olaf2(olaf1);
+		其中匹配的构造函数为
+		TableTennisPlayer (const RatedPlayer & );
+		类定义中没有这样的构造函数,但存在隐式复制构造函数
+		TableTennisPlayer (const TableTennisPlayer &);
+		形参为基类引用,因此它可以引用派生类
+		将olaf2初始化为olaf1时,将使用该构造函数,复制firstname,lastname,hasTable成员的值
+		也就是说,将olaf2初始化为嵌套在RatedPlayer对象olaf1中的TableTennisPlayer对象
+		
+		(4)可以将派生对象赋给基类对象
+		RatedPlayer olaf1(1840,"Olaf1","Loaf",true);
+		TableTennisPlayer winner;
+		winner = olaf1;
+		这种情况下程序将使用隐式重载赋值操作符
+		TableTennisPlayer operator= (const TableTennisPlayer & )const;
+		基类引用指向的派生类对象,因此将olaf1的基类部分复制给winner
+		
+		
