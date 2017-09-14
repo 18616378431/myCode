@@ -170,5 +170,33 @@
 	[2]使用虚方法
 4.is-a关系是不可逆的
 	eg:水果不是香蕉
+	
+13.4.1 开发Brass类和BrassPlus类
+1.virtual修饰的类成员方法称为虚方法(virtual method)
+2.可以将析构函数声明为虚拟析构函数(virtual destructor)
+3.virtual关键字,如果方法是通过引用或指针而不是对象调用的,它将确定使用哪一种方法
+	如果没有使用关键字virtual,程序将根据引用类型或指针类型选择方法
+	如果使用了virtual关键字,程序将根据引用或指针指向的对象的类型来选择方法
+	eg:	Brass dom("Dominic Banker",12244,4183.45);
+		BrassPlus dot("Dorothy Banker",12118,2592.00);
+		[1]使用了virtual关键字修饰ViewAcct
+		dom.ViewAcct();//use Brass::ViewAcct();
+		dot.ViewAcct();//use BrassPlus::ViewAcct();
+		[2]未使用virtual修饰ViewAcct
+		Brass & b1_ref = dom;
+		Brass & b2_ref = dot;
+		b1_ref.ViewAcct();//use Brass::ViewAcct();
+		b2_ref.ViewAcct();//use Brass::ViewAcct();
+		引用变量的类型为Brass,则使用Brass::ViewAcct();
+		使用Brass指针代替引用时,结果类似
+		[3]ViewAcct时虚拟(virtual)的
+		b1_ref.ViewAcct();//use Brass::ViewAcct();
+		b2_ref.ViewAcct();//use BrassPlus::ViewAcct();
+4.经常在基类中奖派生类会重新定义的方法声明为虚方法,方法在基类中声明为虚拟的后
+	在派生类中将自动成为虚方法,在派生类中使用virtual指出哪些是函数是虚函数也是一个好办法
+5.基类声明一个虚析构函数,是为了释放派生对象时,按正确的顺序调用析构函数
+6.如果要在派生类中重新定义基类方法,通常应将基类中的方法声明为虚拟的,
+	这样,程序将根据对象类型(引用或指针指向的类型)而不是引用或指针的类型来选择方法的版本
+	为基类声明一个虚拟析构函数也是一种惯例
 		
 		
