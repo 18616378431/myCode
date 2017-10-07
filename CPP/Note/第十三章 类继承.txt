@@ -433,5 +433,78 @@
 		TheOnlyInstance * pTheOnlyInstance = TheOnlyInstance::GetTheOnlyInstance();
 		因为静态变量在函数调用结束时仍保存在内存中,所以以后再调用GetTheOnlyInstance时,
 		将返回同一个静态对象地址
-		
+
+13.6 抽象基类(abstract base class,ABC)
+1.有时候候is-a规则并不像看上去那样简单
+	图形程序显示圆和椭圆,圆是椭圆的一种特殊情况-长轴和短轴相等的情况
+	搜索的圆都是椭圆,如果从椭圆类(Ellipse)派生出圆类(circle)将发现许多细节问题
+	(1)椭圆类包含的内容:
+		数据成员包含椭圆中心坐标、长半轴(长轴一半)、短半轴(短轴一半)、方向角(水平坐标轴与长轴的角度)
+		类方法包含移动椭圆、返回椭圆的面积、旋转椭圆、缩放长半轴和短半轴
+		class Ellipse
+		{
+		private:
+			double x;//x、y coordinate of the ellipse's center
+			double y;
+			double a;//semimajor axis 长半轴
+			double b;//semimanor axis 短半轴
+			double angle;//orientation angle in degrees
+			...
+		public:
+			...
+			void Move(int nx,int ny){x = nx;y = ny;}
+			virtual double Area()const{return 3.14159 * a * b;}
+			virtual void Rotate(double nang){angle += nang;}
+			virtual void Scale(double sa,double sb){a *= sa;b *= sb;}
+		};
+	(2)从椭圆派生出圆
+		class Circle:public Ellipse
+		{
+			...
+		};
+		圆虽然是一种椭圆,但将椭圆用作基类派生出圆,其中有些信息是冗余的
+		圆只需要一个半径来描述大小和形状,并不需要长短半轴
+		angle和Rotate旋转对圆没有意义
+		Scale会将两个轴进行缩放使圆成为椭圆
+		不使用继承直接定义圆将更简单
+		class Circle
+		{
+		private:
+			double x;//x、y coordinate of the circle's center
+			double y;
+			double r;//radius
+			...
+		public:
+			...
+			void Move(int nx,int ny){x = nx;y = ny;}
+			double Area()const {return 3.14159 * r * r;}
+			void Scale(double sr){r *= sr;}
+		};
+		这样解决问题方法效率不高,可以将椭圆和圆的共同点抽象到一个基类中
+2.抽象基类:将两个类具有的共性抽象到一个ABC中,然后从ABC中派生出具有共性的派生类
+	这样就可以使用基类指针数组同时管理派生对象,即可以使用多态方法
+3.C++通过使用纯虚函数提(pure virtual function)供未实现的函数,纯虚函数声明的结尾处为=0
+	当类中包含纯虚函数时,则不能创建该类的对象,包含纯虚函数的类只能作为基类
+	要成为真正的ABC,必须至少包含一个纯虚函数
+	原型中的=0使虚函数成为纯虚函数
+	C++甚至允许纯虚函数有定义
+	在需要将类声明为抽象的,可以将原型声明为虚拟的
+	void Move(int nx,int ny) = 0;
+	这将使基类成为抽象的,仍可以在实现文件中提供方法定义
+	void BaseEllipse::Move(int nx,int ny){x = nx;y = ny;}
+	在原型中使用=0指出类是一个抽象基类,在类中可以不定义该函数
+	eg:	class BaseEllipse
+		{
+		private:
+			double x;
+			double y;
+			...
+		public:
+			BaseEllipse(double x0 = 0,double y0 = 0):x(x0),y(y0){}
+			virtual ~BaseEllipse(){}
+			void Move(int nx,int ny){x = nx;y = ny;}
+			virtual double Area()const = 0;//纯虚函数(pure virtual function)
+		};
+4.由抽象基类派生出了类称为具体类(concrete),表示可以创建这些类型的对象
+5.ABC描述的是至少使用一个纯虚函数的接口,从ABC派生出的类将根据派生类的具体特征,实现其特定的操作
 		
