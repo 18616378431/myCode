@@ -1,0 +1,123 @@
+第三章处理数据
+
+内置类型:基本类型和复合类型
+
+bool、char、signed char、unsigned char、 short 、unsigned short、 int、 unsigned int、 long 、unsigned long、wchar_t
+float、double、long double
+
+C++命名规则:
+	名称中只能使用字母、数字、下划线(_)
+	名称的第一个字母不能是数字
+	区分大写字符和小写字符
+	不能将C++关键字用作名称
+	以两个下划线或下划线和大写字母打头的名称被保留给实现使用(编译器及其使用的资源)，以一个下划线开头的名称被保留给实现，用作全局标识符
+	C++对名称的长度没有限制，名称中所有字符都有意义
+计算机内存由一些叫做位(bit)的单元组成
+字节(byte)通常指的是8位的内存单元
+sizeof()操作符返回类型或变量的长度，单位为字节
+
+CHAR_BIT	char的位数
+CHAR_MAX	char的最大值
+CHAR_MIN	char的最小值
+UCHAR_MAX	unsigned char的最大值
+
+SHRT_MAX	short的最大值
+SHRT_MIN	short的最小值
+USHRT_MAX	unsigned char的最大值
+
+INT_MAX		int的最大值
+INT_MIN		int的最小值
+UINT_MAX	unsigned int的最大值
+
+LONG_MAX	long的最大值
+LONG_MIN	long的最小值
+ULONG_MAX	unsigned long的最大值
+
+初始化将声明与赋值合并在一起
+
+传统C初始化方法:int own = 101;
+C++初始化方法:int wen(432);//将int型变量wen初始化为432
+
+无符号类型:关键字unsigned，增大变量能够存储的最大值，从0开始，不包括负数
+
+cout输出控制符:hex、oct、dec，控制cout以16进制、八进制、十进制进行输出
+
+cout.put()是cout类的成员函数，意义为通过类对象cout使用put函数，句点被称为成员操作符
+
+为什么会产生cout.put()函数:
+		因为在C++2.0之前，cout将字符变量显示为字符，将字符常量显示为数值，
+		计算机存储字符变量使用1字节，八位
+		存储字符常量时，使用16位或32位空间
+		在将字符常量赋值给字符变量时，只复制了字符常量的前八位
+		C++2.0之后，字符变量和字符常量均存储为字符char类型
+
+char常量:'M'，由单引号括起
+转义序列:		\a		\b		\t			\n		\v			\r		\\		\?		\'		\"
+			鸣笛		退格		水平制表符	换行符	垂直制表符	回车		反斜杠	问号		单引号	双引号
+
+通用字符名:通用字符名类似于转义序列，通用字符名可以以\u或\U开头，\u后面是8个十六进制位，
+			\U后面是16个十六进制位
+singned char:-128 ~ 127
+unsigned char :0 ~ 255
+
+wchar_t:宽字符类型，占用两字节，用来表示扩展字符集，wchar_t是一种整数类型，可以表示系统使用的最大字符集
+	cin和cout将输入和输出流看做char流不适用于处理wchar_t类型，相应的可以使用宽字符的wcin和wcout
+	EX:wchar_t bob = L'P';//将宽字符P存储在wchar_t类型变量bob中
+		wcout << L"tall" << endl;//输出宽字符字符串
+bool类型:值为true或false，用来表示真和假，true 和false可以提升为1和0
+	任何数字值或指针可以隐式转换为bool值
+const关键字:const叫做限定符，限定了声明的含义，声明符号常量，该变量值不可改变
+
+浮点数:能够表示带小数部分的数字
+	计算机将浮点数分为两分布存储:一部分存储数值，另一部分存储缩放因子
+书写浮点数有两种方法:1.标准小数点方法，123.456
+					2.E表示法，2.53E+8,2.53乘以10的8次方
+								2.0e9,2.0乘以10的9次方
+浮点类型:float、double、long double
+有效位(significant figure)表示数字中有意义的位
+查看浮点数的系统限制:cfloat头文件
+ostream方法self()迫使输出使用定点表示法，防止程序将更大的值转换为E表示法，
+		并使程序显示到小数点后六位
+	参数:ios_base::fixed和ios_base::floatfield
+cout会删除结尾的零
+浮点数的优缺点:
+	优点:表示整数之间的值，由于有缩放因子，使显示的范围更大
+	缺点:浮点数运算比整数慢
+整数和浮点型统称为算数(arithmetic)类型
+		
+C++算数操作符:+、-、*、/、%
+
+使用相同的符号进行多种操作，叫做操作符重载(operator overloading)
+
+求模操作符返回整数除法的余数
+
+类型转换:
+	1.赋值时进行转换:
+		将一个值赋给取值范围更大的一般不会导致问题，简单的复制右边的位，占用更多的字节
+		赋给取值范围小的类型，会损失精度，以及结果不确定
+		潜在的数值转换问题:
+			(1)较大的浮点类型转换为较小的浮点类型，精度降低或超出目标类型范围，结果不确定
+			(2)将浮点类型转换为整型，小数部分丢失或超出目标类型范围，结果不确定
+			(3)将较大的类型转换为较小的类型，超出目标类型范围，通常只复制右边的字节
+			(4)将0赋给bool变量时，转换为false，非零转换为true
+	2.表达式中转换:
+		C++将bool、char、unsigned char、singned char、short值转换为int，这些整型转换被称为整型提升
+		wchar_t会被提升为int、unsigned int、long、unsigned long中宽度足够的存储wchar_t取值范围的类型
+		操作数中，有一个是long double，则另一个被提升为long double
+		操作数中，有一个是double，则另一个被提升为double
+		操作数中，有一个是float，则另一个被提升为float
+		操作数中，有一个是unsigned long，则另一个被提升为unsigned long
+		操作数中，有一个是unsigned int、long int，如果long可以表示unsigned int可以表示的所有值，将unsigned int转换为long int
+		操作数中，有一个是long，则另一个被提升为long
+		操作数中，有一个是unsigned int，则另一个被提升为unsigned int
+		总之，两个操作数不是同一类型，就转换为取值范围较大的类型
+	3.传递参数时转换
+		一般讲char、short整型提升，为了兼容，一般讲float提升为double
+	4.强制类型转换
+		(long)thron
+		long(thron)
+		强制类型转换不会改变原有值，产生新的、指定类型的值
+强制类型转换操作符:static_cast<long>(thron)，将一种数值转换为另一种数值类型
+
+3 /4 除法，除不开，结果为0
+3 % 4 取余，分子小于分母，结果为分子3

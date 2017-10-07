@@ -1,0 +1,29 @@
+第四章复习题
+
+1.	a.char actor[30];	b.short betsie[100];		c.float chuck[13];		d.long double dipsea[64];
+2.	int arr[5] = {1,3,5,7,9};
+3.	int even = arr[0] + arr[4];
+4.	cout << ideas[1] << endl;
+5.	char str[80] = "cheeseburger";
+6.	struct fish{
+		char kind[20];
+		int weight;
+		float length;
+	};
+7.	fish f = {
+		"fish",
+		3,
+		2.11
+	};
+8.	enum Response {No,Yes,Maybe};
+9.	double * pd = &ted;	cout << *pd << endl;
+10.	float * pf = treacle;	cout << *pf << *(pf + 9) << endl;
+11.	int i;
+	cout << "Enter a number:";
+	cin >> i;
+	int * pi = new int[i];
+12.	有效，打印字符串的地址
+13.	fish * f = new fish;
+	cin >> f->kind;
+	cout << f->weight << f->length << endl;
+14.	跳过空白，直到字符，然后开始读取，一直遇到空白，会跳过数字输入后的换行符，每次只读取一个单词
