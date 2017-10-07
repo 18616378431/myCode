@@ -1,0 +1,83 @@
+14章复习题
+1.结构的关键字是struct,并且在结构的花括号开始处有一个模板标记或者在结束花括号后有一个变量名,结构的结束花括号后应有一个分号，最后一个成员定义之后应有分号
+2.6	1	22 Spiffo Road		S	p
+3.	struct month{
+		char name[41];
+		char abbrev[4];//最后一个位置放\0
+		int days;
+		int monumb;
+	};
+4.struct month mon[12] = {
+		{"January","jan",31,1},
+		{"February","feb",28,2},
+		{"March","mar",31,3},
+		{"April","apr",30,4},
+		{"May","may",31,5},
+		{"June","jun",30,6},
+		{"July","jul",31,7},
+		{"August","aug",31,8},
+		{"September","sep",30,9},
+		{"October","oct",31,10},
+		{"November","nov",30,11},
+		{"December","dec",31,12},
+	};
+5.int getDays(int monthNum,struct month * p)//指向结构的指针
+{
+	int totalDays = 0;
+	int i = 0;
+	
+	while(i++ < monthNum)
+	{
+		totalDays += p++->days;
+	}
+	return totalDays;
+}
+6.typedef struct lens{//镜头描述
+	float foclen;//焦距长度，以mm为单位
+	float fstop;//孔径
+	char brand[30];//品牌名称
+} LENS;
+a.LENS test[10];
+test[2].foclen = 500;
+test[2].fstop = 2.0;
+strcpy(test[2].brand,"Remarkatar");
+b.
+LENS test[10] = {[2] = {500,2.0,"Remarkatar"},
+};
+
+7.	
+	a.6	Arcturan cturan
+	b.bem.title.last;		pb->title.last;
+	c.void showS(struct bem * ps)
+	{
+		printf("%s %s is a %d-limbed %s.\n",ps->title.first,ps->title.last,ps->limbs,ps->type);
+	}
+8.struct fullname{
+	char fname[20];
+	char lname[20];
+};
+struct bard{
+	struct fullname name;
+	int born;
+	int died;
+};
+struct bard willie;
+struct bard * pt = &willie;
+a.willie.born;
+b.pt->born;
+c.scanf("%d",willie.born);
+d.scanf("%d",&pt->born);
+e.scanf("%s",willie.name.lname);
+f.scanf("%s",pt->name.lname);
+g.willie.name.fname[2];
+h.strlen(willie.name.fname) + strlen(willie.name.lname)
+
+9.struct car{
+	char carName[40];//名称
+	int power;//马力
+	int level;//市内行驶的EPA英里每加仑(mpg)等级
+	int distance;//轴距
+	int years;//使用年数
+};
+10.
+
