@@ -1,9 +1,9 @@
-14ÕÂ¸´Ï°Ìâ
-1.½á¹¹µÄ¹Ø¼ü×ÖÊÇstruct,²¢ÇÒÔÚ½á¹¹µÄ»¨À¨ºÅ¿ªÊ¼´¦ÓĞÒ»¸öÄ£°å±ê¼Ç»òÕßÔÚ½áÊø»¨À¨ºÅºóÓĞÒ»¸ö±äÁ¿Ãû,½á¹¹µÄ½áÊø»¨À¨ºÅºóÓ¦ÓĞÒ»¸ö·ÖºÅ£¬×îºóÒ»¸ö³ÉÔ±¶¨ÒåÖ®ºóÓ¦ÓĞ·ÖºÅ
+14ç« å¤ä¹ é¢˜
+1.ç»“æ„çš„å…³é”®å­—æ˜¯struct,å¹¶ä¸”åœ¨ç»“æ„çš„èŠ±æ‹¬å·å¼€å§‹å¤„æœ‰ä¸€ä¸ªæ¨¡æ¿æ ‡è®°æˆ–è€…åœ¨ç»“æŸèŠ±æ‹¬å·åæœ‰ä¸€ä¸ªå˜é‡å,ç»“æ„çš„ç»“æŸèŠ±æ‹¬å·ååº”æœ‰ä¸€ä¸ªåˆ†å·ï¼Œæœ€åä¸€ä¸ªæˆå‘˜å®šä¹‰ä¹‹ååº”æœ‰åˆ†å·
 2.6	1	22 Spiffo Road		S	p
 3.	struct month{
 		char name[41];
-		char abbrev[4];//×îºóÒ»¸öÎ»ÖÃ·Å\0
+		char abbrev[4];//æœ€åä¸€ä¸ªä½ç½®æ”¾\0
 		int days;
 		int monumb;
 	};
@@ -21,7 +21,7 @@
 		{"November","nov",30,11},
 		{"December","dec",31,12},
 	};
-5.int getDays(int monthNum,struct month * p)//Ö¸Ïò½á¹¹µÄÖ¸Õë
+5.int getDays(int monthNum,struct month * p)//æŒ‡å‘ç»“æ„çš„æŒ‡é’ˆ
 {
 	int totalDays = 0;
 	int i = 0;
@@ -32,10 +32,10 @@
 	}
 	return totalDays;
 }
-6.typedef struct lens{//¾µÍ·ÃèÊö
-	float foclen;//½¹¾à³¤¶È£¬ÒÔmmÎªµ¥Î»
-	float fstop;//¿×¾¶
-	char brand[30];//Æ·ÅÆÃû³Æ
+6.typedef struct lens{//é•œå¤´æè¿°
+	float foclen;//ç„¦è·é•¿åº¦ï¼Œä»¥mmä¸ºå•ä½
+	float fstop;//å­”å¾„
+	char brand[30];//å“ç‰Œåç§°
 } LENS;
 a.LENS test[10];
 test[2].foclen = 500;
@@ -73,11 +73,11 @@ g.willie.name.fname[2];
 h.strlen(willie.name.fname) + strlen(willie.name.lname)
 
 9.struct car{
-	char carName[40];//Ãû³Æ
-	int power;//ÂíÁ¦
-	int level;//ÊĞÄÚĞĞÊ»µÄEPAÓ¢ÀïÃ¿¼ÓÂØ(mpg)µÈ¼¶
-	int distance;//Öá¾à
-	int years;//Ê¹ÓÃÄêÊı
+	char carName[40];//åç§°
+	int power;//é©¬åŠ›
+	int level;//å¸‚å†…è¡Œé©¶çš„EPAè‹±é‡Œæ¯åŠ ä»‘(mpg)ç­‰çº§
+	int distance;//è½´è·
+	int years;//ä½¿ç”¨å¹´æ•°
 };
 10.
 
