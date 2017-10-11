@@ -518,3 +518,45 @@
 1.ABC方法更具系统性,更规范
 2.设计类的继承层次,将那些不会被用作基类的类设计为具体类
 3.ABC要求具体派生类覆盖其虚函数,迫使派生类遵循ABC所设计的接口规则
+
+13.7 继承和动态内存分配
+1.如果基类使用动态内存分配(new/delete),并重新定义赋值和复制构造函数,将如何影响派生类
+2.两种情况:
+	(1)派生类不使用new
+	(2)派生类使用new
+
+13.7.1 第一种情况:派生类不使用new
+1.假设有使用了动态内存分配的基类、及不使用动态内存分配的派生类
+	不需要为不使用new的派生类定义析构函数、显式复制构造函数、赋值操作符
+	eg:	//Base class using DMA
+		class BaseDMA
+		{
+		private:
+			char * label;
+			int rating;
+		public:
+			BaseDMA(char * l = "null",int r = 0);
+			BaseDMA(const BaseDMA &rs);
+			virtual ~BaseDMA();
+			BaseDMA & operator= (const BaseDMA & rs);
+		};
+		//derived class without DMA
+		class LacksDMA:public BaseDMA
+		{
+		private:
+			char color[40];
+		public:
+			...
+		};
+		(1)可以使用默认析构函数,派生类无任何特殊操作,执行完派生类代码后调用基类析构函数
+		(2)复制构造函数:默认复制构造函数执行成员复制,常规复制将采用类型复制,long复制到long
+			使用的是常规赋值方式,但复制类的成员或继承的类组件时,则使用该类的复制构造函数完成
+			<因此LacksDMA类的默认复制构造函数,使用显式声明的BaseDMA的复制构造函数,
+			来复制LacksDMA对象的BaseDMA部分>
+			因此,派生类的默认的复制构造函数对派生类和基类都是合适的
+		(3)赋值操作符:与复制构造函数类似,类的默认赋值操作符将自动使用基类的赋值操作符来对基类组件进行赋值
+			默认赋值操作符也是合适的
+		(4)派生类的这些属性也适用于本身是对象的类成员
+			派生类的析构函数将自动调用基类或是对象的成员的析构函数
+		
+		
