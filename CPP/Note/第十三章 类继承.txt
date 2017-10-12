@@ -558,5 +558,73 @@
 			默认赋值操作符也是合适的
 		(4)派生类的这些属性也适用于本身是对象的类成员
 			派生类的析构函数将自动调用基类或是对象的成员的析构函数
-		
+
+13.7.2 第二种情况:派生类使用new
+1.假设有使用了new(DMA)的派生类,继承自BaseDMA
+	这种情况下必须为派生类定义显式析构函数、复制构造函数、赋值操作符
+	eg:	class HasDMA:public BaseDMA
+		{
+		private:
+			char * style;//use new in constructors
+		public:
+			...
+		};
+2.派生类析构函数自动调用基类的析构函数,故其自身的职责是对派生类构造函数执行的工作进行清理
+	HasDMA释放指针style管理的内存,并依赖于BaseDMA的析构函数释放指针label管理的内存
+	eg:	BaseDMA::~BaseDMA()
+		{
+			delete [] label;
+		}
+		HasDMA::~HasDMA()
+		{
+			delete [] style;
+		}
+3.复制构造函数:派生类的复制构造函数只能访问派生类的数据,因此它必须调用基类的复制构造函数来处理共享的基类数据
+	eg:	BaseDMA::BaseDMA(const BaseDMA & rs)
+		{
+			label = new char[std::strlen(rs.label) + 1];
+			std::strcpy(label,rs.label);
+			rating = rs.rating;
+		}
+		HasDMA::HasDMA(const HasDMA & hs):BaseDMA(hs)
+		{
+			style = new char[std::strlen(hs.style) + 1];
+			std::strcpy(style,hs.style);
+		}
+		成员初始化列表将HasDMA对象传递给BaseDMA的复制构造函数,基类引用可以指向派生类
+		因此,BaseDMa复制构造函数将使用HasDMA参数的BaseDMA部分来构造新对象的BaseDMA部分
+4.赋值操作符:由于派生类使用动态内存分配,需要一个显式赋值操作符
+	做为HasDMA方法,只能访问HasDMA的数据
+	派生类的显式赋值操作符必须负责所有继承的BaseDMA基类对象的赋值,
+	可以通过显式调用基类赋值操作符来完成
+	eg:	BaseDMA & BaseDMA::operator= (const BaseDMA & rs)
+		{
+			if(this == &rs)
+			{
+				return *this;
+			}
+			delete [] label;
+			label = new char[std::strlen(rs.label) + 1];
+			std::strcpy(label,rs.label);
+			rating = rs.rating;
+			return *this;
+		}
+		HasDMA & HasDMA::operator= (const HasDMA & hs)
+		{
+			if(this == &hs)
+			{
+				return *this;
+			}
+			BaseDMA::operator=(hs);
+			style = new char[std::strlen(hs.style) + 1];
+			std::strcpy(style,hs.style);
+			return *this;
+		}
+		BaseDMA::operator=(hs);使用作用域解析操作符调用基类操作符函数
+		不使用函数表示法将产生递归调用(*this = hs)
+5.基类和派生类都使用动态内存分配时,
+	派生类的析构函数、复制构造函数、赋值操作符都必须使用相应的基类方法处理基类元素
+	析构函数,是自动完成的
+	复制构造函数,通过使用成员初始化列表调用基类复制构造函数实现的
+	复制操作符,通过使用作用域解析操作符显式调用基类赋值操作符实现
 		
