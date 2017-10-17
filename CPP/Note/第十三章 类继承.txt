@@ -634,4 +634,159 @@
 	使用强制类型转换,以便匹配原型时能够选择正确的函数
 	eg: //重载,类型转换以使其匹配正确版本的基类友元函数函数
 		os << (BaseDMA &)hs;
+
+13.8 类设计回顾
+
+13.8.1 编译器生成的成员函数
+1.默认构造函数
+	(1)默认构造函数要么没有参数,要么所有参数都有默认值
+	(2)如果没有定义任何构造函数,编译器将定义默认构造函数,让您能够创建对象
+	(3)自动生成的默认构造函数自动调用基类的默认构造函数和调用本身是对象的成员所属类的默认构造函数
+	(4)如果派生的构造函数初成员始化列表部分没有显式调用基类构造函数,
+		则编译器将使用基类的默认构造函数来构造派生类对象的基类部分
+		这种情况下,如果基类没有构造函数,将导致编译截断错误
+	(5)如果定义了某种构造函数,编译器将不会定义默认构造函数
+		在这种情况下如果需要默认构造函数,则必须自己提供
+	(6)提供构造函数时为了保证类对象总能正确的被初始化,如果类包含指针成员,则必须初始化这些成员
+		所以,最好提供一个显式默认构造函数,将所有类成员都初始化为合理的值
+2.复制构造函数
+	(1)复制构造函数接收其所属类的对象作为参数
+	(2)下述情况将使用复制构造函数
+		[1]将新对象初始化为一个同类对象
+		[2]按值将对象传递给函数
+		[3]函数按值返回对象
+		[4]编译器生成临时对象
+	(3)如果程序没有提供复制构造函数,编译器将提供原型,但不提供函数定义(即具体实现)
+		如果程序提供的复制构造函数,执行成员初始化
+		新对象的成员将被初始化为原始对象的成员相应的值(普通复制构造函数执行浅拷贝,仅复制值,包括指针)
+	(4)类成员使用了new动态内存分配或包含了需要修改的静态变量
+		此时需要定义自己的复制构造函数执行深复制(复制成员指针指向的值)
+3.赋值操作符
+	(1)默认的赋值操作符用于处理同类对象之间的赋值
+		如果语句创建新对象则为初始化
+		如果语句修改已有对象的值则为赋值
+		eg:	Star sirius;
+			Star alpha = sirius;//initialization
+			Star dogstar;
+			dogstar = sirius;//assignment
+	(2)如果需要显式定义复制构造函数,则需要显式定义赋值操作符
+		赋值操作符返回Star对象的引用
+		eg:	Star & operator= (const Star & s);
+	(3)编译器不会生成将一种类型赋值给另一种类型的赋值操作符
+		eg: 将字符串赋值给Star,一种方法是定义如下赋值操作符
+			Star & operator= (const char * s);
+			另一种方法是使用转换函数,接收char *的构造函数,将字符串转换为Star对象,再使用赋值函数
+			Star(const char * s);
+			第一种方法运行速度快,代码多
+			使用转换函数可能导致编译器混乱
+	
+13.8.2 其他的类方法
+1.构造函数:
+	(1)构造函数创建新的对象,而其他类方法只是被现有的对象调用
+	(2)构造函数不被继承
+	(3)继承意味着派生类可以使用基类方法
+	(4)构造函数在完成其工作之前,对象并不存在
+2.析构函数:
+	(1)一定要定义一个显式析构函数来清理构造函数使用new分配的内存,完成对象所需的任何清理工作
+	(2)对于基类,即使不需要析构函数,也需要定义一个虚拟析构函数
+3.转换:
+	(1)使用一个参数就可以调用构造函数定义了从参数类型到类类型的转换
+		eg:	Star(const char *);//converts char * to Star
+			Star(const Spectral &,int members = 1);//converts Spectral to Star
+	(2)将可转换的类型传递给以类为参数的函数时,将调用转换构造函数
+		eg:	Star north;
+			north = "polaris";
+			第二条语句将会调用Star::operator= (const Star &)
+			使用Star::Star(const char *)生成一个Star对象,并将其传递给赋值操作符的形参
+	(3)对构造函数使用explicit将禁止进行隐式转换,仍允许显式转换
+		eg: class Star
+			{
+			private:
+				...
+			public:
+				explicit Star(const char *);
+			};
+			Star north;
+			north = "polaris";//not allowed
+			north = Star("polaris");//allowed
+	(4)要将类对象转换为其他类型,应定义显式转换
+		转换函数可以是没有参数的类成员函数,也可以是返回类型被声明为目标类型的成员函数
+		即使没有声明返回类型,函数也需返回转换值
+		eg:	operator int()const;
+			operator double()const;
+			
+			Stonewt::operator int()const
+			{
+				return int(pounds + 0.5);
+			}
+			Stonewt::operator double()const
+			{
+				return pounds;
+			}
+	(5)包含转换代码的类可能导致二义性
+4.按值传递对象与引用传递:
+	编写使用对象做为参数的函数时,应按引用传递,提高效率
+	按值传递对象涉及生成临时拷贝,即调用复制构造函数,然后调用析构函数
+	复制大型对象比传递引用花费的时间更多
+	如果不修改对象,应将参数声明为const
+	继承使用虚函数时,基类参数引用可以指向派生类
+5.返回对象和返回引用:
+	(1)可以不返回对象则返回引用
+		函数原型之间的别:
+		Star & noval(const Star &);//return reference
+		Star novel(const Star &);//return object
+		返回对象涉及到生成返回对象的临时拷贝,这是调用程序可以使用的拷贝
+		返回对象的时间成本包括调用复制构造函数生成拷贝和调用析构函数删除拷贝的时间
+		返回引用可节省时间和内存
+		直接返回对象和按值传递对象相似,都生成临时拷贝
+		返回引用和按引用传递对象相似,调用和被调用函数对同一个对象进行操作
+	(2)并不总是可以返回引用
+		函数不能返回在函数中创建的临时对象的引用,函数结束时,临时对象将消失,这种引用是非法的
+		应返回对象,以生成调用程序可以使用的拷贝
+	(3)通常的规则
+		[1]函数返回在函数中创建的临时对象,则不返回引用,直接返回对象
+		eg:	使用构造函数创建对象并返回对象的拷贝
+			Vector Vector::operator+ (const Vector & b)const
+			{
+				return Vector(x + b.x,y + b.y);
+			}
+		[2]函数返回的是通过指针或引用传递给它的对象,则按引用返回对象
+		eg:	按引用返回调用函数的对象或作为参数传递给函数的对象
+			const Stock & Stock::topval(const Stock & s)const
+			{
+				if(s.total_val > total_val)
+				{
+					return s;//argument object
+				}
+				else
+				{
+					return *this;//invoking object
+				}
+			}
+6.使用const
+	(1)使用const可以确保方法不修改参数
+		eg:	Star::Star(const char * s){...}//won't change sthe string which s points
+	(2)确保方法不修改调用它的对象
+		eg:	void Star::show()const{...}//won't change invoking object
+			const表示const Start * this,this指向调用对象
+	(3)可以使用const确保引用或指针返回的值不能用于修改对象中的数据
+		可以将返回引用的函数放在赋值语句的左侧,意味着可以将值赋给函数返回的引用
+		eg:	const Stock & Stock::topval(const Stock & s)const
+			{
+				if(s.total_val > total_val)
+				{
+					return s;//argument object
+				}
+				else
+				{
+					return *this;//invoking object
+				}
+			}
+		//参数和this都为const,返回值也必须是const
+	(4)如果函数将参数声明为指向const的引用或指针,则不能将参数传递给另一个函数,
+		除非后者也确保参数不会被修改
+		
+		
+			
+		
 		
