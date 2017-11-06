@@ -102,6 +102,48 @@
 			};
 	(8)使用多个基类的继承称为多重继承(multiple inheritance,MI)
 		公有MI将导致一些问题,必须使用额外的句法规则来解决它们
-	(9)包含与私有继承的区别
+	(9)包含与私有继承的区别[1]
 		包含需提供显式命名的对象成员
 		私有继承提供无名称的子对象成员
+1.初始化基类组件
+	(1)构造函数使用成员初始化列表句法,它使用继承类的构造函数而不是类成员
+		eg:	typdef std::valarray<double> ArrayDb;
+			做为成员对象的初始化方法
+			Student(const char * str,double * pd,int n):name(str),scores(pd,n){...}
+			做为继承类的初始化方法
+			Student(const char * str,double * pd,int n):std::string(str),ArrayDb(pd,n){...}
+		这是包含和私有继承的第二个区别[2]
+2.访问基类的方法
+	(1)使用私有继承时,只能在派生类的方法中使用基类的方法
+	(2)使用包含时,使用对象名来调用方法,
+		使用私有继承时,使用类名及作用域解析操作符来调用基类方法
+		eg:	[1]包含的调用方法
+				typdef std::valarray<double> ArrayDb;
+				string name;
+				ArrayDb scores;
+				调用
+				name.size();
+				scores.sum() / scores.size();
+			[2]私有继承的调用方法
+				typdef std::valarray<double> ArrayDb;
+				if(ArrayDb::size() > 0)
+				{
+					return ArrayDb::sum() / ArrayDb.size();
+				}
+				else
+				{
+					return 0;
+				}
+3.访问基类对象
+	(1)使用作用域解析操作符可以访问基类方法
+		使用基类本身的对象,可以使用强制类型转换,将派生类转换为基类
+	(2)指针this为调用方法的对象
+		eg:	const std::string & Name()const
+			{
+				return (const std::string &)*this;
+			}
+			
+		
+			
+			
+			
