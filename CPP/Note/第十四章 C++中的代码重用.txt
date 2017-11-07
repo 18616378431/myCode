@@ -142,6 +142,18 @@
 			{
 				return (const std::string &)*this;
 			}
+4.访问基类的友元函数
+	(1)友元不属于类,不能使用类名限定访问
+		可以显式地转换为基类来调用正确的函数
+		eg:	ostream & operator<< (ostream & os,const Student & stu)
+			{
+				os << "Scores for " << (const string &)stu << endl;
+			}
+	(2)私有继承中,不进行显式强制类型转换时,不能将指向派生类的引用或指针赋给基类引用或指针
+		公有继承也需要将stu进行显式强制转换,否则与当前类友元匹配形成递归调用
+		os << stu;
+	(3)多重继承时,编译器无法确定转换为哪一个基类,如果多个基类都提供了相同的函数
+	
 			
 		
 			
