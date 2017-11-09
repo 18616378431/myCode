@@ -167,9 +167,52 @@
 		使用私有继承,重新定义的函数将只能在类中使用,而不是公有的
 	(5)通常,应使用包含建立has-a关系
 		如果新类需要访问原有类的保护成员,或需要重新定义虚函数,则应使用私有继承
+7.保护继承
+	(1)保护继承是私有继承的变体
+		在列出基类时使用protected关键字
+		eg:	class Student:protected std::valarray<double>,protected std::string
+			{
+			};
+	(2)使用保护继承时,基类的公有成员和保护成员都将成为派生类的保护成员
+	(3)和私有继承相似,基类的接口在派生类中可用,在继承结构外是不可用的
+	(4)从派生类派生出的类,私有继承和保护继承的区别:
+		[1]私有继承时,第三代类将不能使用基类的接口,因为基类的公有方法在派生类中将变为私有的
+		[2]使用保护继承时,基类的公有方法在派生类中将变为受保护的,第三代派生类中可以使用它们
+	(5)不同种类的继承
+		特征				公有继承				保护继承				私有继承
+		公有成员变成		派生类的公有成员		派生类的保护成员		派生类的私有成员
+		保护成员变成		派生类的保护成员		派生类的保护成员		派生类的私有成员
+		私有成员变成		只能通过基类接口访问	只能通过基类接口访问	只能通过基类接口访问	
+		能否隐式向上转换	是						是(只能在派生类中)						否
+8.使用using重新定义访问权限
+	(1)使用保护派生或私有派生时,基类的公有成员将成为保护成员或私有成员
+		在派生类外使用基类访问,通过定义使用基类方法的派生类公有方法
+		eg:	double Student::sum()const
+			{
+				return ArrayDb::sum():
+			}
+	(2)在派生类的公有部分使用using声明来指出可以使用的基类成员,该方法在私有派生情况下也可行
+		eg:	class Studen:private std::string,std::valarray<double>
+			{
+			public:
+				using std::valarray<double>::min;
+				using std::valarray<double>::max;
+			};
+			ada // array of Student
+			cout << ada[i].max() << endl;
+			上述声明使得valarray的min、max方法可用,将像类的公有方法
+			注意:using声明只使用成员名----没有圆括号、函数特征标、返回类型
+		eg: using std::valarray<double>::operator[];
+			using声明仅适用于继承,不适用于包含
+	(3)老式方法使私有继承的基类的方法可用
+		在派生类的公有部分重新声明基类的方法,将方法名放在派生类的公有部分
+		eg:	class Studen:private std::string,std::valarray<double>
+			{
+			public:
+				std::valarray<double>::operator[];//只使用名称声明
+			};
+			注意:该方法即将摒弃
 		
-		
-
 			
 		
 			
