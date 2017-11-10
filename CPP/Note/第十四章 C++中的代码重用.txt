@@ -212,9 +212,23 @@
 				std::valarray<double>::operator[];//只使用名称声明
 			};
 			注意:该方法即将摒弃
-		
-			
-		
+
+14.3 多重继承
+1.MI描述的是有多个直接基类的类,与单继承一样,公有MI表示is-a关系
+	eg:	class SingingWaiter:public Waiter,public Singer
+		{
+		...
+		};
+2.必须使用关键字public限定每一个基类,否则编译器将默认视为private私有派生
+	eg:	class SingingWaiter:public Waiter,Singer//Singer is private base
+		{
+		...
+		};
+3.私有MI和保护MI表示has-a关系
+4.MI可能遇到的问题:
+	(1)从两个不同基类继承同名方法
+	(2)从两个或更多相关基类继承同一个类的多个实例
+	
 			
 			
 			
