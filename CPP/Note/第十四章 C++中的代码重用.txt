@@ -228,7 +228,21 @@
 4.MI可能遇到的问题:
 	(1)从两个不同基类继承同名方法
 	(2)从两个或更多相关基类继承同一个类的多个实例
-	
+
+14.3.1 有多少Worker
+	(1)从Waiter和Singer派生出SingingWaiter派生类
+		Waiter和Singer均公有派生自Worker
+		class SingingWaiter:public Waiter,public Singer{...};
+		SingingWaiter将包含两个Worker组件
+	(2)这种情况下将基类指针指向派生类将产生二义性
+		eg:	SingingWaiter ed;
+			Worker * pw = &ed;//ed中的基类结构中的Singer和Waiter各包含一个Woker组件,产生二义性
+			这种赋值将把基类指针设置为派生类对象中的基类对象的地址
+			ed中包含两个Worker对象,有两个地址可供选择,应使用类型转换来指定对象
+			Worker * pw1 = (Waiter *)&ed;
+			Worker * pw2 = (Singer *)&ed;
+			这将使得使用基类指针来引用不同的对象(多态性)复杂化
+	(3)使用虚基类解决派生对象中的相同基类组件冲突
 			
 			
 			
