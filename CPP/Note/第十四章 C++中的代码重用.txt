@@ -243,6 +243,59 @@
 			Worker * pw2 = (Singer *)&ed;
 			这将使得使用基类指针来引用不同的对象(多态性)复杂化
 	(3)使用虚基类解决派生对象中的相同基类组件冲突
+1.虚基类
+	(1)虚基类使得从多个类(它们的基类相同)派生出的对象只继承一个基类对象
+		eg:	Singer和Waiter在类声明中使用virtual关键字,可以使Worker被用作Singer和Waiter的虚基类
+			(virtual和public的次序无关)
+			class Singer:public virtual Worker{...};
+			class Waiter:virtual public Worker{...};
+			可以将SingingWaiter定义为
+			SingingWaiter:public Singer,public Waiter{...};
+			SingingWaiter将只包含Worker对象的一个拷贝,继承的Singer和Waiter对象共享一个Worker对象,
+			而不是各自引入自己的Worker对象拷贝
+			SingingWaiter只包含一个Woker对象,可以使用多态
+2.新的构造函数规则
+	(1)使用虚基类时需要对派生类的构造函数使用新的句法,
+		常规类可以在初始化列表中调用基类构造函数进行初始化基类组件
+		并可以逐级向下传递
+		虚基类对于自动传递将不起作用
+		eg: 常规类
+			class A
+			{
+			private:
+				int a;
+			public:
+				A(int n = 0){a = n;}
+			};
+			class B:public A
+			{
+			private:
+				int b;
+			public:
+				B(int m = 0,int n = 0):A(n){b = m;}
+			};
+			class C:public B
+			{
+			private:
+				int c;
+			public:
+				C(int q = 0,int m = 0,int n = 0):B(m,n){c = q;}
+			};
+			C类的构造函数只能代用B类的构造函数
+			B类的构造函数只能调用A类的构造函数
+			C类的构造函数使用q,并将值m、n传递给B类的构造函数
+			B类的构造函数使用m,并将n传递给A的构造函数
+			虚基类对于这种自动传递将不起作用
 			
+			SingingWaiter(const Worker & wk,int p = 0,int v = Singer::other):Waiter(wk,p),Singer(wk,v){}
+			信息自动传递时将通过两条不同的途径(Singer,Waiter)将wk传递给Woker对象
+			为避免这种冲突,C++在基类是虚拟时将禁止信息通过中间类自动传递给基类
+			上述构造函数初始化了p、v所对应的成员,但wk将不会传递给Woker基类
+			编译器必须在构造派生对象之前构造基类对象组件,上述情况将使用基类的默认构造函数初始化基类组件
+			如果不希望使用默认构造函数初始化基类组件,则虚显式调用虚基类的构造函数
 			
+			SingingWaiter(const Worker & wk,int p = 0,int v = Singer::other):Worker(wk),Waiter(wk,p),Singer(wk,v){}
+			对于虚基类的初始化必须这样做,对于非虚基类,则是非法的
+	(2)如果有间接虚基类,则除非只需使用该虚基类的默认构造函数,否则必须显式地调用该虚基类的构造函数进行初始化
+	
 			
