@@ -297,5 +297,83 @@
 			SingingWaiter(const Worker & wk,int p = 0,int v = Singer::other):Worker(wk),Waiter(wk,p),Singer(wk,v){}
 			对于虚基类的初始化必须这样做,对于非虚基类,则是非法的
 	(2)如果有间接虚基类,则除非只需使用该虚基类的默认构造函数,否则必须显式地调用该虚基类的构造函数进行初始化
-	
+
+14.3.2 哪个方法
+	(1)在单继承中,如果没有重新定义方法,派生类对象调用基类方法,则将使用最近祖先中的定义
+		在多继承中,每个直接祖先中都有一个相同的方法定义,派生类对象调用基类方法,则将产生二义性
+	(2)多重继承可能导致函数调用的二义性,
+		eg:	SingingWaiter中没有重新定义Show方法
+			SingingWaiter newhire("Elise Hawks",2005,6,soprano);
+			newhire.Show();//产生二义性
+	(3)可以使用作用域解析操作符指定调用哪个基类的方法
+		eg:	newhire.Singer::Show();
+	(4)最好的方法是在多重继承的派生类中重新定义基类方法,并指出要使用哪个方法
+		eg:	void SingingWaiter::Show()const
+			{
+				Singer::Show();
+			}
+	(5)对于单继承,派生类调用基类的方法是可以的
+		eg:	void Worker::Show()const//base class
+			{
+				...
+			}
+			void Waiter::Show()const//Waiter继承自Woker
+			{
+				Worker::Show();
+				...
+			}
+			void HeadWaiter::Show()const//HeadWaiter继承自Waiter
+			{
+				Worker::Show();
+				...
+			}
+			这种继承对多重继承无效
+			void SingingWaiter::Show()const
+			{
+				Singer::Show();
+			}
+			这种方法忽略了Waiter组件,可以添加Waiter组件
+			void SingingWaiter::Show()const
+			{
+				Singer::Show();
+				Waiter::Show();
+			}
+			这将导致在Waiter、Singer的Show方法调用Woker基类的方法两次,显式两次同样的内容
+			
+			组件冲突解决方案
+			[1]解决方式可以是模块化方式,而不是递增方式
+			提供一个只显式Worker、Waiter、Singer组件的方法
+			void Worker::Data()const
+			{
+				...
+			}
+			void Singer::Data()const
+			{
+				...
+			}
+			void Waiter::Data()const
+			{
+				...
+			}
+			void SingingWaiter::Data()const
+			{
+				Waiter::Data();
+				Singer::Data();
+			}
+			void SingingWaiter::Show()const
+			{
+				Worker::Data();
+				Data();
+			}
+			其他Show方法也可以组合适当的组件进行显示
+			将Data方法设置为保护的,在继承层次中可用
+			[2]将所有数据组件都设置为保护的,而不是私有的,使用保护方法可以更有效地控制对数据的访问
+				祖先相同时,使用MI必须使用虚基类,并修改构造函数的初始化规则
+				
+			
+			
+			
+			
+			
+			
 			
