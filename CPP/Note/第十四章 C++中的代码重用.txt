@@ -417,7 +417,72 @@
 	(1)有间接虚基类的派生类包含直接调用间接基类构造函数的构造函数,这对于间接非虚基类来说是非法的
 	(2)通过优先规则解决名称二义性
 
-	
+14.4 类模板
+1.容器类(container class)被设计用来存储其他对象或数据类型
+2.类模板:模板提供参数化(parameterized)类型,即能够将类型名做为参数传递给接收方来建立类或函数
+
+14.4.1 定义类模板
+1.采用模板时,将使用模板定义替换Stack声明,使用模板函数替换Stack成员函数
+	eg:	//native class
+		typedef unsigned long Item;
+		class Stack
+		{
+		private:
+			enum{MAX = 10};
+			Item items[MAX];
+			int top;//栈顶索引
+		public:
+			//构造函数
+			Stack();
+			//判栈空
+			bool isempty()const;
+			//判栈满
+			bool isfull()const;
+			//压入,栈满返回false,否则返回true
+			bool push(const Item & item);//添加元素到栈
+			//弹出,栈空返回true,否则返回true
+			bool pop(Item & item);//弹出栈顶元素到item
+		};
+		//template class
+		(1)模板类以下面的代码开头
+			template <class Type>
+			关键字template告诉编译器将要定义一个模板
+			尖括号中的内容相当于函数的参数列表,可以把关键字class看做是变量的类型名
+			该变量接受类型做为其值,把Type看做是该变量的名称
+			使用class并不意味着Type必须是一个类,只是表明Type是一个通用的类型说明符
+			在使用模板时,将使用实际的类型替换它
+		(2)较新的C++使用typename代替class
+			template <typename Type>
+			可以使用自己的通用类型名代替Type,其命名规则与其他标识符相同
+			向前流行的选项包括T和Type
+			当模板被调用时,Type将被具体的类型值(int/string)取代
+			在模板定义中可以使用通用的类型名来标识堆栈中的类型
+			应将声明标识Item的所有typedef替换为Type
+			Item item[MAX];
+			=>
+			Type item[MAX];
+		(3)可以使用模板成员函数替换原有类的类方法,每个函数头都将以相同的模板声明开头
+			template <class Type>
+			应使用通用类型名Type替换typedef标识符item
+			还需将类限定符从Stack::替换为Stack<Type>::
+			bool Stack::push(cosnt Item & item)
+			{
+				...
+			}
+			=>
+			template <class Type>//or template <typename Type>
+			bool Stack<Type>::push(const Type & item)
+			{
+				...
+			}
+			如果在类声明中定义了内联方法,则可省略模板前缀和类限定符
+2.类模板定义指示编译器如何生成类和成员函数定义
+3.模板的具体实现被称为实例化(instantiation)或具体化(specialization)
+	除非编译器实现了新的export关键字,否则将模板成员函数放置在一个独立的实现文件中奖无法运行
+	因为模板不是函数不能单独编译
+	模板必须与特定的模板实例化请求一起使用
+	最简单的方法是将所有模板信息放在一个头文件中,并在要使用这些模板的文件中包含该头文件
+			
 			
 			
 			
