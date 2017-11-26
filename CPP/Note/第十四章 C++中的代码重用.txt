@@ -490,7 +490,21 @@
 		(1)将模板声明放在一个单独的头文件中,并使用#include编译指令使程序能够使用这些声明
 		(2)将模板类的方法定义放在一个源代码文件中,在该文件中包含头文件,并使用工程文件使程序能够使用这些定义
 		
-			
+14.4.2 使用模板类
+1.程序包含模板文件并不能生成模板类,必须请求实例化
+	需要声明一个类型为模板类的对象,使用具体类型替换通用类型名
+	eg:	Stack<int> kernels;//ints stack
+		Stack<string> colonels;//string stack
+		编译器将按照Stack<int/string>模板分别生成独立的类声明和定义
+		并分别使用int/string替换模板中的Type
+		使用的算法必须与类型一致
+2.通用类型标识符(Type)称为类型参数(type parameter),赋给它们的不能是数字,只能是类型
+3.类模板必须要显式地提供所需类型,与常规的函数模板不同,编译器可以根据传递的参数类型生成相应类型的函数
+	eg:	常规函数模板
+		template <class T>
+		void simple(T t){cout << t << endl;}
+		simple(2);//int
+		simple("two");//char *
 			
 			
 			
