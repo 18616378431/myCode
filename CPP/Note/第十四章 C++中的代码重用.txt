@@ -505,7 +505,24 @@
 		void simple(T t){cout << t << endl;}
 		simple(2);//int
 		simple("two");//char *
-			
+
+14.4.3 深入探讨模板类
+(1)可以将内置类型或类对象用作模板类的类型
+(2)指针也可以作为模板类的类型参数(char *)
+1.不正确地使用指针堆栈
+	eg:	Stack<char *> st;//a pointer stack
+		[1]将string po替换为char *po,在cin保存输入流时发生崩溃,仅声明了指针,未对输入内容分配内存单元
+		[2]将string po替换为char po[40],分配了保存输入的内存,但与pop方法冲突,引用了数组名,不能为数组名赋值
+			item应引用某种类型的左值,而不是数组名
+			tempalte <class Type>
+			bool Stack<Type>::pop(Type & item){...}
+		[3]将string替换为char * po = new char[40]为输入分配的空间,po为变量,与pop兼容,
+			只有一个po变量,每次输入都将覆盖同一块内存区域,并且加入到栈中的地址都相同
+			弹栈操作得到的地址总是相同的,堆栈并没有保存每一个新字符串
+2.正确地使用指针堆栈
+	(1)让调用程序提供一个指针数组,每个指针都指向不同的字符串
+	(2)堆栈仅负责管理指针,创建指针数组是调用程序的职责
+	
 			
 			
 			
