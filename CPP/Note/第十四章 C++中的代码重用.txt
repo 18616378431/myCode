@@ -554,7 +554,42 @@
 			Stack<int> egge(12);
 	(6)动态内存方法更通用,数组大小定义是存储在类成员中的,而不是硬编码存储在类定义中的
 		这样可以将一种尺寸的数组赋给另一种尺寸的数组,也可以创建允许数组大小可变的类
+
+14.4.5 模板多功能性
+	(1)可以将用于常规类的技术用于模板类
+		模板类可用作基类、组件类、其他模板的类型参数
+		eg:	tempalte <class T>
+			class Array
+			{
+			private:
+				T entry;
+				...
+			};
 			
+			template <class Type>
+			class GrowArray:public Array<Type>//inheritance
+			{
+				...
+			};
+			
+			template <class Tp>
+			class Stack
+			{
+			
+				Array<Tp> ar;//use as a component 组件
+				...
+			};
+			//use
+			Array< Stack<int> > asi;//stack of int
+			//必须使用空格将两个>分开以免混淆
+2.递归使用模板
+	eg:	ArrayTP< ArrayTP<int,5>,10 > twodee;
+		twodee是包含十个元素的数组,其中每个元素是包含5个int的数组
+		等价声明
+		int twodede[10][5];
+		模板句法中,维的顺序与等价的二维数组相反
+	
+
 			
 			
 			
