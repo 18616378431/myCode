@@ -608,6 +608,95 @@
 	(2)标准模板库经常使用该特性,将默认类型设置为类
 	(3)可以为类模板参数提供默认值,但不能为函数模板参数提供默认值
 		可以为非类型参数提供默认值,对于类模板和函数模板都适用
+
+14.4.6 模板的具体化
+	(1)类模板和函数模板相似,有隐式实例化、显式实例化、显式具体化,统称为具体化(specialization)
+	(2)模板以通用类型的方式描述类,具体化是使用具体的类型生成类声明
+1.隐式实例化(implicit instantiation)
+	声明一个或多个对象,指出所需类型,编译器使用通用模板提供的方法生成具体的类定义
+	编译器仅在需要创建对象时生成模板类定义,编译器在需要对象之前不会生成隐式实例化
+	eg:	ArrayTP<int,10> stuff;//implicit instantiation
+		ArrayTP<double,30> *pt;//non-object,only a pointer,non-instantiation
+		pt = new ArrayTP<double,30>;//object is needed,生成类定义并创建对象
+2.显式实例化
+	使用关键字template并指出所需类型来声明类时,编译器将生成类声明的显式实例化(explicit instantiation)
+	声明必须位于模板所在名称空间中
+	eg:	template ArrayTP<string,100>;//generate ArrayTP<string,100> class
+	将ArrayTP<string,100>声明为一个类
+	在这种情况下虽然没有创建或提及类对象,编译器也将生成类声明包括方法定义
+	和隐式实例化一样,也将根据通用模板来生成具体化
+3.显式具体化
+	显式具体化(explicit specialization)是特定类型(用于替换模板中的通用类型)的定义
+	有时需要为特殊类型实例化,对模板进行修改,使其行为不同,这种情况下可以创建显式具体化
+	eg:	template <class T>
+		class SortedArray//存储排序后的数组类,插入时排序
+		{
+			...
+		};
+		T为int可以进行>比较,为类时,类重载了>操作符也可用,如果T为char *则不可用
+		这将按字符串地址排序,应使用strcmp进行字母排序
+		这要求类使用strcmp而不是>进行排序,这时可以提供一个显式具体化模板
+		这将采用为具体类型定义的模板,而不是通用模板
+	当具体化版本和通用版本都和实例化请求匹配时,编译器将使用具体化版本
+	eg:	tempalte <> class ClassName<specialized-type-name>{...};
+		tempalte <> class SortedArray<char *>
+		{
+		...//use strcmp to sort
+		};
+		SortedArray<int> scores;//use general definition
+		SortedArray<char *> dates;//use specialized definition
+4.部分具体化
+	(1)C++还允许部分具体化(partial specialization),即部分限制模板的通用性
+		eg:	可以给类型参数之一指定具体的类型
+			//general template
+			tempalte <class T1,class T2>
+			class Pair
+			{
+			...
+			};
+			//specialization with T2 set to int
+			template <class T1> class Pair<T1,int>{...};
+		template关键字后的<>中是没有具体化的类型参数
+		上述声明将T2具体化为int,T1没有具体化
+	(2)如果指定所有类型将导致<>为空,这将导致显式具体化
+		eg:	//specialization with T1 and T2 set to int
+			template <> class Pair<int,int>{...};
+	(3)如果有多个模板可供选择,编译器将选择具体化程度最高的模板
+		eg:	Pair<double,double> p1;//use general Pair tempalte
+			Pair<double,int> p2;//use Pair<T1,int> partial specialization
+			Pair<int,int> p3;//use Pair<int,int> explicit specialization
+	(4)可以通过为指针提供特殊版本来部分具体化现有的模板
+		eg:	tempalte <class T>//general version
+			class Feeb{...};
+			template <class T *>//pointer partial specialization
+			class Feeb{...//modify code};
+			如果提供的类型不是指针,编译器将使用通用版本
+			如果提供的类型是指针,编译器将使用部分具体化版本
+			Feeb<char> fb1;//use general Feeb tempalte,T is char
+			Feeb<char *> fb2;//use Feeb T * specialization,T is char
+			如果没有具体化,第二个参数将使用通用版本,T转换为char *
+			如果进行了部分具体化,将使用部分具体化版本,T转换为char
+	(5)部分具体化使得可以设置各种限制
+		//general tempalte
+		tempalte <class T1,class T2,class T3> class Trio{...};
+		//specialization with T3 set to T2
+		tempalte <class T1,class T2> class Trio<T1,T2,T2>{...};
+		//specialization with T3 and T2 set to T1 *
+		tempalte <class T1> class Trio<T1,T1 *,T1 *>{...};
+		根据上述声明编译器将作出如下选择
+		Trio<int,short,char *> t1;//general version
+		Trio<int,short> t2;//use Trio<T1,T2,T2>
+		Trio<char,char *,char *> t3;//use Trio<T1,T1 *,T1 *>
+		
+			
+		
+		
+	
+		
+		
+	
+		
+	
 	
 
 			
