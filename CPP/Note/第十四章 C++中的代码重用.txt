@@ -750,6 +750,15 @@
 			{
 				return (n.Value() + q.Value()) * u / t;
 			}
+	(2)类外定义成员模板需使用作用域解析操作符限定
+		嵌套使用的需嵌套使用模板声明
+		template <typename T>
+			template <typename V>
+		class beta1<T>::hold1{...};
+			
+		template <typename T>
+			template <typename U>
+		U beta1<T>::blab1(U u,T t){...}
 			
 		
 		
