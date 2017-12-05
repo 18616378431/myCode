@@ -687,7 +687,69 @@
 		Trio<int,short,char *> t1;//general version
 		Trio<int,short> t2;//use Trio<T1,T2,T2>
 		Trio<char,char *,char *> t3;//use Trio<T1,T1 *,T1 *>
-		
+
+14.4.7 成员模板
+	(1)C++模板支持的特性:模板可用作结构、类或模板类的成员
+		要完全实现STL的设计,必须使用这项特性
+		eg:	template <typename T>
+			class beta
+			{
+			private:
+				template <typename V>//template member
+				class hold
+				{
+				private:
+					V val;
+				public:
+					hold(V v = 0):val(v){}
+					void show()const{cout << val << endl;}
+					V Value()const{return val;}
+				};
+				//template object
+				hold<T> q;
+				hold<int> n;
+			public:
+				beta(T t,int i):q(t),n(i){}
+				template <typename U>//template method
+				U blab(U u,T t){return (n.Value() + q.Value()) * u / t;}
+				void Show()const{q.show();n.show();}
+			};
+			编译器接收类外部定义模板成员
+			//out class definition template member
+			template <typename T>
+			class beta1
+			{
+			private:
+				template <typename V>//template member
+				class hold1;
+				//template object
+				hold1<T> q;
+				hold1<int> n;
+			public:
+				beta1(T t,int i):q(t),n(i){}
+				template <typename U>//template method
+				U blab1(U u,T t);
+				void Show()const{q.show();n.show();}
+			};
+			//member definition
+			template <typename T>
+			template <typename V>
+			class beta1<T>::hold1
+			{
+			private:
+				V val;
+			public:
+				hold1(V v = 0):val(v){}
+				void show()const{cout << val << endl;}
+				V Value()const{return val;}
+			};
+			//member definition
+			template <typename T>
+			template <typename U>
+			U beta1<T>::blab1(U u,T t)
+			{
+				return (n.Value() + q.Value()) * u / t;
+			}
 			
 		
 		
