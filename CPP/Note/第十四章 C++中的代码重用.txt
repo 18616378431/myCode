@@ -759,10 +759,25 @@
 		template <typename T>
 			template <typename U>
 		U beta1<T>::blab1(U u,T t){...}
-			
+
+14.4.8 将模板用作参数
+1.模板可以包含类型参数(typename T)、非类型参数(int n),
+	还可以包含本身就是模板的参数,这种参数是模板新增的特性,用于实现STL
+	eg:	template <typename T> class Thing
+		template <typename T> class是类型,Thing是参数
+		完整模板做为参数声明
+		template <template template<typename T> class Thing>
+		使用Crab<King> legs;
+		模板参数King必须是一个模板类,其声明与模板参数Thing的声明匹配
+		tempalte <typename T>
+		class King{...};
+		实现中将使用模板类King替换模板参数Thing
+		模板参数将被替换为声明对象时用作模板参数的模板类型
+2.可以混合使用模板参数和常规参数
+	eg:	template <template <typename T> class Thing,typename U,typename V>
+		模板参数T表示一种模板类型,U、V表示非模板类型
+		Crab<Stack,int,double>
 		
-		
-	
 		
 		
 	
