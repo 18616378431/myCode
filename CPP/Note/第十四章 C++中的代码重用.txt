@@ -766,7 +766,7 @@
 	eg:	template <typename T> class Thing
 		template <typename T> class是类型,Thing是参数
 		完整模板做为参数声明
-		template <template template<typename T> class Thing>
+		template <template <typename T> class Thing>
 		使用Crab<King> legs;
 		模板参数King必须是一个模板类,其声明与模板参数Thing的声明匹配
 		tempalte <typename T>
