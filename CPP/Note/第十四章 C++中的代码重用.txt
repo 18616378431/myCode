@@ -777,6 +777,60 @@
 	eg:	template <template <typename T> class Thing,typename U,typename V>
 		模板参数T表示一种模板类型,U、V表示非模板类型
 		Crab<Stack,int,double>
+
+14.4.9 模板类和友元
+	(1)模板类的声明也可以有友元
+	(2)模板的友元分3类:
+		[1]非模板友元
+		[2]约束(bound)模板友元,友元的类型取决于类被实例化时的类型
+		[3]非约束(unbound)模板友元,即友元的所有具体化都是类的每一个具体化的友元
+1.模板类的非模板友元函数
+	(1)非模板友元是模板所有实例化的友元
+	eg:	template <class T>
+		class HasFriend
+		{
+			friend void counts();//friend to all HasFriend instantiation
+			...
+		};
+		counts()将是HasFriend<int>、HasFriend<double>的友元
+		counts()不是通过对象调用的(它是友元不是成员函数),没有对象参数
+	(2)模板友元如何访问对象数据的
+		[1]友元可以访问全局对象
+		[2]可以使用全局指针访问非全局对象
+		[3]可以创建自己的对象
+		[4]可以访问独立于对象的模板类的静态数据成员
+	(3)如何表示友元需要的模板类参数
+	eg:	friend void report(HasFriend &);//error
+		提供的参数只能是模板的特定具体化,HasFriend<short>
+		要提供模板类参数,必须指明具体化
+		template <class T>
+		class HasFriend
+		{
+			friend void report(HasFriend<T> &);//bound template friend
+			...
+		};
+		HasFriend<int> hf;
+		编译器将使用int替换模板参数T,生成具体化
+		class HasFriend<int>
+		{
+			friend void report(HasFriend<int> &);//bound template friend
+			...
+		};
+		HasFriend<int>参数的report是HasFriend<int>类的友元
+		HasFriend<double>参数的report是HasFriend<double>类的友元,并且是report的一个重载版本
+	(4)report不是模板函数,仅仅是模板友元,带有模板参数,意味着必须为要使用的友元定义显式具体化
+		void report(HasFriend<short> &){...}//explicit specialization for short
+		void report(HasFriend<int> &){...}//explicit specialization for int
+	(5)模板的静态成员
+		模板的每一个特定具体化都将有一个自己的静态成员
+		同一类具体化共享静态数据和成员
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		
