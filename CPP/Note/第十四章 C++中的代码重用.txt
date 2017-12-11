@@ -824,7 +824,27 @@
 	(5)模板的静态成员
 		模板的每一个特定具体化都将有一个自己的静态成员
 		同一类具体化共享静态数据和成员
-		
+2.模板类的约束模板友元函数
+	(1)使用友元函数本身成为模板
+	(2)使模板类的每一个具体化都有与之匹配的友元具体化
+	(3)实现步骤:
+		[1]在类定义前面声明每个模板函数
+			eg:	template <typename T> void counts();
+				template <typename T> void report(T &);
+		[2]在类中奖模板再次声明为友元
+			eg:	template <typename TT>
+				class HasFriendT
+				{
+					...
+					friend void counts<TT>();
+					friend void report<>(HasFriendT<TT> &);
+				};
+			声明中<>指出这是模板的具体化,<>可以为空,可以从函数参数推断出模板类型参数
+			也可以使用report< HasFriendT<TT> >(HasFriendT<TT> &)
+			没有参数的模板友元函数,必须使用模板句法指明其具体化counts<TT>(),TT是HasFriend的类型参数
+		[3]为友元提供模板定义
+			有参数的模板友元可以省略<>中的参数,编译器可根据参数类型推断出要使用的具体化
+			无参数的模板友元必须指明其具体化
 		
 		
 		
