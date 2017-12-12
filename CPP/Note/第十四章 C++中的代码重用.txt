@@ -845,9 +845,24 @@
 		[3]为友元提供模板定义
 			有参数的模板友元可以省略<>中的参数,编译器可根据参数类型推断出要使用的具体化
 			无参数的模板友元必须指明其具体化
-		
-		
-		
+3.模板类的非约束模板友元函数
+	(1)约束模板友元是在类外面声明模板的具体化
+	(2)通过在类内部声明模板,可以创建非约束友元函数,即每个函数具体化都是每个类具体化的友元
+		所有具体化友元能够访问所有模板类具体化的成员
+	(3)对于非约束友元,友元模板类型参数与模板类类型参数是不同的
+		eg:	template <typename T>
+			class ManyFriend
+			{
+				...
+				tempalte <typename C,typename D> friend void show2(C &,D &);
+			};
+			show2(hfi1,hfi2);
+			匹配的具体化
+			void show2< ManyFriend<int>,ManyFriend<int> >(ManyFriend<int> & c,ManyFriend<int> & d);
+			
+			show2(hfd,hfi1);
+			匹配具体化
+			void show2< ManyFriend<double>,ManyFriend<int> >(ManyFriend<double> & c,ManyFriend<int> & d);
 		
 		
 		
