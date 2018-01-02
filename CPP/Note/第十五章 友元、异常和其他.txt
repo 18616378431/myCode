@@ -13,4 +13,38 @@
 	eg:	在类中声明Remote为友元类
 		friend class Remote;
 		Remote类使用了Tv类,编译器必须先了解Tv类才能处理Remote类
-		一种方法是首先定义Tv类,另一种方法是使用向前声明(forward delaration)
+		一种方法是首先定义Tv类,另一种方法是使用向前声明(forward declaration)
+		
+15.1.2 友元成员函数
+1.可以使一个类的成员方法称为另一个类的友元,而不必让整个类都成为友元
+	需要注意的是,必须小心排列各种声明和定义的顺序
+	eg:	声明一个友元成员函数
+		class Tv
+		{
+		friend void Remote::set_chan(Tv & t,int c);
+		...
+		};
+2.使用向前声明(forward declaration)避免循环依赖
+	Tv类需要知道Remote的set_chan方法,Remote定义应放到Tv前面
+	而Remote方法提到了Tv对象,Tv定义应放到Remote之前
+	eg:	class Tv;
+		class Remote{...};
+		class Tv{...};
+3.Remote的内联方法调用了Tv的公有方法,此时编译器必须已经知道Tv类的声明
+	解决方案是使Remote中只包含方法声明,实际定义放在Tv类之后
+	eg:	class Tv;			//forward declaration
+		class Remote{...};	//Tv-using methods as prototypes only
+		class Tv{...};
+		//puts Remote method definitions here
+		Remote方法的原型void onoff(Tv & t);
+4.检查到该原型时,编译器需要知道一个Tv类,向前声明提供了这些信息
+	当编译器到达真正的方法定义时,它已经读取了Tv类的声明,并拥有了编译这些方法的所有信息
+	通过在方法定义中使用inline关键字,可使方法成为内联方法
+5.内联函数:内联函数的链接性是内部的,函数定义必须在使用函数的文件中
+	内联函数位于头文件中,在使用函数的地方包含头文件可确保定义放在正确的地方
+	可以将定义放在实现文件中,但必须删除关键字inline,这样函数的链接性是外部的
+6.使整个类为友元不需要向前声明,友元已经指出友元目标是一个类
+	eg:	friend class Remote;
+	
+		
+	
