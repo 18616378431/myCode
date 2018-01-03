@@ -46,5 +46,50 @@
 6.使整个类为友元不需要向前声明,友元已经指出友元目标是一个类
 	eg:	friend class Remote;
 	
+15.1.3 其他友好关系
+1.互为友元,原型必须在定义前面,以便编译器获取足够的信息来编译该方法
+	eg:	class Tv
+		{
+		friend class Remote;
+		public:
+			void buzz(Remote & r);
+			...
+		};
+		class Remote
+		{
+			friend class Tv;
+		public:
+			bool volup(Tv & t){return t.volup();}
+			...
+		};
+		inline void Tv::buzz(Remote & r)
+		{
+			...
+		}
+2.共同的友元,函数需要访问两个类的私有数据,则将函数作为两个类的友元
+	eg:	class Analyzer;
+		class Probe
+		{
+			friend void sync(Analyzer & a,Probe & p);//sync a to p
+			friend void sync(Probe & p,Analyzer & a);//synv p to a
+			...
+		};
+		class Analyzer
+		{
+			friend void sync(Analyzer & a,Probe & p);//sync a to p
+			friend void sync(Probe & p,Analyzer & a);//synv p to a
+			...
+		};
+		//define the friend functions
+		inline void sync(Analyzer & a,Probe & p)
+		{
+			...
+		}
+		inline void sync(Probe & p,Analyzer & a)
+		{
+			...
+		}
+		向前声明使编译器看到Probe中的友元时,知道Analyzer是一个类型
+	
 		
 	
