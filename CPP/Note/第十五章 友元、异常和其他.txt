@@ -90,6 +90,61 @@
 			...
 		}
 		向前声明使编译器看到Probe中的友元时,知道Analyzer是一个类型
-	
+
+15.2 嵌套类
+1.嵌套类(nested class):可以将类声明放在另一个类中,在另一个类中声明的类被称为嵌套类
+	它提供新的类型类作用域类避免名称混乱
+2.包含类的成员函数可以创建和使用被嵌套类的对象,仅当声明位于公有部分时,才可以在包含类的外面使用嵌套类
+	且必须使用作用域解析操作符
+3.对类进行嵌套与包含不同,包含意味着将类对象作为另一个类的成员,而对类进行嵌套不创建类成员,
+	而是定义了一种类型,该类型仅在包含嵌套类声明的类中有效
+4.对类进行嵌套通常是为了帮助实现另一个类,并避免名称冲突
+	eg:	(1)嵌套结构
+		class Queue
+		{
+			//class scope definitions
+			//Node is a nested structure definition local to this class
+			struct Node{Item item;struct Node * next;};
+			...
+		};
+		结构是一种成员默认为公有的类,Node实际上是一个嵌套类
+		bool Queue::enqueue(const Item & item)
+		{
+			if(isfull())
+				return false;
+			Node * add = new Node;
+			if(add == NULL)
+				return false;
+			add->item = item;
+			add->next = NULL;
+			...
+		}
+		(2)嵌套类
+		class Queue
+		{
+			//class scope definitions
+			//Node is a nested class definition local to this class
+			class Node
+			{
+			public:
+				Item item;
+				Node * next;
+				Node(const Item & i):item(i),next(0){}
+				...
+			};
+			...
+		};
+		在类外部定义嵌套类的方法
+		Queue::Node::Node(const Item & i):item(i),next(0){}
+		新的enqueue写法
+		bool Queue::enqueue(const Item & item)
+		{
+			if(isfull())
+				return false;
+			Node * add = new Node(item);
+			if(add == NULL)
+				return false;
+			...
+		}
 		
 	
