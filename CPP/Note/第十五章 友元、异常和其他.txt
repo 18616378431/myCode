@@ -244,5 +244,34 @@
   (6)程序执行完try块后没有引发异常,则程序跳过try块后面的catch块
 	继续执行处理程序后面的语句
 
-		
+15.3.4 将对象用作异常类型
+1.引发异常的函数将传递一个对象,有点是可以使用不同的异常类型来区分不同函数在不同情况下引发的异常
+	异常对象可以携带信息,可以根据这些信息确定引发异常的原因
+	catch块可以根据这些信息来决定采取什么样的措施
+	eg: //exception class
+		class bad_hmean{...};
+		//exception occur
+		throw bad_hmean(v1,v2);
+2.可使用异常规范对函数定义进行限定,指出它将引发哪些类型的异常
+	可在函数定义后面加上异常规范,它由关键字throw和异常类型列表组成,
+	异常类型列表被括在括号中并用逗号分隔
+	eg:	double hmean(double a,double b) throw(bad_hmean,bad_hmean1,bad_hmean2,...);
+	这完成了两项工作,首先它告诉编译器该函数引发哪些类型的异常
+	如果以后该函数引发了其他类型异常,程序最终将调用abort()函数
+	其次,使用异常规范将提醒阅读该原型的人,该函数引发异常,应提供try块和处理程序
+3.对于引发多种类型异常的函数,可提供一个由逗号分隔的异常类型列表,句法与函数参数列表相似
+	eg:	double multi_err(double z) throw(const char *,double);
+	函数原型及定义中都应加上异常列表
+	double hmean(double a,double b) throw(bad_hmean)
+	{
+		if(a == -b)
+			throw bad_hmean(a,b);
+		...
+	}
+4.如果异常规范中的括号内为空,则表明该函数不会引发异常
+	eg:	double simple(double z) throw();
 	
+
+
+
+
