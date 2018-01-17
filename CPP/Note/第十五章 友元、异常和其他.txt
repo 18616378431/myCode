@@ -265,7 +265,7 @@
 	double hmean(double a,double b) throw(bad_hmean)
 	{
 		if(a == -b)
-			throw bad_hmean(a,b);
+			throw bad_hmean(a,b);//construct
 		...
 	}
 4.如果异常规范中的括号内为空,则表明该函数不会引发异常
@@ -294,6 +294,101 @@
 5.函数返回仅仅处理该函数放在栈中的对象,
 	而throw语句则处理try块和throw之间整个函数调用序列放在栈中的对象
 	如果没有堆栈解退特性,则引发异常后,对于中间函数调用放在栈中的自动类对象,其析构函数不会被调用
+
+15.3.6 其他异常特性
+1.虽然throw-catch机制类似于函数参数和函数返回机制,但仍有不同之处
+	(1)func()返回语句是将控制权返回到调用func()的函数
+		throw语句是将控制权向上返回到能够捕获这一类型异常的try-catch组合
+	(2)引发异常时编译器总是创建一份临时拷贝,即使异常规范和catch块中指定的是引用
+	eg:	class problem{...};
+		void super() throw(problem)
+		{
+			...
+			if(oh_no)
+			{
+				problem oops;
+				throw oops;
+			}
+			...
+		}
+		...
+		try
+		{
+			super();
+		}
+		catch(problem & p)
+		{
+			...statements
+		}
+		p将指向oops的拷贝而不是oops本身,因为super执行完毕oops将被释放
+		[1]将引发异常和创建对象组合在一起将更简单
+			throw problem();
+		[2]throw语句将生成拷贝,catch为什么使用引用?
+			因为基类引用可以指向派生类,其与任何派生类异常都匹配
+	(3)引发的异常对象将被第一个与之匹配的catch块捕获,catch块的顺序应与派生顺序相反
+		eg:	异常类继承层次结构
+			class bad_1{...};
+			class bad_2:public bad_1{...};
+			class bad_3:public bad_2{...};
+			void duper() throw(bad_1)
+			{
+				...
+				if(oh_no)
+					throw bad_1();
+				if(rats)
+					throw bad_2();
+				if(drat)
+					throw bad_3();
+			}
+			try
+			{
+				duper();
+			}
+			catch(bad_3 & be)
+			{
+				...
+			}
+			catch(bad_2 & be)
+			{
+				...
+			}
+			catch(bad_3 & be)
+			{
+				...
+			}
+			如果将bad_1 &处理程序放在最前面,它将不能捕获bad_2、bad_3
+			通过按相反的顺序排列,bad_3异常将被bad_3 &处理程序捕获
+	(4)在catch块的括号中使用省略号来捕获任何异常
+		类似于switch的default
+		eg:	catch(...)
+			{
+				...
+			}
+			...
+			try
+			{
+				duper();
+			}
+			catch(bad_3 & be)
+			{
+				...
+			}
+			catch(bad_2 & be)
+			{
+				...
+			}
+			catch(bad_3 & be)
+			{
+				...
+			}
+			catch(...)//catch nay type of exception
+			{
+				...
+			}
+	(5)在catch块中使用异常类基类对象,将捕获所有派生类对象,但派生特性将被剥去,
+		因此将使用虚方法的基类版本
+	
+
 
 
 
