@@ -387,7 +387,89 @@
 			}
 	(5)在catch块中使用异常类基类对象,将捕获所有派生类对象,但派生特性将被剥去,
 		因此将使用虚方法的基类版本
+
+15.3.7 exception类
+(1).C++异常的主要目的是为设计容错程序提供语言级支持,
+	即异常使得在程序设计中包含错误处理功能更容易,以免采取一些严格的错误处理方式
+(2).新的C++编译器将异常合并到语言中
+	定义了头文件exception/exception.h/except.h
+	定义了exception类,C++可以把它用作其他异常类的基类
+	exception类中定义了what虚拟成员函数,它返回一个字符串
+	由于这是一个虚拟方法,可以在其派生类中重新定义
+	eg:	#include <exception>
+		class bad_hmean:public std::exception
+		{
+		public:
+			const char * what(){return "bad argument to hmean()";}
+			...
+		}
+		class bad_gmean:public std::exception
+		{
+		public:
+			const char * what(){return "bad argument to gmean()";}
+			...
+		}
+		可以在同一个基类异常处理程序中处理exception派生来的异常
+		try
+		{
+			...
+		}
+		catch(std::exception & e)
+		{
+			cout << e.what() << endl;
+		}
+		也可以分别捕获它们
+(3).C++库定义了很多基于exception的异常类型
+	头文件exception提供了bad_exception,供函数unexpected()使用
+1.stdexcept异常类
+(1)头文件stdexcept定义了其他几个异常类
+	定义了logic_error和runtime_error类,它们都以公有方式从exception派生而来
+	eg:	class logic_error:public exception
+		{
+		public:
+			explicit logic_error(const string & what_arg);
+			...
+		}
+		class doamin_error:public exception
+		{
+		public:
+			explicit doamin_error(const string & what_arg);
+			...
+		}
+		这两个新类被用作两个派生类系列的基类
+		logic_error描述了典型的逻辑错误
+		构造函数参数提供了what函数返回的C风格字符串内容
+	类名指出了它们用于报告的错误类型
+	每一个类独有一个类似logic_error的构造函数
+	[1]doamin_error 
+		数学函数有domain定义域和range值域,定义域由参数的可能值组成,值域由函数可能的返回值组成
+		函数参数不在定义域之间时引发domain_error异常
+		std::sin();domain[-π,+π] range[-1,+1]
+	[2]invalid_argument
+		指出给函数传递了一个意料外的值,当传递的参数不是函数希望的值的时候,
+		将引发invalid_argument异常
+	[3]length_error
+		用于指出没有足够的空间来执行所需的操作
+		string类的append()方法在合并得到的字符串长度超出最大允许长度时,将引发length_error异常
+	[4]out_of_bounds
+		通常用于指示索引错误
+		数组类,其operator()[]在使用的索引无效时引发out_of_bounds异常
+(2)runtime_error异常系列描述了可能在运行期间发生难以预计和防范的错误
+	每个类的名称指出了它用于报告错误的类型
+	每一个类独有一个类似runtime_error的构造函数,以提供what函数返回的C风格字符串
+	[1]range_error
+	[2]overflow_error
+	[3]underflow_error
+		下溢(underflow)错误在浮点数计算中
+		存在浮点类型可以表示的最小非零值,计算结果小于这个值时将导致下溢
+		整型和浮点型都可能发生上溢错误,当计算结果超出了某种类型能够表示的最大值时,将发生上溢错误
+		计算结果不在函数允许的范围内时,但没有发生上溢或下溢错误,这时可以用range_error异常
+(3)logic_error一般表示可以通过编程修复的问题,runtime_error表示无法避免的问题
+	所有这些错误类有相同的常规特征,区别:
+		[1]不同的类名能够处理不同的异常
+		[2]继承关系可以一起处理它们
 	
+
 
 
 
