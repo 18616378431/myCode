@@ -479,7 +479,90 @@
 	[1]可以像标准C++从一个异常类派生出另一个
 	[2]可以在类定义中嵌套异常类声明来组合异常
 	[3]嵌套声明可以被继承并可用作基类
-	
+
+15.3.9 异常何时会迷失方向
+1.异常被引发后,在两种情况下会导致问题
+	[1]如果它是在带异常规范的函数中引发的,则必须与规范列表中的某种异常匹配,否则称为意外异常(unexpected exception)
+		默认情况下这将导致程序异常终止
+	[2]如果异常不是在函数中引发的(或函数没有异常规范),则它必须被捕获
+		如果没有被捕获(没有try或catch),则异常被称为未捕获异常(uncaught exception)
+		这将导致程序异常终止
+		可以为程序添加对意外异常和未捕获异常的反应
+2.未捕获异常
+	未捕获异常不会导致程序立刻异常终止
+	程序首先调用函数terminate(),在默认情况下terminate()调用abort()函数
+	可以指定terminate()应调用的函数(而不是ablort())来修改terminate()的这种行为
+	为此可以调用set_terminate()函数
+	set_terminate()和terminate()都是在头文件exception中声明的
+	eg:	typedef void (* terminate_handler)();
+		terminate_handler set_terminate(terminate_handler f) throw();
+		void terminate();
+		调用多次set_terminate()函数,terminate()将调用最后一次set_terminate()设置的函数
+		#include <exception>
+		void myQuit()
+		{
+			cout << "Something" <<endl;
+			exit(5);
+		}
+		set_terminate(myQuit);
+		程序发生未捕获异常将执行myQuit()函数
+3.意外异常
+	通过给函数指定异常规范,可以让函数的用户知道要捕获哪些异常
+	eg:	double Argh(double,double) throw(out_of_bounds);
+		try
+		{
+			x = Argh(a,b);
+		}
+		catch(out_of_bounds & oob)
+		{
+			...
+		}
+	通常异常规范应包含函数调用的其他函数引发的异常
+	函数引发了异常规范没有的异常,这种情况下行为与未捕获异常相似
+	如果发生意外异常,程序将调用unexpected()函数,这个函数将调用terminate()函数
+	terminate()默认情况下将调用abort()函数
+	有一个类似于修改set_terminate()的函数,用来修改unexpected()函数的行为set_unexpected()
+	这些函数也是在头文件exception中声明的
+	eg:	typedef void (* unexpected_handler)();
+		unexpected_handler set_unexpected(unexpected_handler f) throw();
+		void unexpected();
+	set_unexpected()函数的行为比set_terminate()收到更严格的限制
+	[1]通过调用terminate()(默认行为)、abort()、exit()来终止程序
+	[2]引发异常 结果取决于unexpected_handler函数所引发的异常以及引发意外异常的函数的异常规范
+		{1}如果新引发的异常与原来的异常规范相匹配,则程序将从那里进行正常处理
+			即寻找与新引发的异常匹配的catch块,这种方法将用预期的异常取代意外异常
+		{2}如果新引发的异常与原来的异常规范不匹配,且异常规范中没有包括std::bad_exception类型
+			则程序将调用terminate(),bad_exception是从exception派生而来的,其声明位于头文件exception
+		{3}如果引发的异常与原来的异常规范不匹配,且原来的异常规范中包含了std::bad_exception类型
+			则不匹配的异常将被std::bad_exception异常所取代
+		要捕获所有的异常
+		eg:	#include <exception>
+
+			void myUnexpected()
+			{
+				throw std::bad_exception();
+			}
+		仅使用throw不指定异常将导致重新引发原来的异常
+		如果异常规范中包含了这种类型,则该异常将被bad_exception对象所取代
+		在程序开始处将意外操作指定为调用该函数:
+		set_unexpected(myUnexpected);
+		最后将bad_exception包含在异常规范中
+		double Argh(double,double) throw(out_of_bounds，bad_exception);
+		try
+		{
+			x = Argh(a,b);
+		}
+		catch(out_of_bounds & ex)
+		{
+			...
+		}
+		catch(bad_exception & ex)
+		{
+			...
+		}
+
+
+
 
 	
 
