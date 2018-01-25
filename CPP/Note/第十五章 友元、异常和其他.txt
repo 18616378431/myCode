@@ -561,6 +561,57 @@
 			...
 		}
 
+15.3.10 有关异常的注意事项
+1.在设计程序时就加入异常处理功能,而不是以后再添加,这样做有些缺点
+	[1]使用异常会增加程序代码,降低程序的运行速度
+	[2]异常规范不适用于模板,因为模板函数引发的异常可能随特定的具体化而异
+	[3]异常和动态内存分配不能总是协同工作
+	eg:	void test1(int n)
+		{
+			string mesg("I'm trapped in an endless loop");
+			...
+			if(oh_no)
+				throw exception();
+			...
+			return ;
+		}
+		string采用动态内存分配,函数结束时将为string调用析构函数,虽然throw语句过早地终止了函数
+		但它仍使得析构函数被调用,这是堆栈解退的作用,内存被正确地管理
+	eg:	void test2(int n)
+		{
+			double * ar = new double[n];
+			...
+			if(oh_no)
+				throw exception();
+			...
+			delete [] ar;
+			return ;
+		}
+		堆栈解退将删除堆栈中的变量ar,但函数过早地终止意味着函数末尾的delete [] ar将被忽略
+		指针消失了,但它指向内存并未释放,并且不可访问,简而言之,这些内存泄漏了
+		可以在引发异常的函数中捕获异常,在catch块中包含一些清理代码,然后重新引发异常
+	eg:	void test3(int n)
+		{
+			double * ar = new double[n];
+			...
+			try
+			{
+				if(oh_no)
+					throw exception();
+			}
+			catch(exception & ex)
+			{
+				delete [] ar;
+				throw;
+			}
+			...
+			delete [] ar;
+			return ;
+		}
+2.异常处理将会增加编程的工作量、增大程序、降低程序速度,应有节制地使用这种特性
+
+
+
 
 
 
