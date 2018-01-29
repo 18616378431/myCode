@@ -610,6 +610,53 @@
 		}
 2.异常处理将会增加编程的工作量、增大程序、降低程序速度,应有节制地使用这种特性
 
+15.4 RTTI
+1.RTTI:运行阶段类型识别(Runtion Type Identification)
+
+15.4.1 RTTI的用途
+1.为何需要知道类型,可能希望调用列方法的正确版本
+	只要该函数时类层次结构中的所有成员都拥有的虚函数,则并不需要真正需要知道对象的类型
+2.派生对象可能包含不是继承而来的方法,这种情况下只有某些对象可以使用该该方法
+	也可能是出于调试的目的,像跟踪生成对象的类型
+	对于以上两种情况,RTTI提供解决方案
+	
+15.4.2 RTTI的工作原理
+(1).C++有三个支持RTTI的元素:
+	[1]如果可能的话,dynamic_cast操作符将使用一个指向基类的指针来生成一个指向派生类的指针
+		否则该操作符返回0-空指针
+	[2]typeid操作符返回一个指出对象类型的值
+	[3]type_info结构存储了有关特定类型的信息
+(2).只能将RTTI用于包含虚函数的类层次结构中,原因在于只有对这种类层次结构,
+	才应该将派生对象的地址赋给基类指针
+(3).RTTI只适用于包含虚函数的类
+
+1.dynamic_cast操作符
+(1)dynamic_cast操作符是最常用的RTTI组件,它不能回答指针指向的是哪类对象,
+	但能回答是否可以安全地将对象的地址赋给特定类型的指针
+	eg:	class Grand{...//has virtual methods};
+		class Superb:public Grand{...};
+		class Magnificent:public Superb{...};
+
+		Grand * pg = new Grand;
+		Grand * ps = new Superb;
+		Grand * pm = new Magnificent;
+
+		Magnificent * p1 = (Magnificent *)pm;//安全的
+		Magnificent * p2 = (Magnificent *)pg;//不安全,将基类地址赋给派生类
+		Superb      * p3 = (Magnificent *)pm;//安全的,将派生类对象地址赋给基类
+
+	虚函数确保了这三种指针的任何一种指向Magnificent时,都将调用Magnificent的方法
+(2)知道类型后就可以知道调用特定方法是否安全,要调用方法,类型并不一定要完全匹配
+	而可以是定义了方法的虚拟版本的基类类型
+	eg:	dynamic_cast用法
+		Superb * ps = dynamic_cast<Superb *>(pg);
+(3)通常,如果指向的对象(*pt)的类型为Type或者是从Type直接或间接派生而来的类型,
+	则表达式:
+	dynamic_cast<Type *>(pt);
+	将指针pt转换为Type类型指针,否则结果为0,即空指针
+	
+
+
 
 
 
