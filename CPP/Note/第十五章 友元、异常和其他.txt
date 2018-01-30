@@ -654,7 +654,25 @@
 	则表达式:
 	dynamic_cast<Type *>(pt);
 	将指针pt转换为Type类型指针,否则结果为0,即空指针
-	
+(4)即使编译器支持RTTI,在默认情况下他也可能关闭该特性,如果该特性被关闭,程序仍可能通过编译,
+	但将出现运行阶段错误、
+	开启方法VS:项目-属性-C/C++-语言-启用运行时类型信息
+	应尽可能使用虚函数,只在必要时使用RTTI
+(5)也可以将dynamic_cast用于引用,没有与空指针对应的引用值,因此无法使用特殊的引用值来表示失败
+	当请求不正确时,dynamic_cast将引发bad_cast异常,该异常是从exception派生而来的
+	它在头文件typeinfo中定义的
+	eg:	#include <typeinfo>
+		...
+		try
+		{
+			Superb & rs = dynamic_cast<Superb &>(rg);//rg &= Grand;
+		}
+		catch(bad_cast & bc)
+		{
+			...
+		}
+		
+
 
 
 
