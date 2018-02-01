@@ -671,7 +671,67 @@
 		{
 			...
 		}
+2.typeid操作符和typeinfo类
+(1)typeid操作符使得能够确定两个对象是否为同种类型,与sizeof相似,可以接收两种参数
+	[1]类名
+	[2]结果为对象的表达式
+(2)typeid操作符返回一个对typeinfo对象的引用,typeinfo是在头文件typeinfo(typeinfo.h)中定义的一个类
+	typeinfo重载了==和!=操作符,以便可以使用这些操作符对类型进行比较
+	eg:	pg指向Magnificent对象
+		typeid(Magnificent) == typeid(*pg)//true,否则为false
+		如果pg是空指针,程序将引发bad_typeid异常
+		该异常类型从exception类派生而来,在头文件typeinfo中声明
+		typeinfo类包含一个name()成员,该函数返回字符串,通常为类名
+		cout << "Now processing type " << typeid(*pg).name() << endl;//string:Magnificent
+3.误用RTTI的例子
+(1)考虑在使用了typeid的if else语句系列中,使用虚函数和dynamic_cast
+(2)放弃dynamic_cast和虚函数的弊端
+	eg:	//better
+		Grand * pg;
+		Superb * ps;
+		for(int i = 0;i < 5;i++)
+		{
+			pg = GetOne();
+			cout << "Now processing type " << typeid(*pg).name() << endl;
+			pg->Speak();
+			if(ps = dynamic_cast<Superb *>(pg))
+				ps->Say();
+			if(typeid(Magnificent) == typeid(*pg))
+				cout << "Yes,you're really magnificent.\n";
+		}
+		if(ps = dynamic_cast<Superb *>(pg))
+			ps->Say();
+		适用于所有从Superb派生而来的类
+		//bad
+		Grand * pg;
+		Superb * ps;
+		Magnificent * pm;
+		for(int i = 0;i < 5;i++)
+		{
+			pg = GetOne();
+			if(typeid(Magnificent) == typeid(*pg))
+			{
+				pm = (Magnificent *)pg;
+				pm->Speak();
+				pm->Say();
+			}
+			else if(typeid(Superb) == typeid(*pg))
+			{
+				ps = (Superb *)pg;
+				ps->Speak();
+				ps->Say();
+			}
+			else
+			{
+				pg->Speak();
+			}
+		}
+		这样代码将变得冗长,缺少可扩展性,并且添加新的功能将必须修改for循环内容
 		
+
+
+	
+
 
 
 
