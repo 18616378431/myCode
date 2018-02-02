@@ -728,7 +728,96 @@
 		}
 		这样代码将变得冗长,缺少可扩展性,并且添加新的功能将必须修改for循环内容
 		
+15.5 类型转换操作符
+1.更严格地限制允许的类型转换,添加了4个类型转换操作符,使转换过程更规范
+	(1)dynamic_cast
+	(2)const_cast
+	(3)static_cast
+	(4)reinterpret_cast
+	可以根据目的选择一个操作符,而不是使用通用的类型转换
+	这指出了类型转换的原因,并让编译器能够检查程序的行为是否与设计者想法吻合
+	eg:	strutc Data{
+			double data[200];
+		};
+		struct Junk{
+			int junk[100];
+		};
+		Data d = {2.5e33,3.5e-19,20.2e32};
+		char * pch = (char *)(&d);	//to string
+		char ch = (char)(&d);		//address to char
+		Junk * pj = (Junk *)(&d);	//to Junk pointer
+		上述转换在C语言中都是允许的,但都是没有意义的
+2.dynamic_cast仅当目标类型为参数类型的基类(直接或间接),dynamic_cast才能够转换成功
+	class High,Low;
+	pl = dynamic_cast<High *>(ph);
+	dynamic_cast<type-name>(expression)
+	该操作符的用途是,使得能够在类层次结构中进行向上转换(由于is-a关系,这种转换时安全的)
+	而不允许其他转换
+3.const_cast操作符用于执行只有一种用途的类型转换,即改变值为const或volatile
+	其句法与dynamic_cast相同
+	const_cast<type-name>(expression)
+	如果类型的其他方面也被修改,则上述转换将出错,除了const和volatile特征(有或无)可以不同外
+	type-name和expression类型必须相同
+	提供该操作符的原因是有时候可能需要这样一个值,它在大多数时候是常量,
+	而有时又是可以修改的,在这种情况下,可以将这个值声明为const,并在需要修改它的时候,
+	使用const_cast
+	这样可以通过通用类型转换来实现,但通用转换可能同时改变类型
+	eg:	class High,Low;
+		High bar;
+		const High * pbar = &bar;
+		...
+		High * pb = const_cast<High *>(pbar);//valid
+		使得pb成为可修改bar对象的指针,它删除const标签
+		const Low * pl = const_cast<const Low *>(pbar);//invalid
+		非法的,尝试将类型从const High *改为cosnt Low *
 
+		High bar;
+		const High * pbar = &bar;
+		...
+		High * pb = (High *)(pbar);//valid
+		Low * pl = (Low * )(pbar);//valid
+		由于编程时可能同时改变类型和常量特征,因此使用const_cast更安全
+		const_cast可以修改指向一个值的指针,但修改const值的结果是不确定的
+		
+		const_cast操作符可以删除cosnt int * pt中的const使得后面的修改值的语句合法
+		被声明为const的变量,编译器将禁止修改它
+		如果进行了转换,编译器将生成它的一份拷贝,并且结果是不确定的
+4.static_cast操作符的句法与其他类型操作符相同
+	static_cast<type-name>(expression)
+	仅当typename可被隐式转换为expression所属的类型或expression可被隐式转换为type-name所属的类型时
+	上述转换才是合法的,否则将出错
+	eg:	High是Low的基类,Pond是一个无关的类
+		则从High到Low的转换、从Low到High的转换是合法的,而从Low到Pond的转换时不允许的
+		High bar;
+		Low blow;
+		...
+		High * pb = static_cast<High *>(&blow);//vaid upcast
+		Low pl = static_cast<Low *>(&bar);valid downcast
+		Pond * pmer = static_cast<Pond *>(&blow);//invalid Pond unrelated
+		枚举值可以被转换为整型,所以可以用static_cast将整型转换为枚举值
+		同样可以使用static_cast将double转换为int、将float转换为long以及其他各种数值转换
+5.reinterpret_cast操作符用于天生危险的类型转换,它不允许删除const,但会执行其他操作
+	reinterpret_cast<type-name>(expression)
+	eg:	struct dat{short a;short b;};
+		long value = 0xA224B118;
+		dat * pd = reinterpret_cast<dat *>(&value);
+		cout << pd->a;//display first two bytes
+	reinterpret_cast并不支持所有类型转换
+	可以将指针转换为足以存储指针表示的整型,但不能将指针转换为更小的整型或浮点型
+	不能将函数指针转换为数据指针,反之亦然
+6.C++中普通类型转换也受到限制,可以执行其他类型转换可执行的操作,加上一些组合
+	static_cast或reinterpret_cast后跟const_cast,但不能执行其他操作
+	eg:	char ch = (char)(&d);
+		在C语言中是允许的,但在C++中是不允许的,因为对于大多数C++实现,char类型都太小,不能存储指针
+		
+
+	
+
+
+
+
+
+	
 
 	
 
