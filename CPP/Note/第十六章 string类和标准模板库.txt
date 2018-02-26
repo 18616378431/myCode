@@ -1,0 +1,35 @@
+第十六章 string类和标准模板库
+1.主要内容:string类、auto_ptr、STL(通用编程技术,generic programming)
+
+16.1 string类
+1.C风格字符串支持string.h,在C++中为cstring
+2.string头文件提供了string类支持
+3.stirng类内容:
+    [1]将字符串赋给变量
+    [2]合并字符串
+    [3]比较字符串
+    [4]访问各个元素的重载操作符
+    [5]在字符串查找字符串和子字符串
+
+16.1.1 构造字符串
+1.string有6个构造函数
+2.string实际上是模板规范basic_string<char>的一个typedef,同时省略了与内存管理相关的参数
+3.size_type是一个依赖于实现的整型,在头文件string中定义
+4.string类将string::npos定义为字符串的最大长度,通常为无符号整型int的最大值
+5.NBTS(null-byte-terminated string):空字符结束的字符串--传统C字符串
+6.表16.1 string类的构造函数
+    构造函数                         描述
+    string(cosnt char * s)          将string初始化s指向的NBTS
+    string(size_type n,char c)      创建一个包含n个元素的string对象,其中每个元素都被初始化为字符c
+    string(const string & str,string size_type n = npos)    将string兑现个初始化为对象str中从位置pos开始到结尾的字符串,或从位置pos开始的n个字符
+    string()                        创建一个默认的string对象,长度为0
+    string(const char * s,size_type n)  将string初始化为s指向的NBTS中的前n个字符,即使超过了NBTS的结尾
+    template<class Iter> string(Iter begin,Iter end)    将string对象初始化为区间[begin,end]内的字符,其中begin和end的行为就像指针,用于指定位置,范围包括begin在内,但不包括end
+7.重载的操作符
+    [1]+= 将一个字符串附加到另一个字符串后面
+    [2]= 将一个字符串赋给另一个字符串
+    [3]<< 显式string对象
+    [4][ ] 访问字符串中的各个字符
+
+
+
