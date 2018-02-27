@@ -23,13 +23,47 @@
     string(size_type n,char c)      创建一个包含n个元素的string对象,其中每个元素都被初始化为字符c
     string(const string & str,string size_type n = npos)    将string兑现个初始化为对象str中从位置pos开始到结尾的字符串,或从位置pos开始的n个字符
     string()                        创建一个默认的string对象,长度为0
-    string(const char * s,size_type n)  将string初始化为s指向的NBTS中的前n个字符,即使超过了NBTS的结尾
-    template<class Iter> string(Iter begin,Iter end)    将string对象初始化为区间[begin,end]内的字符,其中begin和end的行为就像指针,用于指定位置,范围包括begin在内,但不包括end
+    string(const char * s,size_type n)  将string初始化为s指向的NBTS中的前n个字符,即使超过了NBTS的结尾,仍将位于s之后内存中的内容做为字符进行复制
+    template<class Iter> string(Iter begin,Iter end)    将string对象初始化为区间[begin,end]内的字符,其中begin和end的行为就像指针,用于指定位置,范围包括begin在内,但不包括end,
+    即[begin,end),该构造函数接收一个模板参数,在使用时Iter将被替换为参数的实际类型,eg:char *
 7.重载的操作符
     [1]+= 将一个字符串附加到另一个字符串后面
-    [2]= 将一个字符串赋给另一个字符串
-    [3]<< 显式string对象
+    [2]= 将一个字符串赋给另一个字符串,第二个参数可以是string对象、C-风格字符串、char
+    [3]<< 显示string对象
     [4][ ] 访问字符串中的各个字符
-
-
-
+    [5]+ 第二个参数可以是string对象、C-风格字符串、char
+    
+16.1.2 string类输入
+1.C-风格字符串有3种输入方式:
+    char info[100];
+    [1]cin >> info;
+    [2]cin.getline(info,100); //discard \n
+    [3]cin.get(info,100);//leave \n in queue
+2.string对象2种输入方式：
+    string stuff;
+    [1]cin >> stuff;//read a word
+    [2]getline(cin,stuff);//read a line,discard \n
+3.两个版本的getline()都有一个可选参数,用于指定使用哪个字符来确定输入的边界
+    [1]cin.getline(info,100,':');//read up to ':',discard :
+    [2]getline(cin,stuff,':');//read up to ':',discard :
+4.两个版本getline的区别:
+    [1]string版本的getline()将自动调整目标string对象的大小,使之刚好能够存储输入的字符
+    eg: char fname[10];
+        string lname;
+        cin >> fname;//problem for input size > 9 characters
+        cin >> lname;//can read a very very long word
+        cin.getline(fname,10);//may truncate input
+        getline(cin,fname);//no truncation
+    [2]设计方面的区别,读取C-风格字符串的函数时istream类的方法,而string版本是独立的函数
+    eg: cin.operator>>(fname);
+        operator>>(cin,name);
+5.深入探讨string输入函数:
+    [1]string对象的允许最大长度由常量string:npos指定,通常为unsigned int最大值
+    [2]第二个限制因素是程序可以使用的内存
+    [3]string版本的getline()函数从输入中读取字符,并将其存储到目标string中,直到发生下列3种情况
+        (1)到达文件末尾,输入流eofbit将被设置,方法eof()、fail()都返回true
+        (2)遇到分界字符(\n),这将把分界字符从输入流中删除,但不存储它
+        (3)读取的字符数达到最大允许值(string::npos和可用内存字节较小的一个),这将蛇蛇输入流的     failbit,方法fail()、eof()将返回true
+    [4]输入流对象有一个统计系统,用于跟踪流的错误状态。在这个系统中,检测到文件末尾将设置eofbit寄存器,检测到输入错误时将设置failbit寄存器,出现无法识别的故障将设置badbit寄存器,一切顺利将设置goodbit寄存器
+    [5]string版本的operator>>()函数的行为与此类似,只是它不断读取,直到遇到空白字符并将其留在输入队列中,而不是不断读取,直到遇到分解符并将其丢弃,空白字符指空格、换行符、制表符,即isspace()返回true的字符
+    
