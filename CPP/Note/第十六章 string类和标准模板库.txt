@@ -63,7 +63,52 @@
     [3]string版本的getline()函数从输入中读取字符,并将其存储到目标string中,直到发生下列3种情况
         (1)到达文件末尾,输入流eofbit将被设置,方法eof()、fail()都返回true
         (2)遇到分界字符(\n),这将把分界字符从输入流中删除,但不存储它
-        (3)读取的字符数达到最大允许值(string::npos和可用内存字节较小的一个),这将蛇蛇输入流的     failbit,方法fail()、eof()将返回true
+        (3)读取的字符数达到最大允许值(string::npos和可用内存字节较小的一个),这将设置输入流的failbit,方法fail()、eof()将返回true
     [4]输入流对象有一个统计系统,用于跟踪流的错误状态。在这个系统中,检测到文件末尾将设置eofbit寄存器,检测到输入错误时将设置failbit寄存器,出现无法识别的故障将设置badbit寄存器,一切顺利将设置goodbit寄存器
     [5]string版本的operator>>()函数的行为与此类似,只是它不断读取,直到遇到空白字符并将其留在输入队列中,而不是不断读取,直到遇到分解符并将其丢弃,空白字符指空格、换行符、制表符,即isspace()返回true的字符
-    
+    [6]string版本的getline()指定分界符后,将把换行符\n视为普通字符
+
+16.3 使用字符串
+1.string对象对全部6个关系操作符都进行了重载,可以比较string对象
+2.在机器排序序列中,一个对象位于另一个对象前面,则前者被视为小于后者
+    如果机器排序序列为ASCII码,则数字将小于大写字符、大写字符将小于小写字符
+3.string对象对每个关系操作符都以三种方式进行重载,以便能够将string对象与另一个string对象、C-风格字符串进行比较,并能够将C-风格字符串与string对象比较
+    eg: string snake1("cobra");
+        string snake2("coral");
+        char snake3[] = "anaconda";
+        if(snake1 < snake2)//operator< (const string &,const string &)
+            ...
+        if(snake1 == snake3)//operator== (const string &,const char *)
+            ...
+        if(snake3 != snake2)//operator!= (const char *,const string &)
+            ...
+4.string成员函数size()和length()都返回字符串中的字符数
+    eg: if(snake1.length() == snake2.size())
+            cout << "Both string has the same length.\n";
+    length()函数来自较早版本的string类,size()函数为提供STL兼容性添加的
+5.可以以多种方式在字符串中搜索给定的子字符串或字符
+    find方法的四个版本:重载的find方法
+    方法原型                                                    描述
+    size_type find(const string & str,size_type pos = 0)const  从字符串的pos位置开始,查找子字符串str,如果找到,则返回该子字符串首次出现时其首字符的索引;否则,返回string::npos
+    size_type find(const char * s,size_type pos = 0)const      从字符串的pos位置开始,查找子字符串s,如果找到,则返回该子字符串首次出现时其首字符的索引;否则,返回string::npos
+    size_type find(const char * s,size_type pos = 0,size_type n)从字符串的pos位置开始,查找s的前n个字符组成的子字符串,如果找到,则返回该子字符串首次出现时其首字符的索引;否则返回string::npos
+    size_type find(char ch,size_type pos = 0)const             从字符串的pos位置开始,查找字符ch,如果找到,则返回该字符首次出现的位置;否则,返回string::npos
+6.string的其他find相关方法:
+    rfind(),find_first_of(),find_last_of(),find_first_not_of(),find_last_not_of()
+    它们的重载函数特征标都与find相同
+    [1]rfind:查找子字符串或字符最后一次出现的位置
+    [2]find_first_of:在字符串中查找参数中任何一个字符首次出现的位置
+        eg: int where = snake1.find_first_of("hark");//将返回r在cobra中的索引 3
+    [3]find_last_of:功能与find_first_of相似,查找的是最后一次出现的位置
+        eg: int where = snake1.find_last_of("hark");//将返回a在cobra中的位置
+    [4]find_first_not_of:在字符串中查找第一个不被包含在参数中的字符
+        eg: int where = snake1.find_first_note_of("hark");//将返回c在cobra的位置
+    [5]find_last_not_of:在字符串中查找最后一个不被包含在参数中的字符
+
+
+
+
+
+
+
+
