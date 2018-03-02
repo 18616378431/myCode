@@ -105,7 +105,66 @@
         eg: int where = snake1.find_first_note_of("hark");//将返回c在cobra的位置
     [5]find_last_not_of:在字符串中查找最后一个不被包含在参数中的字符
 
+16.1.4 string还提供了哪些功能
+1.string库提供了许多其他工具,包括完成下述功能的函数:
+    [1]删除字符串的部分或全部内容
+    [2]用一个字符串的部分或全部内容替换另一个字符串的部分或全部内容
+    [3]将数据插入到字符串中或删除字符串中的数据
+    [4]将一个字符串的部分或全部内容与另一个字符串的部分或全部内容进行比较
+    [5]从字符串中提取子字符串
+    [6]将一个字符串中的内容复制到另一个字符串中
+    [7]交换两个字符串的内容
+    ps:这些函数大多都被重载,以便能够同时处理C-风格字符串和string对象,详见附录F
+2.string类的自动调整大小功能:
+    每当程序将一个字符附加到字符串末尾时,不能仅仅将已有的字符串加大,因为相邻的内存可能被占用了
+    因此可能需要分配一个新的内存块,并将原来的内容复制到新的内存单元中
+    如果执行大量这样的操作,效率将非常低
+    因此很多C++实现分配一个比实际字符串大的内存块,为字符串提供了增大空间
+    然而,如果字符串不断增大,超过了内存块的大小,程序将分配一个大小为原来两倍的新内存块,以提供足够的增大空间
+    避免不断地分配新内存块
+    [1]方法capacity()返回当前分配给字符串的内存块大小
+    [2]方法reserve()限定您能够请求内存块的最小长度
+        标准容量选择是16的倍数(win7 MS 15bytes)
+3.有string对象但需要C-风格字符串,string对象的c_str()方法返回与string对象存储内容相同的指向C-风格字符串的指针
+    eg: string filename;
+        cout << "Enter filename:";
+        cin >> filename;
+        ofstream fout;
+        fout.open(filename.c_str());
+4.可以使用重载的==操作符来比较string对象,但某些情况下会区分大小写
+    通常比较两个字符串是否相等不区分大小写
+    C库的stricmp()执行不区分大小写的比较(该函数不属于C标准,不一定通用)
+    通过创建该函数的重载版本可以避免上述问题
+    eg: #include <cstring>
+        #include <string>
 
+        inline bool stricmp(cosnt std::string & strA,const std::string & strB)//overloaded function
+        {
+            return stricmp(strA.c_str(),strB.c_str()) == 0;
+        }
+
+        string strA;
+        cin >> strA;
+        string strB = "mapleSyrup";
+
+        bool bStringAreEqual = stricmp(strA,strB);
+        c_str()方法提供了将C-风格字符串函数转换为string对象函数的路径
+5.string库是基于一个模板类的
+    template< class charT,class traits = char _traits<charT>,class Allocator = allocator<charT> >
+    basic_string{...};
+    这个类中包含两个typedef
+    typedef basic_string<char> string;
+    typedef basic_string<wchar_t> wstring;
+    这使得能够使用基于char和wchar_t的字符串
+    甚至可以开发某种类似字符的类,并对它使用basic_string模板
+    traits类描述关于被选择的字符类型的特定情况,如何对值进行比较
+    对于char和wchar_t类型的,有预定义的char_traits模板规范,它们都是traits的默认值
+    Allocator是一个管理内存分配的类,对于char和wchar_t类型,有预定义的allocator模板规范,它们都是默认的
+    它们按通常的方式使用new和delete,但编程者可保留一部分内存,并提供自己的分配方法
+    
+
+
+    
 
 
 
