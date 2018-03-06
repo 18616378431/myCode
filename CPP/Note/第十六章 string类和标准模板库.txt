@@ -237,7 +237,49 @@
     将它赋给指向同类型的常规指针,
     赋给另一个同类型的auto_ptr
 
-        
+16.2.2 有关auto_ptr的注意事项
+1.new和new [],必须与相应的使用delete和delete [],auto_ptr模板使用的是delete,而不是delete []
+    因此它只能与new一起使用,而不腻与new []一起使用
+2.没有适用于动态数组的auto_ptr,可以复制头文件memory中的auto_ptr模板,重命名为auto_arr_ptr,
+    然后对其进行修改,使之使用delete []
+    string vacation("I wandered lonely as cloud.");
+    auto_ptr<string> pvac(&vacation);//error 将delete用于非堆内存
+    只能对new分配的内存使用auto_ptr,而不要对由new []分配或通过声明变量分配的内存使用它
+3.
+    auto_ptr<string> ps(new string("I reigned lonely as a cloud"));
+    auto_ptr<string> vocation;
+    vocation = ps;
+    如果两个指针为常规指针,指向同一个string对象,其中一个是另一个的拷贝,ps和vocation过期时将试图删除同一个对象两次
+    避免这种问题的方法:
+    (1)定义赋值操作符,执行深复制,这样两个指针将指向不同的对象,其中一个对象是另一个对象的拷贝
+    (2)建立所有权(ownership)概念,对于特定的对象,只能有一个智能指针拥有它,
+        智能指针的构造函数只能删除该只能指针拥有的对象,并使赋值操作符转让所有权,这就是用于auto_ptr的策略
+    (3)创建智能更高的指针,跟踪引用特定对象的智能指针数,这被称为引用计数(reference counting)
+        例如:赋值时将计数加1,指针过期时计数减1,仅当最后一个指针过期时,delete才被调用
+        同样的策略也适用于构造函数
+4.下面的方法不适用于auto_ptr对象:
+    auto_ptr<string> films[5] = {
+        auto_ptr<string> (new string("Fowl Balls")),
+        auto_ptr<string> (new string("Duck Walks")),
+        auto_ptr<string> (new string("Chicken Runs")),
+        auto_ptr<string> (new string("Turkey Errors")),
+        auto_ptr<string> (new string("Goose Eggs"))
+    };
+    auto_ptr<string> owin(films[2]);
+    int i;
+    cout << "The nominees for best avian baseball film are\n";
+    for(i = 0;i < 5;i++)
+        cout << *films[i] << endl;
+    cout << "The winner is " << *pwin << "!\n";
+    问题在于,将所有权从films[2]转让给pwin时,它可能导致films[2]不再引用该字符串
+    auto_ptr对象放弃所有权后,将可能不再可用,是否可用取决于实现
+5.智能指针
+    C++库中auto_ptr对象是一种智能指针(smart pointer),智能指针是这样一种类,即其对象的特征类似于指针
+    智能指针可用于存储new分配的内存地址,也可被解除引用
+    因为只能指针是一个类对象,一次它可修改和扩充简单指针行为
+    例如,只能指针可建立引用计数,这样多个对象可共享由智能指针跟踪的同一个值
+    当使用该值的兑现数为0时,只能指针将删除这个值
+    智能指针可以提高内存的使用效率,帮助防止内存泄漏
 
 
 
