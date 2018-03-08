@@ -311,6 +311,61 @@
         class vector{...};
         如果省略该可选参数,则容器模板将使用默认的allocator<T>类,这个类以标准方式使用new和delete
         
+16.3.2 可对矢量执行的操作
+1.所有的STL容器都提供了一些基本方法,其中包括size()--返回容器中元素数目,swap()--交换两个容器的内容
+    begin()--返回一个指向容器第一个元素的迭代器,end()--返回一个表示超过容器尾的迭代器
+2.迭代器:一个广义指针,实际上它可以是指针,也可以是一个可对其执行类似指针的操作--如解除引用(operator *())
+    和递增(operator ++())--的对象
+    对指向迭代器的指针进行广义化使得STL能够为各种不同的容器类(包括那些简单指针无法处理的类)提供统一的接口
+    每个容器类都定义了一个合适的迭代器,该迭代器类型时一个名为iterator的typedef,其作用域为整个类
+    eg: 为vector的double类型规范声明一个迭代器
+        vector<double>::iterator pd;//pd an iterator
+        scores是一个vector<double>对象
+        vector<double> scores;
+        则可以使用迭代器pd执行这样的操作
+        pd = scores.begin();
+        *pd = 22.3;
+        ++pd;
+    迭代器的行为就像指针
+    超过结尾(past-the-end)的迭代器,它是一种迭代器,指向个容器最后一个元素后面那个元素
+    这与C-分隔字符串最后一个字符后面的空字符类似,空字符是一个值,"超过结尾"是一个指向元素的指针(迭代器)
+    (1)end()成员函数标识超过结尾的位置
+    如果将迭代器设置为容器的第一个元素,并不断地递增,则最终它将到达容器结尾,从而遍历整个容器的内容
+    eg: 可以使用下面的代码显式容器的内容
+        for(pd = scores.begin();pd != scores.end();pd++)
+            cout << *pd << endl;
+    所有容器都包含以上方法
+    vector模板类也包含一些只有STL容器才有的方法
+    (2)push_back()是一个方便的方法,它将元素添加到矢量末尾,这样做时,它将负责内存管理
+    增加矢量长度,使之能够容纳新成员
+    eg: vector<double> scores;
+        double temp;
+        while(cin >>temp && temp >= 0)
+            scores.push_back(temp);
+        cout << "You entered " << scores.size() << " scores.\n";
+        每次循环给scores增加一个元素,无需了解元素的数目,有足够的内存,就可以根据需要增加scores的长度
+    (3)arase()删除矢量中给定区间的元素,它接受两个迭代器参数,这些参数定义了要删除的区间
+    第一个迭代器指向区间的起始处,第二个迭代器位于区间终止处的后一个位置
+    eg: scores.erase(scores.begin(),scores.begin() + 2);
+        将删除第一个元素和第二个元素,删除begin()和begin()+1指向的元素
+        vector实现了随机访问功能,其实现了begin() + 2的操作
+        如果it1、it2是迭代器,则STL文档使用(it1,it2)来表示从it1到it2(不包括it2)的区间
+        因此区间[begibn(),end()]将包括集合的所有内容,区间[it1,it1]为空
+        []表示法不是C++的部分,只能在文档中使用
+        区间[it1,it2]由迭代器it1、it2指定,其范围为it1到it2(不包括it2)
+    (4)insert()方法的功能与erase()相反,它接受3个迭代器参数,第一个参数指定了新元素的插入位置
+        第二个和第三个迭代器参数定义了被插入区间,该区间通常是另一个容器对象的一部分
+    eg: vector<int> old;
+        vector<int> new;
+        ...
+        old.insert(old.begin(),new.begin() + 1,new.end());
+        将矢量new中除第一个元素以外的所有元素插入到old矢量的第一个元素前面
+        这种情况下拥有超尾元素是非常方便的,因为这使得在矢量尾部附加元素非常简单
+    eg: old.insert(old.end(),new.begin() + 1,new.end());
+        将新元素插入到old.end()前面,即矢量最后一个元素前面
+    (5)总结矢量方法:size(),begin(),end(),push_back(),erase(),insert(),swap()
+
+
 
 
 
