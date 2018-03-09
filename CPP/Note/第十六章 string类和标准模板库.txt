@@ -365,6 +365,64 @@
         将新元素插入到old.end()前面,即矢量最后一个元素前面
     (5)总结矢量方法:size(),begin(),end(),push_back(),erase(),insert(),swap()
 
+16.3.3对矢量可执行的其他操作
+1.矢量模板没有包含常用的对数组的搜索、排序、随机排序等功能,STL从更广泛的角度定义了非成员(non-member)函数来执行这些操作
+    不是为每一个容器类都定义一个操作的函数,而是定义了适用于所有容器类的非成员函数,
+    这种设计理念省去了大量重复的工作,定义新的容器类时,遵循正确的指导思想,则它也可以使用非成员函数来执行查找、排序等操作
+2.3个具有代表性的STL函数:
+    for_each()、random_shuffle()、和sort()
+    (1)for_each:可用于许多容器类,它接受3个参数,前两个是定义容器中区间的迭代器,最后一个是指向函数的指针(函数对象)
+        for_each()将被指向的函数(第三个参数)应用于容器区间中的各个元素,被指向的函数不能修改容器元素的值
+        可以用for_each()函数代替for循环
+        eg: //迭代器方法遍历区间
+            vector<Review>::iterator pr;
+            for(pr = books.begin();pr != books.end();pr++)
+                ShowReview(*pr);
+            //STL函数遍历区间,可避免显式使用迭代器变量
+            for_each(books.begin(),books.end(),ShowReview);
+    (2)random_shuffle:接受两个指定区间的迭代器参数,并随机排列该区间的元素
+        eg: random_shuffle(books.begin(),books.end());
+            //这将随机排列books矢量中的所有元素
+            与可用于任何容器类的for_each不同,该函数要求容器类允许随机访问,vector类可以满足这一点
+    (3)sort:也要求容器支持随机访问,该函数有两个版本
+        [1]第一个版本接受两个定义区间的迭代器参数,并使用为存储在容器中的类型元素定义的<操作符
+            对区间中的元素进行操作
+            eg: vector<int> coolstuff;
+                ...
+                sort(coolstuff.begin(),coolstuff,end());
+                //将按升序进行排序,排序时使用内置的<操作符对值进行比较
+            如果容器元素是用户定义对象,则要使用sort,必须定义能够处理该类型对象的operator< ()函数
+            可以为Review提供成员或非成员函数operator< (),则可对包含Review对象的矢量进行排序
+            eg: bool operator< (const Review & r1,const Review & r2)
+                {
+                    if(r1.title < r2.title)
+                        return true;
+                    else if(r1.title == r2.title && r1.rating < r2.rating)
+                        return true;
+                    else
+                        return false;
+                }
+                有了这样的函数就可以对包含Review对象的矢量进行排序
+                sort(books.begin(),books.end());
+        如果想按降序排序或按rating进行排序,可以使用另一种格式sort()
+        [2]它接受三个参数,前两个参数是指定区间的迭代器,最后一个参数是指向要使用的函数的指针(函数对象)
+            而不是用于比较的operator< (),返回值可转换为bool,false表示两个参数的顺序
+            eg: bool WorseThan(const Review & r1,const Review & r2)
+                {
+                    if(r1.rating < r2.rating)
+                        return true;
+                    else
+                        return false;
+                }
+                有了这个函数则可以对包含Review对象的矢量进行升序排序
+                sort(books.begin(),books.end(),WorseThan);
+                注意:与operator< ()函数相比,WorseThan()函数执行的对Review对象进行排序的工作不那么完整,
+                    如果两个对象的title成员相同,operator< ()函数将按rating进行排序,而WorseThan将它们视为相同
+                    第一种排序称为全排序(total ordering),第二种排序称为完整弱排序(strict weak ordering)
+                    在全排序中,如果a<b、b<a都不成立,则a和b必定相同
+                    在完整弱排序中,它们可能相同,也可能只是在某方面相同,只能说明它们等价,而不是相同
+                    
+
 
 
 
