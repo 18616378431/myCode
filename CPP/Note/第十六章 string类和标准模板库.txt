@@ -470,6 +470,101 @@
     (4)应能够使用迭代器遍历容器中的所有元素,可以通过对迭代器带定义++p和p++来实现
     (5)迭代器也可以有其他功能
 5.STL按功能的强弱定义了多种级别的迭代器
+    eg: 重新编写find_ar函数
+        typdef double * iterator;
+        iterator find_ar(iterator ar,int n,const double & val)
+        {
+            for(int i = 0;i < n;i++,ar++)
+                if(*ar == val)
+                    return ar;
+            return 0;
+        }
+        修改函数参数,使其接受两个指示区间的指针参数,其中一个指向数组起始位置,另一个指向数组的超尾
+        函数可以返回尾指针,指出没有知道要找的值
+        typedef double * iterator;
+        iterator find_ar(iterator begin,iterator end,const double & val)
+        {
+            iterator ar;
+            for(ar = begin;ar != end;ar++)
+                if(*ar == val)
+                    return ar;
+            return end;
+        }
+        //对于find_ll函数可以定义一个迭代器类,其中定义了操作符*和++
+        struct Node
+        {
+            double item;
+            Node * p_next;
+        };
+        class iterator
+        {
+            Node * pt;
+        public:
+            iterator():pt(0){}
+            iterator(Node * pn):pt(pn){}
+            double operator* (){return pt->item;}
+            iterator & operator++ ()//for ++it,1 + it
+            {
+                pt = pt->p_next;
+                reutrn *this;
+            }
+            iterator operator++ (int)//for it++,it + 1(int)
+            {
+                iterator tmp = *this;
+                pt = pt->p_next;
+                return tmp;
+            }
+            //operator== (),operator!= (),etc
+        };
+        为区分++操作符前缀版本和后缀版本,C++将operator++ ()做为前缀版本,
+        将operator++ (int)做为后缀版本,其中的参数永远不会用到,所以不必指定其名称
+        //改进后的find_ll函数
+        iterator find_ll(iterator head,const double & val)
+        {
+            iterator start;
+            for(start = head;start != 0;++start)
+                if(*start == val)
+                    return start;
+            return 0;
+        }
+        这和find_ar几乎相同,区别在于如何断言已达到最后一个值
+        find_ar使用超尾迭代器,而find_ll使用存储在最后一个元素节点中的空值
+        除了这种差别,这两个函数完全相同
+        可以要求链表的最后一个元素后面还有一个额外的元素,即让数组和链表都有超尾元素
+        并在迭代器到达超尾位置时结束搜索,这样find_ar和find_ll检测数据尾的方式将相同
+        从而成为相同的算法,增加超尾元素后,对迭代器的要求变成了对容器类的要求
+6.STL遵循上面介绍的方法
+    首先,每个容器类(vector,list,deque等)定义了相应的迭代器类型
+        对于其中某个类,迭代器可能是指针,而对于另一个类,则可能是对象
+        不管实现方式如何,迭代器都将提供所需的操作,如*和++(有些类需要的操作可能比其他类多)
+    其次,每个容器类都有一个超尾标记,当迭代器递增到超越容器的最后一个值后,这个值将被赋给迭代器
+        每个容器类都有begin()和end()方法,它们分别返回指向容器第一个元素和超尾位置的迭代器
+        每个容器类都使用++操作符,让迭代器从指向第一个元素逐步指向超尾位置,从而遍历容器中的每一个元素
+    使用容器类时,无需知道其迭代器是如何实现的,也无需知道超尾是如何实现的,而只需知道它有迭代器,
+        其begin()返回指向第一个月元素的迭代器,end()返回指向超尾位置的迭代器即可
+        eg: 打印vector<double>对象中的值
+            vector<double>::iterator pr;
+            for(pr = scores.begin();pr != scores.end();pr++)
+                cout << *pr << endl;
+            pr被声明为vector<double>::iterator类型的迭代器
+            使用list<double>类模板来存储分数
+            list<double>::iterator pr;
+            for(pr = scores.begin();pr != scores.end();pr++)
+                cout << *pr << endl;
+            唯一不同的是pr的类型
+    因此STL为每个类定义适当的迭代器,并以统一的风格设计类,能够为内部表示绝然不同的容器,
+    编写相同的代码
+    就风格而言,应避免直接使用迭代器,而应尽可能使用STL函数(for_each)来处理细节
+7.总结STL方法
+    (1)处理容器的算法,应尽可能用通用的术语来表达算法,使之独立于数据类型和容器类型
+        为使通用算法能够适用于具体情况,应定义能够满足算法需求的迭代器,
+        并把要求加到容器设计上
+    (2)基于算法的要求,设计基本迭代器的特征和容器特征
+        
+
+
+
+
     
 
 
