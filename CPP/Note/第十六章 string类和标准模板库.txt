@@ -738,6 +738,61 @@
                 第二个模板参数指出输入流使用的字符类型
                 构造函数参数cin意味着使用由cin管理的输入流,省略构造函数参数表示输入失败
                 上述代码表示从输入流中读取,直到文件末尾、类型不匹配或出现其他输入故障为止
+2.其他有用的迭代器
+(1)除了ostream_iterator和istream_iterator之外,头文件iterator还提供了其他一些专用的预定义迭代器类
+    reverse_iterator,back_insert_iterator,front_insert_iterator和insert_iterator
+    [1]reverse_iterator:
+        对reverse_iterator执行递增操作将导致它被递减,不使用常规迭代器,是为了简化对已有的函数的使用
+        eg: 显式dice的内容
+            ostream_iterator<int,char> out_iter(cout," ");
+            copy(dice.begin(),dice.end(),out_iter);
+        反向显式容器内容
+        vector类有一个名为rbegin()的成员函数和一个名为rend()的成员函数
+        前者返回指向超尾的反向迭代器,后者返回指向第一个元素的反向迭代器
+        对迭代器执行递增操作将导致它被递减,则可以使用下面语句进行反向显式容器内容
+        copy(dice.rbegin(),dice.rend(),out_iter);
+        甚至不必声明反向迭代器
+        注:rbegin()和end()反回相同的值(超尾),但类型不同(reverse_iterator,iterator)
+            rend()和begin()返回相同的值(容器的第一个元素),但类型不同(reverse_iterator,iterator)
+        必须对反向迭代器做一种特殊的补偿.假设rp是一个被初始化为dice.rbegin()的反转指针
+        则rp指向超尾,因此不能对该地址进行解除引用,如果rend()是第一个元素的位置
+        则copy必须提早一个位置停止,因为区间的结尾处不包括在区间内
+        反向指针通过先递减,再解除引用解决了这两个问题
+        即*rp将在*rp的当前值之前对迭代器执行解除引用,如果rp指向6,则*rp将是位置5的值,以此类推
+        如果可以在显式声明迭代器和使用STL函数来处理内部问题(将rbegin()返回值传递给函数)之间选择
+        请采用后者,这样要做的工作较少且出错机会更小
+    [2]另外3种迭代器(back_insert_iterator,front_insert_iterator和insert_iterator)也将提高STL算法的通用性
+        很多STL函数都与copy函数相似,将结果发送到输出迭代器指示的位置
+        eg: copy(casts,casts + 10,dice.begin());
+            将值复制到dice容器中并覆盖原有值,但该函数不会自动调整容器大小
+        将元素添加到容器中且不覆盖,3种插入迭代器通过将复制转换为插入解决了这些问题
+        插入将添加新的元素,而不会覆盖已有的数据,并使用自动内存分配来容纳新的元素
+        back_insert_iterator将元素插入到容器末尾
+        front_insert_iterator将元素插入到容器前端
+        insert_iterator将元素插入到insert_iterator构造函数参数指定的位置前面
+        这三个插入迭代器都是输出容器概念模型
+        这里存在一些限制
+        back_insert_iterator只能用于允许在尾部快速插入的容器(快速插入指一个时间固定的算法),vector类符合这种要求
+        front_insert_iterator只能用于允许在起始位置做时间固定插入的容器类型,vector类不能满足这种要求,但queue满足
+        insert_iterator没有这种限制,因此可以用它将元素插入到矢量前端,但front_insert_iterator对那些支持它的容器执行速度更快
+        可以用insert_iterator将复制数据的算法转换为插入数据的算法
+        这些迭代器将容器类型做为模板参数,将实际的容器标识做为构造函数参数
+        eg: 为名为dice的vector<int>容器创建back_insert_iterator
+            back_insert_iterator< vector<int> > back_iter(dice);
+            必须声明容器类型的原因是,迭代器必须使用合适的容器方法
+            back_insert_iterator的构造函数将假设传递给它的类型有一个push_back()方法
+            copy是一个独立函数没有调整容器大小的权限
+            但前面的声明让back_iter能够使用方法vector<int>::push_back()方法,该方法有这样的权限
+        front_insert_iterator的方式与此相同
+        insert_iterator还需一个指示插入位置的构造函数参数
+        insert_iterator< vector<int> > insert_iter(dice,dice.begin());
+    [3]copy函数不仅可以将信息从一个容器复制到另一个容器,还可以将信息从容器复制到输出流
+        从输入流复制到容器中,还可以使用copy将信息插入到容器中
+
+
+        
+
+
 
 
 
