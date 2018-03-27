@@ -900,6 +900,58 @@
         void splice(iterator pos,list<T,Alloc>x)将链表x的内容插入到pos前面,x将为空.复杂度为固定时间
         void unique()                           将连续的相同元素压缩为单个元素,复杂度为线性时间
     所有模拟STL序列的类都有insert方法
+(4)程序说明:
+    insert()和splice()之间的主要区别在于:
+        insert()将原始区间的副本插入到目标地址
+        splice()则将原始区间移动到目标地址
+    splice的其他原型用于移动单个元素和元素区间,splice执行后迭代器仍然有效,仍指向其移动前指向的元素
+    unique()只能将相邻的相同的值压缩为单个值,执行list<Type>::sort()后在执行unique则每个值将只占一个位置
+    非成员函数sort(),需要随机访问迭代器,快速插入使得不能够进行随机访问,不能将非成员函数sort()用于链表
+    list模板提供了成员函数版本sort()
+(5)list工具箱
+    list方法组成了一个方便的工具箱
+    可以对列表先排序然后合并,使用unique函数删除重复元素
+    sort(),merge(),unique()方法还各自拥有接受另一个参数的版本,该参数用于指定用来比较元素的函数
+    remove()函数也有接受另一个参数的版本,该参数用于指定用来确定是否删除元素的函数
+    这些参数都是判定函数
+(6)queue:模板类在头文件queue(queue.h)中声明,是一个适配器类
+    ostream_iterator就是一个适配器类,让输出流能够使用迭代器接口
+    queue模板让底层类(deque)展示典型的队列接口
+    queue模板的限制比deque更多,不仅不允许随机访问队列元素,甚至不允许遍历队列
+    它将使用限制在定义队列的基本操作,
+    可以将元素议添加到队尾,从队首删除元素,查看队首和队尾的值,检查元素数目,测试队列是否为空
+                    queue的操作
+        方法                              说明
+        bool empty()const               如果队列为空返回true,否则返回false
+        size_type size()const           返回队列中元素的数目
+        T & front()                     返回指向队首元素的引用
+        T & back()                      返回指向队尾元素的引用
+        void push()(const T & x)        在队尾插入x
+        void pop()                      删除队首元素
+    注意:pop()是删除数据的方法,不是检索数据的方法,应先使用front检索这个值,然后使用pop将其从队首删除
+(7)priority_queue:模板类在有文件queue中声明,是另一个适配器类,支持的操作与queue相同
+    两者的区别主要在于:
+        在priority_queue中,最大的元素被移到队首
+        内部区别在于,默认的底层类是vector
+    可以修改用于确定哪个元素放在队首的比较方式,方法是提供一个可选的构造函数参数
+    priority_queue<int> pd1;
+    priority_queue<int> pq2(greater<int>);//use greater<int> to order
+    greater<>()是一个预定义的函数对象
+(8)stack:与queue相似,在头文件stack(stack.h)中声明,也是一个适配器类,给底层类(默认情况下是vector)提供了典型的堆栈接口
+    stack模板的限制比vector更多,它不仅不允许随机访问堆栈元素,甚至不允许遍历堆栈元素,它把使用限制在定义堆栈的基本操作上,
+    可以将压入推到栈顶,从栈顶弹出元素,查看栈顶的值,检查元素数目,测试堆栈是否为空
+            stack操作
+        方法                      说明
+        bool empty()const       如果堆栈为空返回true,否则返回false
+        size_type size()const   返回堆栈中元素数目
+        T & top()               返回指向栈顶元素的引用
+        void push(T & x)        在堆栈顶部插入x
+        void pop()              删除栈顶元素
+    注意:要使用堆栈中的值,先使用top检索其值,然后使用pop将其从栈顶删除
+
+
+    
+
 
 
 
