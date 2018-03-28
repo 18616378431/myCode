@@ -949,6 +949,76 @@
         void pop()              删除栈顶元素
     注意:要使用堆栈中的值,先使用top检索其值,然后使用pop将其从栈顶删除
 
+16.4.6 联合容器
+(1)联合容器(associative container):是对容器概念的另一种改进
+    联合容器将值与关键字关联在一起,使用关键字来查找值
+    值可以是结构,关键字可以是具有唯一性的编号
+    对于容器X,表达式X::value_type指出了存储容器中值的类型
+    对于关联容器,表达式X::key_type指出了用作关键字的类型
+(2)联合容器的有点在于其提供了对值的快速访问
+    与序列相似,联合容器也允许插入新元素,但不能指定元素的插入位置
+    原因是联合容器通常包含用于确定数据放置位置的算法,以便能够很快检索信息
+(3)STL提供了4中联合容器,set、multiset、map、multimap
+    前两种是在set(set.h,multiset.h)头文件中定义的,后两种是在map(map.h,multimap.h)头文件中定义的
+    最简单的簇(bunch)是set,其值的类型与关键字相同,关键字是唯一的--集合中不会有多个相同的关键字,对于set来说值就是关键字
+    multiset类型类似于set,前者可能有多个值的关键字相同
+    eg: 关键字和值的类型为int,则multiset对象包含的内容可以是1、2、2、2、3、4、7、7
+    对于map类型,值的类型与关键字不同,关键字是唯一的,每个关键字只对应一个值
+    multimap与map类似,只是一个关键字可以与多个值关联
+1.set范例
+    (1)STL set是多个概念的模型,它是一个联合集合,可反转、可排序,关键字是唯一的,它只能存储同一类型的值
+        与vector和list相似,set也是用模板参数来提供要存储的值的类型
+        set<string> A;//a set of string objects
+        可选的第二个模板参数可以用于指示用来对关键字进行排序的比较函数或对象,默认使用less<>模板
+        set<string,less<string> > A;//old implementation
+    (2)set也有一个将迭代器区间做为参数的构造函数,这样提供了将集合初始化为数组内容的简单方法
+        关键字是唯一的,数组中for出现了两次,在集合中只出现了一次,且集合是被排序的
+        eg: const int N = 6;
+            string s1[N] = {"buffon","thinkers","for","heavy","can","for"};
+            set<string> A(s1,s1 + N);
+            ostream_iterator<string,char> out(cout," ");
+            copy(A.begin(),A.end(),out);
+            //buffon,can,for,heavy,thinkers
+        数学为集合定义了一些标准操作,并集包含两个集合合并后的内容,如果两个集合中包含相同的值
+        则这个值将在并集中只出现一次,因为关键字是唯一的
+        交集包含两个集合公有的元素
+        两个集合的差是第一个集合减去交集后的结果
+        STL提供了这些操作的算法,它们是通用函数而不是方法,因此它们不是只能用于set对象
+        所有的set对象都自动满足使用这些算法的先决条件,即容器是经过排序的
+        [1]set_union()
+            接受5个迭代器参数,前两个定义了集合的区间,接下来的两个定义了第二个集合的区间
+            最后一个是输出迭代器,指出将结果集复制到什么位置
+            eg: 显式集合A和B
+                set_union(A.begin(),A.end(),B.begin(),B.end(),
+                ostream_iterator<string,char> (cout," "));
+                要将结果集放到集合C中,而不是显式它,则最后一个参数为指向C的迭代器,C.begin()但这样不可用
+                原因有两个:
+                    首先联合集合将关键字看做是常量,所以C.begin()返回的是固定迭代器,不能用作输出迭代器
+                    第二个原因是,与copy()相似,set_union()将覆盖容器中已有数据,并要求容器有足够的空间来容纳信息
+                    C是空的不能满足这种要求
+                    前面讨论的insert_iterator模板可以解决这两个问题,其可以将复制转换为插入
+                    另外它还模拟了输出迭代器的概念,所以可以用它将信息写入容器
+                    创建匿名insert_iterator迭代器,将信息复制给C
+                    构造函数使用容器名称和迭代器做为参数
+                    set_union(A.begin(),A.end(),B.begin(),B.end(),
+                        insert_iterator<set<string> > (C,C.ebgin()));
+        (2)set_intersection()和set_difference()函数查找交集和获得两个集合的差
+            它们的接口与set_union()相同
+        (3)两个有用的set方法是lower_bound()和upper_bound()
+            [1]lower_bound()方法将关键字做为参数并返回一个迭代器,该迭代器指向集合中第一个不小于关键字参数的成员
+            [2]upper_bound()方法将关键字做为参数,并返回一个迭代器,该迭代器返回集合中第一个大于关键字参数的成员
+                可以使用这些方法获得一个字符串集合的区间,该区间包含b->f的的所有字符串
+        (4)因为排序决定了插入的位置,所以这种类包含只指定要插入的信息,而不指定位置的插入方法
+            eg: A,B是字符串集合
+                string s("tennis");
+                A.insert(s);//insert a value
+                B.insert(A.begin(),A.end());//insert a range
+                
+
+                
+
+
+
 
     
 
