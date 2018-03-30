@@ -1013,9 +1013,39 @@
                 string s("tennis");
                 A.insert(s);//insert a value
                 B.insert(A.begin(),A.end());//insert a range
-                
+2.multimap范例
+    (1)与set相似,multimap也是可反转、经过排序的联合容器,但在multimap中,关键字的类型与值类型不同
+        在multimap对象中,特定的关键字可能与多个值关联
+    (2)基本的multimap声明使用模板参数指定了关键字的类型和所存储值的类型
+        可选的第三个模板参数可以用于指出用于对关键字进行排序的比较函数或对象,默认使用less<>模板
+        该模板将关键字类型做为参数
+        eg: multimap<int,string> codes;
+            关键字类型为int,值类型为string
+    (3)为将信息结合到一起,实际的值类型将关键字类型和数据类型结合为一对
+        为此,STL使用pair<class T,class U>模板类将这两种值存储到一个对象中
+        eg: 如果keytype为关键字类型,datatype存储的数据类型,则值类型为pair<const keytype,datatype>
+            codes对象中存储的值类型为pair<cosnt int,string>
+    (4)创建multimap对象的值
+        eg: [1]pair<const int,string> item(213,"Los Angeles");
+            codes.insert(item);
+            也可以使用匿名函数创建
+            codes.insert(pair<const int,string>(213,"Los Angeles"));
+            数据项是按关键字进行排序的,所以不需要指出插入位置
+            [2]有了pair对象便可以通过first和second成员来访问两个部分
+                pair<const int,string> item(213,"Los Angeles");
+                cout << item.first << " " << item.second << endl;
+    (5)获取有关multimap对象的信息
+        [1]count()成员函数用关键字做为参数,并返回具有该关键字的元素数目
+        [2]lower_bound()和upper_bound()成员函数将关键字做为参数,它们的工作方式与set的方式相同
+        [3]equal_range()成员函数将关键字做为参数,并返回表示与该关键字匹配的区间的迭代器
+            该方法返回两个值,存储在pair对象中,此时两个模板参数时迭代器类型
+            eg: pair<multimap<KeyType,string>::iterator,
+                     multimap<KeyType,string>::iterator> range = 
+                     codes.equal_range(718);
+                cout << "Cities with area code 718:\n";
+                for(it = range.first;it != range.second;it++)
+                    cout << (*it).second << endl;
 
-                
 
 
 
