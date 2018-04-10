@@ -1080,9 +1080,62 @@
         该例中f是一个函数指针,f(...)为调用该函数
         for_each的最后一个参数为对象,则f(...)将是调用其重载的()操作符的对象
 
-
-
-
+16.5.1 函数符概念
+1.正如STL定义了容器和迭代器概念,它也定义了函数符概念:
+    (1)生成器(generator)是不用参数就可以调用的函数符
+    (2)一元函数(unary function)是用一个函数可以调用的函数符
+    (3)二元函数(binary function)是用两个参数可以调用的函数符
+        eg: 用于for_each的函数符应当是一元函数,因为它每次作用于一个容器元素
+    概念改进版(断言):
+    (4)返回bool值的一元函数是断言(predicate)
+    (5)返回bool值的二元函数是二元断言(binary predicate)
+        eg: 一些STL函数需要断言参数或二元断言参数
+            例16.7的sort函数使用了二元断言作为其第三个参数
+            bool WorseThan(const Review & r1,const Review & r2);
+            ...
+            sort(books.begin(),books.end(),WorseThan);
+    (6)list模板有一个将断言做为参数的remove_if()成员,该函数将断言应用于区间中的每个元素,
+        如果断言返回true,则删除这些元素
+        eg: 删除链表中大于100的元素
+            bool tooBig(int n){return n > 100;}
+            list<int> scores;
+            ...
+            scores.remove_if(tooBig);
+        断言只能接收一个参数,但可以通过类成员来传递额外的参数,而不是函数参数
+        eg: template <typename T>
+            class TooBig
+            {
+            private:
+                T cutoff;
+            public:
+                TooBig(const T & t):cutoff(t){}
+                bool operator() (const T & v){return v > cutoff;}
+            };
+        remove_if是模板类的一个模板方法,有些老式C++编译器可能不支持
+        有一个非成员函数版本的remove_if(),它使用两个区间(两个迭代器)和断言作为参数
+        eg: 可以将接收两个参数的模板函数转换为接收一个参数的函数对象
+            template<class T>
+            bool tooBig(const T & val,const T & lim)
+            {
+                return > lim;
+            }
+            转换为函数对象
+            template <class T>
+            class TooBig
+            {
+            private:
+                T cutoff;
+            public:
+                TooBig(const T & t):cutoff(t){}
+                bool operator() (const T & v){return tooBig<T>(v,cutoff);}
+            };
+            //use
+            TooBig<int> tB100(100);
+            int x;
+            cin >> x;
+            if(tB100(x))//same as tooBig(x,100);
+            ...
+            函数符时一个适配器,使函数能够满足不同的接口
 
 
 
