@@ -1136,6 +1136,54 @@
             if(tB100(x))//same as tooBig(x,100);
             ...
             函数符时一个适配器,使函数能够满足不同的接口
+16.5.2 预定义的函数符
+1.STL定义了多个基本的函数符,它们执行诸如将两个值相加、比较两个值是否相等操作
+    提供这些函数对象时为了支持将函数作为参数的STl函数
+    eg: transform()有两个版本
+        (1)第一个版本接收四个参数,前两个参数是指定容器区间的迭代器,第三个参数是指定将结果复制到哪里的迭代器
+            最后一个参数是一个函数符,它被应用于区间中的每个元素,生成结果中的新元素
+            const int LIM = 5;
+            double arr1[LIM] = {36,39,42,45,48};
+            vector<double> gr8(arr1,arr1 + LIM);
+            ostream_iterator<double,char> out(cout," ");
+            transform(gr8.begin(),gr8.end(),out,sqrt);
+            计算每一个元素的平方根并将结果输出到输出流
+            目标迭代器可以位于原始区间中
+            out替换为gr8.being()将使用新值覆盖原来的值
+            使用的函数符必须是接收单个参数的函数符
+        (2)第二个版本是使用一个接受两个参数的函数,并将该函数用于两个区间中的元素
+            用另一个参数(第三个参数)标识第二个区间的起始位置
+            m8//vector<double>
+            mean//(double,double)返回两个值的平均值
+            输出来自gr8和m8的值的平均值
+            transform(gr8.begin(),gr8.end(),m8.begin(),out,mean);
+            将数组相加
+            double add(double x,double y){return x + y;}
+            ...
+            transform(gr8.begin(),gr8.end(),m8.begin(),out,add);
+            这样必须为每个类型定义一个函数,更好的办法是定义一个STL没有定义的模板
+2.头文件functional(function.h)定义了多个模板类函数对象,包括plus<>()
+    eg: #include <functional>
+        ...
+        plus<double> add;//create plus<double> object
+        double y = add(2.2,3.4);//using plus<double>::operator() ()
+        它使得将函数对象做为参数更方便
+        transform(gr8.begin(),gr8.end(),m8.begin(),out,plus<double> ());
+        可以使用匿名对象构造函数符
+3.STL提供了的等价于内置操作符的函数符,算术操作符、关系操作符、逻辑操符
+    它们可用于处理C++内置类型或任何用户定义类型(如果重载了相应操作符)
+                操作符和相应的函数符
+    操作符             相应的函数符          操作符             相应的函数符
+    +                   plus                >                   greater
+    -                   minus               <                   less
+    *                   multiplies          >=                  greater_equal
+    /                   divides             <=                  less_equal
+    %                   modulus             &&                  logical_and
+    -                   nagate              ||                  logical_or
+    ==                  equal_to            !                   logical_not
+    !=                  not_equal_to
+
+
 
 
 
