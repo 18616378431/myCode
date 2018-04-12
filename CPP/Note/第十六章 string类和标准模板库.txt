@@ -1176,14 +1176,46 @@
     操作符             相应的函数符          操作符             相应的函数符
     +                   plus                >                   greater
     -                   minus               <                   less
-    *                   multiplies          >=                  greater_equal
+    *                   multiplies(times)   >=                  greater_equal
     /                   divides             <=                  less_equal
     %                   modulus             &&                  logical_and
     -                   nagate              ||                  logical_or
     ==                  equal_to            !                   logical_not
     !=                  not_equal_to
 
-
+16.5.3 自适应函数符和函数适配器
+1.上表中列出的预定义函数符都是自适应的
+2.STL有5个相关概念:
+    (1)自适应生成器(adaptable generator)
+    (2)自使用一元函数(adaptable unary function)
+    (3)自适应二元函数(adaptable binary function)
+    (4)自适应断言(adaptable predicate)
+    (5)自适应二元断言(adaptable binary predicate)
+3.使函数符称为自适应的原因是,它携带了标识参数类型和返回值类型的typedef成员
+    这些成员分别是result_type、first_argument_type、second_argument_type
+    eg: plus<int>对象的返回值类型内标识为plus<int>::result_type,这是int的typedef
+    函数符自适应的意义在于:函数适配器对象可以使用函数对象,并认为存在这些typedef成员
+    eg: 接受一个自适应函数符参数的函数可以使用result_type成员来声明一个与函数的返回值类型匹配的变量
+    STL提供了使用这些工具的函数适配器类
+    eg: transform(gr8.begin(),gr8.end(),out,sqrt);
+        将gr8的每个元素增加2.5倍
+        multiplies()函数可以执行乘法操作,但它是二元函数,因此需要一个函数适配器,将接受两个参数的函数转换为接受一个参数的函数符
+        TooBig已经进行了相似范例,提供了一种方法
+        但STL使用binder1st和binder2nd类自动完成这一过程,它们将自适应二元函数转换为一元函数
+        (1)binder1st:
+            有一个自适应二元函数对象f2(),则可以创建一个binder1st对象,该对象与一个将被用作f2()的第一个参数的特定值val关联
+            binder1st(f2,val) f1;
+            这一使用单个参数调用f1(x)时,返回的值与将val做为第一个参数、将f1()的参数做为第二个参数调用的f2()的返回值相同
+            即f1(x)等价于f2(val,x),只是前者是一元函数,后者是二元函数,f2()函数被适配
+            仅当f2()是一个自适应函数时这才能实现
+            STL提供了bind1st()函数,以简化binder1st类的声明
+            可以为其提供用于构造binder1st对象的函数名称和值,它将返回一个这种类型的对象
+            将二元自适应函数multiplies()转换为一元函数
+            binder1st(multiplies<double> (),2.5);
+            将gr8每个元素*2.5
+            transform(gr8.begin(),gr8.end(),out,bind1st(multiplies<double> (),2.5));
+        (2)binder2nd:与binder1st类似,只是将常数赋给第二个参数,而不是第一个参数
+            有一个bind2nd的助手函数,工作方式类似于bind1st()
 
 
 
