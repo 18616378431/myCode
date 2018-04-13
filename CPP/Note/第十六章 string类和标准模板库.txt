@@ -1217,6 +1217,80 @@
         (2)binder2nd:与binder1st类似,只是将常数赋给第二个参数,而不是第一个参数
             有一个bind2nd的助手函数,工作方式类似于bind1st()
 
+16.6 算法
+1.STL包含了很多处理容器的非成员函数,
+    sort()、copy()、find()、random_shuffle()、set_union()、set_intersection()、set_difference()、transform()
+    它们的总体设计是相同的,都使用迭代器来标识要处理的数据区间和结果存放位置
+    有些函数还接受一个函数对象参数,并使用它来处理数据
+2.对于算法函数设计,有两个主要的通用部分
+    它们都使用模板来提供通用类型
+    都使用迭代器来提供访问容器中数据的通用表示
+    copy()函数可用于将double值存储在数组中的容器、将string值存储在链表中的容器,也可用于将用户定义的对象存储在树结构中(set)的容器
+    指针是一种特殊的迭代器,copy()等STL函数可用于常规数组
+3.统一的容器设计使得不同类型的容器之间具有明显关系
+    可以使用copy()将常规数组中的值复制到vector对象中,将vector对象的值复制到list中
+    将list对象中的值复制到set对象中
+    可以使用==来比较不同类型的容器,deque和vector
+    因为容器重载的==操作符使用迭代器来比较内容
+    deque和vector的内容相同且排序相同,则它们是相等的
+
+16.6.1 算法组
+1.STL将算法分为四组:
+   (1)非修改式序列操作
+   (2)修改式序列操作
+   (3)排序和相关操作
+   (4)通用数字运算
+   前三组在algorithm(algo.h)头文件中描述,第四组是专用于数值数据的,位于头文件numeric(old in algo.h)中
+   非修改式序列操作对区间中的每个元素进行操作,这些操作不修改容器的内容,eg:find(),for_each()
+   修改式序列操作对区间中每个元素进行操作,它们可以修改容器的内容,可以修改值和值的排列顺序,eg: transform(),random_shuffle(),copy()
+   排序和相关操作包括多个排序函数(sort())和其他各种函数,包括集合操作
+   数字操作包括将区间的内容累积、计算两个容器的内部乘积、计算小计、计算相邻对象差的函数,通常这些都是数组的操作特性,vector是最有可能使用这些操作的容器
+
+16.6.2 算法的通用特征
+1.STL函数使用迭代器和迭代器区间
+    template<class InputIterator,class OutputIterator>
+    OutputIterator copy(InputIterator first,InputIterator last,OutputIterator result);
+    STL模板使用模板参数名称来表示参数模型的概念
+    区间参数必须是输入迭代器或更高级别的迭代器,指示存储结果位置的迭代器必须是输出迭代器或更高级别的迭代器
+2.对算法进行分类的方式之一是按结果的存放位置进行分类
+    有些算法就地完成工作,有些则创建拷贝
+    sort()函数完成工作时将结果存放在原始数据的位置上,sort()是就地算法(in-place algorithm)
+    copy()则是将结果发送到另一个位置,所以它是复制算法(copying algorithm)
+    transform()可以以这两种方式工作,与copy相似,它使用输出迭代器指示结果的存放位置,与copy不同的是transform()允许输出迭代器指向输入区间,因此它可以使用计算结果覆盖原来的值
+    有些算法有两个版本:
+        (1)就地版本和复制版本
+            STL的约定是,复制版本的名称将以_copy结尾,复制版本将接受一个额外的输出迭代器参数,该参数指定结果的存放位置
+            eg: replace()的原型,就地版本
+                template <class ForwardIterator,class T>
+                void repalce(ForwardIterator first,ForwardIterator last,const T & old_value,const T & new_value);
+                它将所有的old_value替换为new_value,这是就地发生的,这种算法同时读写容器元素,因此迭代器类型必须是ForwardIterator或更高级别的
+                
+                复制版本的原型
+                template <class InputIterator,class OutputIterator,class T>
+                OutputIterator replace_copy(InputIterator first,InputIterator last,OutputIterator result,const T & old_value,const T & new_value);
+                结果被复制到result指定的位置,因此对于指定区间而言,只读输入迭代器足够了
+                replace_copy的返回值类型为OutputIterator
+                对于复制算法,统一的约定是:返回一个迭代器,该迭代器指向复制的最后一个值后面的一个位置(超尾)
+        (2)另一个常见的变体是:有些函数有这样的版本,即根据将函数应用于容器元素得到的结果来执行操作
+            这些版本的名称通常以_if结尾
+            如果将函数用于旧值时,返回值的true,则replace_if()将把旧值替换为新的值
+            replace_if()原型:
+                template <class ForwardIterator,class Predicate,class T>
+                void replace_if(ForwardIterator first,ForwardIterator last,Predicate pred,const T & new_value);
+                断言是返回bool值的一元函数,还有一个replace_copy_if版本
+                与InputIterator一样,Predicate也是模板参数名称,可以为T、U
+                STL使用Predicate类提醒用户,实参应该是Predicate概念的一个模型
+                STL使用Generator和BinaryPredicate等术语来指示必须是其他函数对象概念模型的参数
+
+
+
+
+
+
+
+   
+
+
 
 
 
