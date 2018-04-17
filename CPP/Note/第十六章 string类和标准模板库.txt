@@ -1303,6 +1303,60 @@
     可以将其用于数组、string对象、STL容器、还可以用非方法函数处理混合的容器类型
     如将矢量容器中的数据存储到链表中
 
+16.6.5 使用STL
+1.STL是一个库,其组成部分被设计成协同工作,STL组件是工具,但也是创建其他工具的基本部件
+2.例:用户输入单词,获取按输入顺序排列的单词列表,按字母顺序排列的单词列表(忽略大小写),记录每个单词输入的次数
+    假设输入中不包含数字和标点符号
+    (1)输入和保存单词列表可以是vector<string>对象,使用push_back()将单词加入到列表中
+    vector<string> words;
+    string input;
+    while(cin >> input && input != "quit")
+        words.push_back(input);
+    (2)获取字母顺序排列的单词列表
+    使用sort()然后使用unique(),这种算法将覆盖原始数据,sort()是就地算法
+    更简单的方法是创建一个set<string>对象,然后将矢量中的数据复制(使用插入迭代器)到集合中
+    集合自动对其内容进行排序,无需使用sort(),集合只允许一个关键字出现一次,无需使用unique()
+    忽略大小写,则可以使用transform()而不是copy()将矢量中的数据复制到集合中
+    使用一个转换函数将字符串转换成小写
+    set<string> wordset;
+    transform(words.begin(),words.end(),insert_iterator<set<string> >(wordset,wordset.begin()),ToLower);
+    ToLower:使用transform将tolower()函数应用于字符串中的各个元素,并将字符串用作源和目标
+    string对象也可以使用STL函数,字符串按引用传递,避免复制开销,操作原始字符串
+    string & ToLower(string & st)
+    {
+        transform(st.begin(),st.end(),st.begin(),tolower);
+        return st;
+    }
+    解决tolower函数有些环境下接受并返回int参数
+    int tolower(int),使用char toLower(char)代替
+    (3)获取单词在输入中出现的次数
+    使用count()函数,它将一个区间和一个值作为参数,并返回这个值在区间中出现的次数
+    对于集合中的每个值都计算其在矢量中出现的次数
+    要将单词与其出现的次数关联,可将单词和计数作为pair<const string,int>对象存储在map对象中
+    单词将做为关键词(只出现一次),计数作为值
+    通过一个循环来完成
+    map<string,int> wordmap;
+    set<string>::iterator si;
+    for(si = wordset.begin();si != wordset.end();si++)
+        wordmap.insert(pair<string,int> (*si,count(words.begin(),words.end(),*si)));
+    注意:老式STL实现将count()的类型声明为void,不适用返回值,而是提供按引用传递的第四个参数,元素数目将加到该参数中
+    int ct = 0;
+    count(words.begin(),words.end(),*si,ct);
+    map可以使用数组表示法来访问所存储的值(将关键字用作索引)
+    wordmap["the"]表示与关键字the相关的值
+    wordset存储了所有wordmap使用的关键字
+    for(si = wordset.begin();si != wordset.end();si++)
+        wordmap[*si] = count(words.begin(),words.end(),*si);
+    可以使用数组表示法显式结果
+    for(si = wordset.ebgin();si != wordset.end();si++)
+        cout << *si << ":" << wordmap[*si] << endl;
+    wordmap["key"]中如果关键字无效则其值为0
+    老式C++实现可能使用(vector.h,map.h,iterator.h,ctype.h),并要求set和map模板使用less<string>模板参数
+    且使用带有第四个计数参数的count版本
+    STL算法是内联的
+    
+
+
 
 
 
