@@ -1354,7 +1354,87 @@
     老式C++实现可能使用(vector.h,map.h,iterator.h,ctype.h),并要求set和map模板使用less<string>模板参数
     且使用带有第四个计数参数的count版本
     STL算法是内联的
-    
+
+16.7 其他库
+1.complex头文件为复数提供了一个complex模板,专用于float,long,long double
+    这个类提供了标准的复数运算及能够处理复数的标准函数
+2.第14章介绍了头我呢间valarray提供的模板类valarray,这个模板类被设计用于表示数值数组
+    支持各种数值数组操作,将两个数组的内容相加、对数组的每个元素应用数学函数、对数组进行线性代数运算
+3.vector和valarray
+    (1)为什么C++提供了两个数组模板:vector和valarray
+        这些类时不同小组开发的用于不同的目的
+        vector模板类是一个容器类和算法系统的一部分,它支持面向容器的操作,排序、插入、重新排列、搜索,将数据转移到其他容器中
+        valarray类模板是面向数值计算的,不是STL的一部分,没有push_back()、insert()等方法,但提供了简单直观的接口
+        vector<double> ved1(10),ved2(10),ved3(10);
+        valarray<double> vad1(10),vad2(10),vad3(10);
+        将两数组中第一个元素的和赋给第三个数组的第一个元素
+        vector:
+            transform(ved1.begin(),ved1.end(),ved2.begin(),ved3.begin(),plus<double> ());
+        valarray:其重载了所有算数操作符,可以将操作符直接应用于valarray对象
+            vad3 = vad1 + vad2;//+ overloaded
+            vad3中的每个元素都是vad1和vad2中相应元素的乘积
+            vad3 = vad1 * vad2;//* overloaded
+        要将数组中每个元素扩大2.5倍
+        vector:    
+            transform(ved3.begin(),ved3.end(),ved3.begin(),bind1st(multiplies<double> (),2.5));
+        valarray:重载了将valarray对象乘以一个值的操作符,及各种组合赋值操作符
+            vad3 = 2.5 * vad3;//* overloaded
+            vad3 *= 2.5;//*= overloaded
+        计算数组中每个元素的自然对数,并将结果存储到另一个数组中
+        vector:
+            transform(ved1.begin(),ved1.end(),ved3.begin(),log);
+        valarray:重载了这种数学函数,接受一个valarray参数,并返回一个valarray对象
+            vad3 = log(vad1);//log overloaded
+            可以使用apply方法,该方法也适用于非重载函数
+            vad3 = vad1.apply(log);
+            apply不修改调用对象,而是返回一个包含结果的新对象
+        执行多步运算时,valarray接口的简单性将更明显
+            vad3 = 10.0 * ((vad1 + vad2) / 2.0 + vad1 * cos(vad2));
+        valarray还提供了sum()方法--计算数组中所有元素的和、size()方法--返回元素总数、
+            max()方法--返回最大元素值、min()方法--返回最小元素值
+    (2)对于数学运算,valarray类提供了比vector更清晰的表示方式,但通用性更低
+        valarray类有一个resize()方法,但不能像vector的push_back()自动调整大小
+        不支持插入、排序、搜索等操作的方法
+        与vector相比,valarray关注的东西更少,但其接口更简单
+    (3)valarray的接口简单是否意味着性能更高呢?大多数情况下答案是否定的
+        简单表示法通常是使用类似于处理常规数组时使用的循环实现的
+        有些硬件允许在执行矢量操作时,同时将一个数组中的值加载到一组寄存器中,然后并行地进行处理
+        从原则上将,valarray也可以设计成利用这样的设计
+    (4)可以将STL功能用于valarray对象吗?
+        有一个包含十个元素的valarray<double>对象
+        valarray<double> vad(10);
+        填充该数组后,能否将STL的sort()函数用于该数组呢?
+        valarray类没有begin()、end()方法,因此不能将它们用作指定区间的参数
+        sort(vad.begin(),vad.end());//NO
+        不能像处理常规数组那样使用vad,vad + 10做为区间参数,因为vad不是数组名,它是一个对象名,因此没有地址
+        sort(vad,vad + 10);//NO
+        可以使用地址操作符 &
+        sort(&vad[0],&vad[10]);
+        vad的类型为valarray<double>,vad[0]的类型为double,&vad[0]的类型为double *,因此可以将其赋给类型为double *的指针,并可用作迭代器
+        接下来看看该指针(double *pt)是否满足STL对随机存取迭代器的要求
+        首先,它能够被解除引用,*pt => vad[0]
+        pt++,指针可以递增,递增后是否指向数组的第二个元素呢?
+        &a[i + j]和&a[i] + j是等价的,&a[i] + 1等价于&a[i + 1];
+        将地址加1为下一个元素的地址,pt++后会指向下一个元素
+        上述等价规则意味着随机存取是可行的
+        但&vad[10]存在两个问题,该规则只适用于&vad[0]到&vad[9]
+        另外,使用大于等于数组长度的下标,结果是不确定的,因此使用&vad[10]的结果是不确定的
+        这并不意味着sort()不可行,使用集中编译器都证实可行,但有不可行的可能
+        就是让数组与预留的堆内存块相邻
+        为了避免这种超尾问题,可以将valarray对象声明为比所需元素数多1,这样做将给sum()、max()、size()方法带来麻烦
+        
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
