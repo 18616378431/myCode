@@ -1422,7 +1422,33 @@
         这并不意味着sort()不可行,使用集中编译器都证实可行,但有不可行的可能
         就是让数组与预留的堆内存块相邻
         为了避免这种超尾问题,可以将valarray对象声明为比所需元素数多1,这样做将给sum()、max()、size()方法带来麻烦
+    (5)valarray的其他特性
+        创建bool值数组
+        valarray<double> numbers;
+        valarray<bool> vbool=numbers>9;
+        vbool[i] = numbers[i] > 9?true:false;
+    (6)扩展的下标指定版本:slice类
+        slice类对象可以用作数组索引,这种情况下它代表的不是一个值而是一组值
+        slice对象被初始化为三个整数值:起始索引、索引数、跨距
+        起始索引:第一个被选中的元素的索引
+        索引数:指出要选择多少个元素
+        跨距:元素之间的间隔
+        eg: slice(1,4,3)创建的对象表示选择4个元素,索引分别为1、4、7、10,从起始索引开始加上跨距得到下一个元素的索引
+            直至选择了4个元素
+            valarray<int> varint;
+            将下标为1、4、7、10的元素设置为10
+            varint[slice(1,4,3)] = 10;
+        这种特殊的下标指定功能让您能够使用一个一维valarray对象来表示二维数据
+        eg: 表示4行3列数组,可以将信息存储在包含12个元素的valarray对象中
+            使用slice(0,3,1)对象作为下标,来表示元素0、1、2,第一行
+            使用slice(0,4,3)对象作为下标,来表示元素0、3、6、9,第一列
+        对于valarray对象和int,+操作符已经被定义,使用slice下标指定的valarray单元(valint[slice(1,4,3)]),并没有定义+操作符
+        因此程序使用slice指定的元素创建一个完整的valarray对象,以便能够执行加法运算
+        vint(valint[slice(1,4,3)]) + vint(valint[slice(2,4,3)]);//calls slice-based constructor
+        valarray类提供了用于这种目的的构造函数
         
+        
+
 
 
 
