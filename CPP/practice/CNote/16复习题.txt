@@ -1,0 +1,50 @@
+1.	a.5280 * miles合法
+	b.4 * 4 + 4 = 20合法可能得不到想要的结果
+	c.nex = = 6//合法但是没有意义
+	d.	y = y + 5	berg = berg + 5 * lob		
+		est = (berg + 5 * lob) + (5 / y) + 5	nilp = lob * -(berg + 5 * lob) + 5
+		全部合法，可能得不到想要的结果
+2.#define NEW(X) (X + 5)
+3.#define MIN(X,Y) (X) < (Y)?(X):(Y)
+4.#define EVEN_GT(X,Y) (X) % 2 == 0?((X) > (Y)?1:0):0
+5.#define SHOW_V(X,Y) printf(#X" is %d and "#Y" is %d.\n",X,Y)
+6.	#define NUM 25
+	#define SPACE ' '
+	#define PS() putchar(SPACE)
+	#define BIG(X) ((X) + 3)
+	#define SUMSQ(X,Y) (X) * (X) + (Y) * (Y)
+7.#define SHOW_VAR(X) printf("name:"#X";value:%d;address:%p.\n",X,&X)
+8.	#ifdef JUMP
+		SHOW_V(3+4,4*12);
+	#endif
+	#define _SKIP_
+	#ifndef _SKIP_
+	SHOW_V(3+4,4*12);
+	#endif
+9.	#ifdef PR_DATE
+		printf("Date is %s.\n",__DATE__);
+	#endif
+10.main函数的第二个命令行参数为char *类型,argv[]数组的元素类型为字符串
+	输出要用%s，并且使用数学库函数时没有包含数学库math.h
+	求根函数sqrt()接受的参数类型为数值类型,不可以是字符串,求平方根之前要检查参数是否为负
+11.qsort()函数接受四个参数
+	第一个参数为指向要排序数组的指针
+	第二个参数为要排序的项目数量
+	第三个参数为数组元素大小
+	第四个参数为指向排序函数的函数指针
+	原型 void qsort(void * base,size_t nmemb,size_t size,int (*compar)(const void * ,const void *));
+	a.qsort(scores,1000,1000 * sizeof(int),comp);
+	b.int comp(const void * p1,const void * p2)
+	{
+		const int * a1 = (const int *)p1;
+		const int * a2 = (const int *)p2;
+
+		if(*a1 > *a2)//从大到小排序
+			return -1;
+		else if(*a1 == *a2)
+			return 0;
+		else
+			return 1;
+	}
+12.	a.memcpy(data1,data2,100 * sizeof(double));
+	b.memcpy(data1,data2 + 200,100 * sizeof(double));

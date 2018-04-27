@@ -1,0 +1,13 @@
+第二章复习题
+1.函数
+2.在最终编译之前，使用iostream文件的内容替换该编译指令
+3.使程序可以使用名称空间std中的定义
+4.cout << "Hello world!" << endl; //cout << "Hello world!\n";
+5.int cheese;
+6.cheese = 32;
+7.cin >> cheese;
+8.cout << "We have " << cheese << " varieties of cheese" << endl;
+9.	int froop(double t);函数的返回值类型int，函数名称froop，接收一个都变了类型的参数
+	void rattle(int n);函数无返回值，函数名称rattle，接收一个int类型的参数
+	int prune(void);函数返回值类型int，函数名称prune，不接收任何参数
+10.函数返回值类型为void

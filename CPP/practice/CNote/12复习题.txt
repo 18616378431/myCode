@@ -1,0 +1,27 @@
+1.自动存储类、寄存器存储类、静态空链接存储类
+2.静态外部链接存储类、静态内部链接存储类、静态空链接存储类
+3.(1)静态外部链接存储类(2)静态内部链接存储类
+4.空链接
+5.表明使用的变量或函数已经在其他地方定义过了
+6.都分配一个具有100个元素的数组的内存空间;calloc()将每个元素设置为0
+7.	daisy为静态外部链接变量，对main默认可见，对petal()、stem()、root()通过extern声明可见.
+	文件2的extern daisy引用声明使daisy对文件2所有函数可见
+	错误:pertal中对lily的引用时错误的，不存在外部lily定义;有一个静态内部链接的lily，
+	仅对文件2可见
+	第一个外部rose对root可见，对stem不可见，因为stem中定义了自己的局部变量rose覆盖了外部变量
+	(不是同一地址，不代表同一变量)
+8.	color in main() is B
+	color in first() is R
+	color in main() is B
+	color int second() is G
+	color int main() is G
+9.(1)
+static int plink;
+	plink为静态内部链接变量，类型为int，仅在声明的文件中及其之后的全部函数可见
+int value_ct(const int arr[],int value,int n);
+	value_ct返回值类型为int，第一个参数为指向整数的指针，假定指向具有n个元素的数组的第一个元素
+	const使程序不允许使用arr指针修改原始数组值
+   (2)
+不会，int value和int n具有代码块作用域，仅对作为形参的函数可见，不能改变调用函数中的值
+使用const限定词使value和n的值不可在声明其的函数中改变
+

@@ -1,0 +1,14 @@
+第三章复习题
+1.根据特定需要选择合适的类型存储数据
+2.short a = 80;		unsigned int a = 42110;		double a = 3E9
+3.未提供措施，但是可以查看climits查看各种类型的限制
+4.33L为long类型，33为int类型
+5.不完全等价，65为int常量，'A'为char常量，只有在使用ASCII码的系统上，前者将grade赋值为A，否则赋值为int类型65
+6.	cout << char(88) << endl;
+	cout << (char)88 << endl;
+	cout.put(char(88));
+	char c= 88;cout << c << endl;
+7.具体问题取决于类型的长度long为4字节，无损失，最大的long值为20亿，10位，double保证至少有13位有效数字，不需要舍入
+8.	a.74		b.4		c.0		d.4.5		e.3
+9.	int a  = int(x1) + int(x2);
+	
