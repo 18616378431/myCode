@@ -118,8 +118,79 @@
         未重定向则所有消息都将显示在屏幕上,如果程序输出被重定向到文件,则第一条消息将被发送到文件中
         而第二条将被发送到屏幕
         有些系统允许对标准错误进行重定向,UNIX、Linux中,操作符2>重定向标准错误
-        
 
+17.2 使用cout进行输出
+1.C++将输出看做字节流(16位或32位字节),但在程序中很多数据被组织成比字节更大的单位
+    int由16位或32位的二进制值表示,double由64位的二进制数据表示
+    但在将字节流发送给屏幕时,希望每个字节表示一个字符值
+    要在屏幕上显示-2.34,需要将5个字符(-,2,.,3,4),而不是这个值的64位内部浮点表示发送到屏幕上
+    ostream最重要的任务之一是将数值类型(int/float)转换为以文本形式表示的字符流
+    ostream类将数据内部表示(二进制位模式)转换为由字符字节组成的输出流
+    为执行这些转换任务,ostream类提供了多个类方法
+
+17.2.1 重载的<<操作符
+(1)在C++中,与C一样,<<操作符的默认含义是按位左移操作符
+    表达式x << 3将x的二进制表示中所有的位向左移动3位
+    ostream类重新定义了<<操作符,方法是将其重载为输出,这种情况下<<叫做插入操作符
+    而不是左移操作符,插入操作符被重载以支持C++中所有的基本类型
+    基本类型:
+    unsigned char
+    signed char
+    char 
+    short
+    unsigned short
+    int
+    unsigned int
+    long
+    unsigned long
+    float
+    double
+    long double
+    上述每种类型,ostream类都提供了operator<< ()函数的定义
+    eg: cout << value;//value为前面列出的类型之一
+        则C++程序将其对应于有相应特征的操作符函数
+        cout << 88;
+        对应于下面的方法原型
+        ostream & operator<< (int);
+        该原型表明,operator<< (int)接受一个int参数,这与上述语句相匹配
+        并且该函数返回一个ostream对象的引用,以便可以进行链式调用
+        cout << "I'm feeling sedimental over " << boundary << "\n";
+1.输出和指针
+(1)ostream类还为下面的指针类型定义了插入操作符函数
+    [1]const signed char *
+    [2]const unsigned char *
+    [3]const char *
+    [4]void *
+(2)C++使用指向字符串存储位置的指针来表示字符串
+    指针的形式可以是char数组名或显式的point-to-char或引号括起的字符串
+    eg: char name[20] = "Dudly Diddlemore";
+        char *pn = "Violet D'Amore";
+        cout << "Hello!";
+        cout << name;
+        cout << pn;
+        方法使用字符串中的终止空字符来确定何时停止显式字符
+        对于其他类型的指针,C++将其对应于void *,并打印地址的数值表示,如果要获得字符串的地址,则必须将其强制转换为其他类型
+        int eggs = 12;
+        char *amount = "dozen";
+        cout << &eggs;//print address of eggs variable
+        cout << amount;//print the string dozen
+        cout << (void *)amount;//print the address of the "dozen" string
+        老式C++实现没有接受void *的原型,要打印地址值,必须将指针强制转换为unsigned或unsigned long
+2.拼接输出
+(1)插入操作符的所有化身的返回类型都是ostream &,其原型如下
+    ostream & operator<< (type);
+    type为要显示的数据类型,返回类型ostream &意味着使用该操作符将返回一个指向ostream对象的引用
+    引用将指向调用该操作符的对象,操作符函数的返回值为调用操作符的对象
+    这种特性使得能够通过插入连接输出
+    eg: cout << "We have " << count << " unhatched chickens.\n";
+        =>
+        cout << count << " unhatched chickens.\n";
+        =>
+        cout << << " unhatched chickens.\n";
+
+
+
+        
 
 
 
