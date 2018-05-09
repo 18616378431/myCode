@@ -186,7 +186,48 @@
         =>
         cout << count << " unhatched chickens.\n";
         =>
-        cout << << " unhatched chickens.\n";
+        cout << " unhatched chickens.\n";
+
+17.2.2 其他ostream方法
+1.除了各种operator<< ()函数外,ostream类还提供了put()方法和write()方法,前者用于显示字符,后者用于显示字符串
+2.最初put()的原型如下
+    ostream & put(char);
+    当前标准尊与此相同,但被模板化,以适用于wchar_t,可以用类方法表示法来调用它
+    cout.put('W');//display the W character
+    cout是调用方法的对象,put()是类成员函数,和<<操作符一样,该函数也返回指向调用对象的引用
+    因此可以用它拼接输出
+    cout.put('I').put('t');//displaying It with two put() calls
+    函数调用cout.put("I")返回cout,然后cout被用作put('t')的调用对象
+    在原型合适的情况下,可以将数值型参数(int)用于put(),让函数原型将参数值自动转换为正确的char值
+    cout.put(65);//display the A character
+    cout.put(66.3);//display the B character
+    第一条语句将int值65转换为char值,然后显示ASCII码为65的字符
+    第二条语句将double值66.3转换为char值66,并显示对应的字符
+    这种行为在C++2.0之前可以派上用场
+    在这些版本中,C++语言用int值表示字符常量
+    cout << 'W';
+    将'W'解释为int值,因此将其作为整数87(ASCII)显示出来
+    cout.put('W');
+    当前C++将char常量表示为char类型
+    一些老式编译器错误地为char、unsigned char、signed char3中参数类型重载了put()
+    这使得将int用于put()时具有二义性,int可被转换为这3中类型中的任何一种
+3.write()方法:显示整个字符串,其模板原型
+    basic_ostream<charT,traits> & write(const char_type *s,streamsize n);
+    第一个参数提供了要显式字符串的地址
+    第二个参数指出要显式多少个字符
+    使用cout调用write()时将调用char具体化,因此返回类型为ostream &
+    cout.write()调用返回cout对象,write()方法返回一个指向调用它的对象的引用‘
+    这使得可以将输出拼接起来,cout.write()将被其返回值cout替换
+    cout.write(state2,i) << endl;
+    write()方法并不会在遇到空字符时自动停止打印字符,而只是打印指定数目的字符,即使超出的字符串的边界
+    state2前后声明了亮娃两个字符串,以便相邻内存中有数据
+    编译器在内存中存储数据的顺序以及调整内存的方式各不相同
+    占用6个字节的字符串,由于编译器使用4个字节的倍数调整字符串,因此6个字节的字符串填充为占用8个字节
+    write()方法也可以用于数值数据,可以将数字的地址强制转换为char *,然后传递给它
+    long val = 560031841;
+    cout.write((char *)&val,sizeof(long));
+    long变量的4个字节中的每个字节将被作为单独的字节被传输
+    输出设备将把每个字节作为ASCII码进行解释,因此在屏幕上这4个字节将被显式为4个字符组合
 
 
 
