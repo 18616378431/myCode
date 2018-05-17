@@ -362,9 +362,78 @@
     ios_base::showpos                   在正数前面加上+
     这些格式常量都是在ios_base类中定义的,使用时需加上作用域解析操作符,ios_base::uppercase
     格式的修改将一直有效,直到被覆盖为止
-    
+
     ios_base::showpos仅当基数为10时才使用加号,C++将十六进制和八进制都视为无符号的,因此对它们无需使用符号
     
+    第二个setf()原型接受两个参数,并返回以前的设置
+        fmtflags setf(fmtflags,fmtflags);
+        函数的这种重载格式用于设置由多位控制的格式选项
+        第一个参数和以前一样,也是一个包含所需设置的fmtflags值
+        第二个参数指出要清除第一个参数中的哪些位
+    清除位(clearing the bit):
+        如:将第3位设置为1表示以10位基数,将第4位设置为1表示以8为基数,将第5位设置为1表示以16为基数
+            输出是以10位基数的,要将其设置为以16为基数,则需要将第5位设置为1,并且需要将第3位设置为0
+    十六进制控制符hex可以自动完成这项工作
+    setf()的第一个参数指出要设置哪些位,第二个参数指出要清除哪些位
+    ios_base类定义了常量用于设置及清除位
+    eg: 修改基数
+        cout.setf(ios_base::hex,ios_base::basefield);
+        上述操作与使用十六进制控制符的作用相同
+
+            setf(long,long)的参数
+    第二个参数               第一个参数               含义
+    ios_base::basefield     ios_base::dex           使用基数10
+                            ios_base::oct           使用基数8
+                            ios_base::hex           使用基数16
+    ios_base::floatfield    ios_base::fixed         使用定点计数法
+                            ios_base::scientific    使用科学计数法
+    ios_base::adjustfield   ios_base::left          使用左对齐
+                            ios_base::right         使用右对齐
+                            ios_base::internal      符号或基数前缀左对齐,值右对齐
+    
+    ios_base类定义了可按这种方式处理的3组格式标记
+    每组标记都由一个可用作第二个参数的常量和2-3个可用作第一个参数的常量组成
+    第二个参数清除一些相关的位,第一个参数将其中一位设置为1
+    C++没有提供自动对齐模式
+    定点表示法意味着使用123.4来表示浮点值,而不管数字长度如何,科学表示法意味着使用格式1.23e04,而不考虑数字的长度
+    C++默认的模式对应于printf的%g说明符,定点表示法对应于%f说明符,科学表示法对应于%e说明符
+    C++中定点表示和科学表示法的特征:
+        [1]精度指的是小数点的位数,而不是总位数
+        [2]显示末尾的0
+    在老式用法中,末尾的0都不显示,除非ios_base::showpoint被设置
+    老式用法中,精度总是指的小数位数,即使在默认情况下也是如此
+    setf()是iso_base类的成员函数,由于这个类时ostream类的基类,因此可以使用cout对象来调用
+    eg: 左对齐
+        ios_base::fmtflags old = cout.setf(ios_base::left,ios_base::adjustfield);    
+        恢复以前的设置
+        cout.setf(old,ios_base::adjustfield);
+    UNIX搜索数学库函数
+        CC setf2.c -lm
+        -lm选项命令链接程序搜索数学库
+    cout.precision(3)使得默认浮点显示总共显示3位,而定点模式和科学模式只显示3位小数
+    setf()的效果可以使用unsetf()消除,其原型如下:
+        void unsetf(fmtflags mask);
+        mask是位模式,mask中所有的位都为1,将使得对应的位被复位
+        setf()将位设置为1,unsetf()将位恢复为0
+    eg: cout.setf(ios_base::showpoint);//show trailing decimal point
+        cout.unsetf(ios_base::showpoint);//don't show trailing decimal point
+        cout.setf(ios_base::boolalpha);//display true,false
+        cout.unsetf(ios_base::boolalpha);//display 1,0
+    没有专门指示浮点数默认显示模式的标记
+    系统的工作原理:
+        仅当只有定点位被设置时使用定点表示法,仅当只有科学位被设置时使用科学表示法
+        对于其他组合,如果没有位被设置或两位都被设置,将使用默认模式
+    启用默认模式的方式之一是将所有位都设置为0
+        cout.setf(0,ios_base::floatfield);
+        第二个参数用来关闭这两位,第一个参数不设置任何位
+        第二种方法是使用ios_base::floatfield参数调用unsetf()函数
+        cout.unsetf(ios_base::floatfield);//go to default mode
+        如果已知cout当前处于定点模式,可以使用cout.unsetf(ios_base::fixed)来切换到默认模式
+        无论当前cout状态如何,使用cout.unsetf(ios_base::floatfield)都将切换到默认模式
+        这是一种更好的选择
+        
+
+
 
 
 
