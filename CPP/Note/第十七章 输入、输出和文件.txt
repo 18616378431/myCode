@@ -431,7 +431,59 @@
         如果已知cout当前处于定点模式,可以使用cout.unsetf(ios_base::fixed)来切换到默认模式
         无论当前cout状态如何,使用cout.unsetf(ios_base::floatfield)都将切换到默认模式
         这是一种更好的选择
-        
+7.标准控制符
+    使用setf()不是进行格式化的、对用户最友好的方法,C++提供了多个控制符,能够调用setf(),并自动提供正确的参数
+    dec、oct、hex,这些控制符(多数都不适用于老式C++实现)的工作方式都与hex类似
+    eg: cout << left << fixed;
+        打开左对齐和定点选项
+    注:如果系统支持这些控制符则请使用,否则仍可以使用setf()
+                
+                一些标准控制符
+    操纵符             调用
+    boolalpha       setf(ios_base::boolalpha);
+    noboolalpha     unsetf(ios_base::boolalpha);
+    showbase        setf(ios_base::showbase);
+    noshowbase      unsetf(ios_base::showbase);
+    showpoint       setf(ios_base::showpoint);
+    noshowpoint     unsetf(ios_base::showpoint);
+    showpos         setf(ios_base::shwopos);
+    noshowpos       unsetf(ios_base::showpos);
+    uppercase       setf(ios_base::uppercase);
+    nouppercase     unsetf(ios_base::uppercase);
+    internal        setf(ios_base::internal,ios_base::adjustfield);
+    left            setf(ios_base::left,ios_base::adjustfield);
+    right           setf(ios_base::right,ios_base::adjustfield);
+    dec             setf(ios_base::dec,ios_base::basefield);
+    hex             setf(ios_base::hex,ios_base::basefield);
+    oct             setf(ios_base::oct,ios_base::basefield);
+    fixed           setf(ios_base::fixed,ios_base::floatfield);
+    scientific      setf(ios_base::scientific,ios_base::floatfield);
+8.iomanip头文件
+    使用iostream工具设置一些格式值(字段宽度)不太方便,为简化工作
+    C++在iomanip头文件中提供了其他一些控制符,它们能够提供前面讨论过的服务,但表示起来更方便
+    3个最常用的控制符分别是:setprecision()、setfill()、setw()
+    它们分别用来设置精度、填充字符和字段宽度
+    与前面讨论的控制符不同的是,这3个控制符带参数
+    setprecision()控制符接受一个指定精度的整数参数
+    setfill()控制符接受一个指定填充字符的char参数
+    setw()控制符接受一个指定字段宽度的整数参数
+    由于他们都是控制符,因此可以用cout语句链接起来,这样setw()控制符在显示多列值时尤为方便
+    注:UNIX系统中使用数学库函数需要添加编译参数-lm以搜索数学库
+        CC iomanip.c -lm
+        老式编译器可能无法识别shwopoint这样的新标准控制符,可以使用等价的setf()
+        老式实现中,使用showpoint控制符可以显示末尾的0
+        新式实现中,使用fixed控制符可以显示末尾的0
+        使用fixed在两种系统中都将以定点方式显示
+        在新式统中,它使精度指的是小数位数
+        在老式系统中,精度总是这个含义,而不管是否为浮点显示模式
+
+                格式化方便的变化
+    特性                          老式C++                   当前C++
+    precision(n)                显示n位小数                在默认模式下,显示的总位数为n;在定点模式和科学模式下,显示n位小数
+    ios::showpoint              显示末尾的小数点和末尾的0   显示末尾的小数点
+    ios::fixed,ios::scientific                            显示末尾的0(precision())
+
+
 
 
 
