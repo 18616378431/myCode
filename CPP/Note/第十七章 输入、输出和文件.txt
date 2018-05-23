@@ -562,6 +562,52 @@
         返回值false让程序能够检查输入是否满足要求
         输入可以被缓冲,可以在按下回车之前输入多个值,在此之前输入不会发送给程序
         
+17.3.2 流状态
+(1).cin或cout对象包含一个描述流状态(stream state)的数据成员(继承自ios_base)
+    流状态(被定义为iostate类型,而iostate是一种bitmask类型)由3个ios_base元素组成:
+    eofbit、badbit或failbit,其中每个元素都是一位,可以是1(设置)或0(清除)
+    当cin操作到达文件末尾时,它将设置eofbit;
+    当cin操作未能读取到预期的字符时,它将设置failbit,IO(读取不可访问的文件或试图写入保护的磁盘)失败也可能将failbit设置为1
+    在一些无法诊断的失败破坏流时,badbit元素将被设置
+    当全部3个状态都设置为0时,说明一切顺利
+    程序可以检查流状态并决定下一步做什么
+
+                    流状态
+    成员              描述
+    eofbit          如果到达文件末尾则设置为1
+    badbit          如果流被破坏,则设置为1;例,文件读取错误
+    failbit         如果输入没有读取到预期的字符或输出没有写入预期的字符,则设置为1
+    goodbit         另一种表示0的方法
+    good()          如果流可以使用(所有的位都被清除),则返回true
+    eof()           如果eofbit被设置,则返回true
+    bad()           如果badbit被设置,则返回true
+    fail()          如果badbit或failbit被设置,则返回true
+    rdstate()       返回流状态
+    exceptions()    返回一个位掩码,指出哪些标记导致异常被引发
+    exceptions(iostate ex)  设置哪些状态将导致clear()引发异常;例,如果ex是eofbit,则如果eofbit被设置,clear()将引发异常
+    clear(iostate s)    将流的状态设置为s,s的默认值是0(goodbit);如果(restate() & exceptions() != 0),则引发异常basic_ios::failure
+    setstate(iostate s) 调用clear(rdstate() | s).这将设置与s中设置的位对应的流状态位,其他流状态位保持不变
+1.设置状态
+    (1)clear()和setstate()很相似,它们都重置状态,但采取不同的方式
+        clear()方法将状态设置为它的参数:
+        clear();//将使用默认参数0,这将清除全部3个状态位(eofbit,badbit,failbit)
+        clear(eofbit);//eofbit将被设置,其他两个状态位将被清除
+    (2)setstate()方法只影响其参数中已设置的位
+        setstate(eofbit);//只设置eofbit位,而不会影响其他位,failbit如果被设置了,则其相应位的值将不会被改变
+    为什么需要重新设置流状态,在输入不匹配或到达文件末尾时,需要使用不带参数的clear()重新打开输入
+    setstate()主要用途是为输入和输出函数提供一种修改状态的途径
+    eg: cin >> num;//int num;
+        将可能导致operator>> (int &);使用setstate()设置failbit或eofbit
+
+        
+
+
+
+
+
+    
+
+
 
 
 
