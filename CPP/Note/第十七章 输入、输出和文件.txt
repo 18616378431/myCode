@@ -598,6 +598,83 @@
     setstate()主要用途是为输入和输出函数提供一种修改状态的途径
     eg: cin >> num;//int num;
         将可能导致operator>> (int &);使用setstate()设置failbit或eofbit
+2.I/O异常
+    (1)假设某个输入函数设置了eofbit,这是否会导致异常被引发呢?
+        默认情况下,答案是否定的,但可以使用exceptions()方法来控制异常如何被处理
+    (2)exceptions()返回一个位字段,它包含3位,分别对应于eofbit、failbit和badbit
+        修改流状态涉及到clear()或setstate(),这都将使用clear()
+        修改流状态后,clear()方法将当前的流状态与exceptions()返回的值进行比较
+        如果在返回值中某一位被设置,而当前状态中的对应位也被设置,则clear()将引发ios_base::failure异常
+        如果两个值都设置了badbit,将引发这种情况
+        如果exceptions()返回goodbit,则不会引发任何异常
+        ios_base::failure异常类是从std::exception类派生而来的,因此包含一个what()方法
+        exceptions()的默认设置是goodbit,没有引发异常
+        重载的exceptions(iostate)函数使得能够控制其行为
+        eg: cin.exceptions(badbit);//setting badbit causes exception to be thrown
+            位操作OR(|)使得能够指定多位
+            cin.exceptions(badbit | eofbit);
+            如果badbit或eofbit随后被设置,将引发异常
+3.流状态的影响
+    (1)只有在流状态良好(所有的位都被清除)的情况下,下面的if、while测试才会返回true
+        while(cin >> input)
+        如果测试失败,则可以使用流状态表中的成员函数来判断可能的原因
+        while(cin >> input)
+        {
+            sum += input;
+        }
+        if(cin.eof())
+            cout << "Loop terminated because EOF encountered\n";
+        设置流状态有一个非常重要的后果,流将会对后面的输入或输出关闭,直到位被清除
+        下面的代码将不能工作
+        while(cin >> input)
+        {
+            sum += input;
+        }
+        cout << "Last value entered = " << input << endl;
+        cout << "Sum = " << sum << endl;
+        cout << "Now enter a new number:";
+        cin >> input;//won't work
+        如果希望在流状态位被设置后能够读取后面的输入,必须将流状态重置为良好,可以通过调用clear()方法来实现
+        while(cin >> input)
+        {
+            sum += input;
+        }
+        cout << "Last value entered = " << input << endl;
+        cout << "Sum = " << sum << endl;
+        cout << "Now enter a new number:";
+        cin.clear();//reset stream state
+        while(!isspace(cin.get()))
+            continue;//get rid of bad input
+        cin >> input;//will work now
+        注意,这还不足以重新设置流状态,导致输入循环终止的不匹配输入仍留在输入队列中
+        程序必须跳过它,可以一直读取字符直到到达空白字符为止,使用cctype的isspace()函数
+        其参数为空白字符时返回true
+        另一种方法是丢弃行中的剩余部分,而不仅仅是下一个单词
+        while(cin.get() != '\n')
+            continue;
+        上例是在不恰当的输入的情况下的,如果循环是由于到达文件末尾或者由于硬件故障而终止的
+        这样的错误处理将毫无意义
+        可以使用fail()成员函数来检测并修复问题,fail()在failbit或badbit被设置时返回true
+        因此必须排除后一种情况
+        while(cin >> input)
+        {
+            sum += input;
+        }
+        cout << "Last value entered = " << input << endl;
+        cout << "Sum = " << sum << endl;
+        if(cin.fail() && !cin.eof())//failed because of mismatched input
+        {
+            cin.clear();
+            while(!isspace(cin.get()))
+                continue;
+        }
+        else//else bail out
+        {
+            cout << "I cannot go on!\n";
+            exit(1);
+        }
+        cout << "Now enter a new number:";
+        cin >> input;//will work now
 
         
 
