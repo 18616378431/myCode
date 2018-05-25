@@ -676,6 +676,98 @@
         cout << "Now enter a new number:";
         cin >> input;//will work now
 
+17.3.3 其他istream类方法
+(1)istream类获取字符输入的函数
+    [1]get(char &)和get(void)方法提供不跳过空白字符的单字符输入
+    [2]get(char *,int,char)和getline(char *,int,char)函数在默认情况下读取整行而不是一个单词
+    它们被称为非格式化输入函数(unformatted input functions),因此它们只读取字符输入,而不会跳过空白,也不进行数据转换
+1.单字符输入
+    (1)在使用char参数或没有参数的情况下,get()方法读取下一个输入字符,即使该字符是空格、制表符或换行符
+        get(char &)版本将输入字符赋给其参数,而get(void)版本将输入字符转换为整型(int),并将其返回
+    eg: //get(char &)
+        int ct = 0;
+        char ch;
+        cin.get(ch);
+        while(ch != '\n')
+        {
+            cout <<ch;
+            ct++;
+            cin.get(ch);
+        }
+        cout << ct << endl;
+        cin.get(char &)将逐个读取输入缓冲区中的字符,直到读到换行符
+        //cin >> ch版本
+        int ct = 0;
+        char ch;
+        cin >> ch;
+        while(ch != '\n')//FAILS
+        {
+            cout << ch;
+            ct++;
+            cin >> ch;
+        }
+        cout << ct << endl;
+        代码将跳过空格,使输入变为压缩版本,并且循环不会终止,抽取操作符跳过了换行符
+        代码不会将换行符赋给ch
+    (2)get(char &)成员函数返回一个指向调用它的istream对象的引用,这意味着可以拼接get(char &)后面的其他抽取操作
+        eg: char c1,c2,c3;
+            cin.get(c1).get(c2) >> c3;
+            代码缩减为
+            cin.get(c2) >>c3;
+            cin >> c3;
+            c1、c2的值可为空白字符,但c3将会跳过空白符而读入非空白字符
+        
+        cin.get(char &)到达文件末尾或键盘模拟仿真的文件末尾(DOS Ctrl + z,UNIX Ctrl + d),它都不会给其参数赋值
+        这是完全正确的,因为到达文件末尾,就没有值可供赋给参数了
+        该方法还将调用setstate(failbit),导致cin的测试结果为false
+        char ch;
+        while(cin.get(ch))
+        {
+            //process input
+        }
+        只要存在有效输入,cin.get(char &)的返回值都将是cin,此时判定结果为true,到达文件末尾时,将返回值判定为false
+    (3)get(void)成员函数还读取空白,但使用返回值来将值传递给程序
+        eg: int ct = 0;
+            char ch;
+            ch = cin.get();
+            while(ch != '\n')
+            {
+                cout << ch;
+                ct++;
+                ch = cin.get();
+            }
+            cout << ct << endl;
+            //注:有些老式C++实现不提供这个成员函数
+        get(void)成员函数的返回值为int(或其他更大的整型,取决于字符集和区域)
+        这使得无法进行下面的链式调用
+        eg: char c1,c2,c3;
+            cin.get().get() >> c3;
+            由于cin.get()的返回值是int,而不是cin对象,因此不能对它使用成员操作符
+            可以在cin.get(char &)抽取序列的最后使用cin.get(void)
+            char c1;
+            cin.get(c1).get();//该表达式将返回最后一个get返回的int值
+            cin.get(void)的返回值为int,这使得它后面不能跟抽取操作符
+            上述表达式读取第一个字符赋给c1,然后读取并丢弃第二个输入字符
+        到达文件末尾后,cin.get(void)豆浆返回值EOF--iostream头文件提供的一个符号常量
+        eg: //这种设计使得可以这样读取输入
+            int ch;
+            while((ch = cin.get()) != EOF)
+            {
+                //process input
+            }
+            应将ch声明为int,而不是char,因为值EOF可能无法使用char类型来表示
+
+                    cin.get(char &)与cin.get(void)
+        特征                      cin.get(ch)                 ch = cin.get()
+        传输输入字符的方法           赋给参数ch                将函数返回值赋给ch
+        字符输入时函数的返回值       指向istream对象的引用      字符编码(int值)
+        到达文件末尾时函数的返回值   转换为false                EOF
+        
+        
+
+
+
+
         
 
 
