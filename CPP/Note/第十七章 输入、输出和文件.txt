@@ -762,8 +762,71 @@
         传输输入字符的方法           赋给参数ch                将函数返回值赋给ch
         字符输入时函数的返回值       指向istream对象的引用      字符编码(int值)
         到达文件末尾时函数的返回值   转换为false                EOF
+2.采用哪种单字符输入形式
+    (1)get(char &)、get(void)、>>
+        希望跳过空格则使用抽取操作符,显示菜单选项时,跳过空白更为方便
+        eg: cout << "a. annoy client    b. bill client\n"
+                    "c. calm client     d. deceive client\n"
+                    "q.\n";
+            cout << "Enter a,b,c,d or q:";
+            char ch;
+            cin >> ch;
+            while(ch != 'q')
+            {
+                switch(q)
+                {
+                    ...
+                }
+                cout << "Enter a,b,c,d or q:";
+                cin >> ch;
+            }
+            键入b并按回车键,则将生成两个字符相应:b\n
+            如果使用get()则必须添加处理\n的代码,而抽取操作符可以跳过它
+            如果希望程序检查每个字符,则可以使用get()
+            例如判断以空格分隔的单词个数
+        get()方法中,get(char &)接口更佳
+        get(void)的主要优点是:它与标准C语言中的getchar()函数极其类似,这意味着
+        可以通过包含iostream头文件而不是stdio.h,并用cin.get()替换所有的getchar()
+        用cin.put(ch)替换所有的putchar(ch),来将C程序转换为C++程序
+3.字符串输入:getline()、get()和ignore()
+    三者均为cin成员函数(有一个非成员函数版本getline(string...))
+    getline()成员函数和get()的字符串读取版本都读取字符串,它们的函数特征标相同
+    (其原型为从更通用的模板声明简化而来)
+    istream & get(char *,int,char);
+    istream & get(char *,int);
+    istream & getline(char *,int,char);
+    istream & getline(char *,int);
+    第一个参数为放置输入字符的内存单元地址
+    第二个参数比要读取的最大字符数大1(额外一个字符用于存储结尾的空字符,以便将输入存储为一个字符串)
+    第三个参数指定用作分界符的字符,两个参数的版本将以换行符为分界符
+    上述函数都在读取了最大数目的字符或遇到换行符后为止
+    eg: char line[50];
+        cin.get(line,50);
+        将字符输入读取到char数组中,在到达第49个字符或遇到换行符后停止将输入读取到数组中
+    get()和getline()的主要区别在于,get()将换行符留在输入流中,这样接下来的输入操作首先看到的将是换行符
+    而getline()抽取并丢弃输入流中的换行符
+    三个参数的版本,遇到分界字符后,输入将停止读取,即使还未读取最大数目的字符
+    默认情况下,如果在读取指定数目的字符之前到达行尾,将停止读取输入
+    和默认情况下一样,get()将分界符留在输入队列中,getline()不保留
+    ignore()成员函数,该函数接受两个参数,一个是数字,指定要读取的最大字节数,另一个是字符,用作输入分界符
+    eg: cin.ignore(255,'\n');
+        将读取并丢弃接下来的255个字符或直到到达第一个换行符
+        其原型为两个参数提供默认值1和EOF,该函数的返回类型为istream &
+        istream & ignore(int = 1,int = EOF);
+        默认参数EOF使其读取指定数目的字符或读取到文件末尾
+        该函数返回调用对象,可以拼接函数调用
+        cin.ignore(255,'\n').ignore(8255,'\n');
+        第一次调用地区并丢弃一行,第二行读取并丢弃一行,读取共二行
+    注:在一些老式C++实现中,iostream版本的getline()有错误,导致下一行的输出被延迟到了输入了未显示行请求的数据后才显示
+    iostream.h则正常
+    
+
         
-        
+
+
+
+
+    
 
 
 
