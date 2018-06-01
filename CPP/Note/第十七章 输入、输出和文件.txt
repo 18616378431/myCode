@@ -899,7 +899,82 @@
         putback()方法接受一个char参数--要插入的字符,其返回类型为istream &,可以进行链式调用
         使用peek()方法的操作相当于使用cin.get(ch)读取一个字符到ch中,然后使用putback(ch)将字符放回到输入流中
         putback()允许将字符放回到不是刚才读取的位置
-        
+
+17.4 文件输入和输出
+(1)字处理程序创建文件,数据库程序创建和搜索信息文件,编译器读取源文件并生成可执行文件
+(2)文件本身是存储在某种设备(磁带、光盘、软盘或硬盘)上的一系列字节
+(3)通常操作系统管理文件,并追踪它们的位置、大小、创建时间等
+(4)通常不需要关心这些事情,除非在操作系统级别上编程
+    需要的只是将程序与文件相连的途径,让程序读取文件内容的途径,以及让程序创建和写入文件的途径
+(5)重定向可以提供一些文件支持,但它比显式程序I/O的局限性要大
+    重定向来自操作系统,而非C++,因此并非所有系统都有这样的功能
+(6)C++I/O软件包处理文件输入和输出的方式与处理标准输入和输出的方式非常相似
+    需要写入文件,需要创建一个ofstream对象,并使用ostream方法,如<<插入操作符或write()
+    要读取文件,需要创建一个ifstream对象,并使用istream方法,如>>抽取操作符或get()
+    不过,与标准输入和输出相比,文件的管理更为复杂
+    eg: 必须将新打开的文件和流关联起来,可以以只读模式、只写模式或读写模式打开文件
+        写文件时,可能想创建新文件、取代旧文件或添加到旧文件中,还可能在文件中来回移动
+        C++在头文件fstream(fstream.h)中定义了多个新类,其中包括用于文件输入的ifstream和文件输出的ofstream
+        C++还定义了fstream类用于同步文件I/O
+        这些类都是从头文件iostream派生而来,因此这些新类可以使用继承而来的方法
+
+17.4.1 简单的文件I/O
+1.要让程序写入文件:
+    (1)创建一个ofstream对象来管理输出流
+    (2)将该对象与特定文件关联起来
+    (3)以使用cout的方式使用该对象,唯一的区别是:输出将进入文件而不是屏幕
+
+    首先要包含头文件fstream,对于大多数实现来说,包含了该头文件则自动包括了iostream,因此不必显式包含iostream
+    然后声明一个ofstream对象
+    ofstream fout;//create an ofstream object named fout
+    对象名称可以是任意有效的C++名称
+    接下来必须将这个文件与特定的文件关联起来,为此,可以使用open()方法
+    fout.open("jar.txt");//associate fout with jar.txt
+    可以使用另一个构造函数来简化步骤
+    ofstream fout("jar.txt");//create an ofstream object,associate it with jar.txt
+    然后,以使用cout的方式使用fout
+    fout << "Dull Data";//output to file jar.txt with "Dull Data"
+    由于ostream是ofstream类的基类,因此可以使用所有ostream方法,包括各种插入操作符定义、格式化方法和控制符
+    ofstream类使用被缓冲的输出,因此程序在创建fout这样的ofstream对象时,将为输出缓冲区分配空间
+    如果创建了两个ofstream对象,程序将创建两个缓冲区,每个对象各一个
+    fout这样的ofstream对象从程序逐字节地收集输出,当缓冲区填满后,它便将缓冲区内容一同传输给目标文件
+    由于磁盘被设计成以大块的方式传输数据,而不是逐字节地传输,因此通过缓冲区可以大大提高从程序到文件传输数据的速度
+    以这种方式打开的文件来进行输出时,如果没有这样的文件,将创建一个新文件;
+    如果有这样的文件,则打开文件将清空文件,输出将进入到一个空文件中
+    注:以默认模式打开文件进行输出将自动将文件的长度截短为0,这相当于删除已有文件
+2.读取文件,与写入文件相似
+    (1)创建一个ifstream对象来管理输入流
+    (2)将该对象与特定文件关联起来
+    (3)以使用cin的方式使用该对象
+    需要包含头文件fstream,声明一个ifstream对象,将它与文件关联起来
+    ifstream fin;
+    fin.open("jellyjar.dat");//create ifstream object called fin
+    //another
+    ifstream fis("jamjar.dat");//create fis and associate with jamjar.dat
+    现在可以像使用cin那样使用fin/fis
+    char ch;
+    fin >> ch;//read a character from the jellyjar.txt file
+    char buf[80];
+    fin >> buf;//read a word from the file
+    fin.getline(buf,80);//rad a line from the file
+    string line;
+    getline(fin,line);//read from a file to a string object
+    输入和输出一样,也是被缓冲的,因此创建ifstream对象与fout一样,将创建一个由fin管理的输入缓冲区
+    与输出一样,通过缓冲,传输数据的速度比逐字节传输要快得多
+    大概输入和输出流对象过期时,到文件的连接将自动关闭
+    另外也可以使用close()来显式地关闭到文件的连接
+    fout.close();//close output connection to file
+    fin.close();//close input connection to file
+    关闭这样的连接并不会删除流,而只是断开流到文件的连接,流管理装置仍被保留
+    close()后fin对象与它管理的输入缓冲区仍然存在,可以将流重新连接到同一个文件或另一个文件
+    关闭文件将刷新缓冲区,从而确保文件被更新
+
+
+
+    
+
+
+
 
 
 
