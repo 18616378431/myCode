@@ -1023,6 +1023,37 @@
         fin.clear();//reset fin(my not bo needed)
         fin.open("rat.dat");//associate stream with rat.dat file
 
+17.4.4 命令行处理技术
+1.文件处理程序通常使用命令行参数来指定文件,命令行参数是用户在输入命令时,在命令行输入的参数
+    eg: 在UNIX/Linux中统计文件中包含的字数
+        wc report1 report2 report3
+        wc为程序名,report1、report2和report3是作为命令行参数传递给程序的文件名
+2.C++有一种让在命令行环境中运行的程序能够访问命令行参数的机制,方法是添加main函数命令行参数
+    int main(int argc,char *argv[])
+    argc为命令行中参数的个数,其中包括命令本身
+    argv为一个char *指针数组,其元素指向命令行的参数字符串
+    argv[0]为指向命令行参数的第一个字符串
+    eg: wc report1 report2 report3
+        argc为4,argv[0]为wc,argv[1]为report1
+        for(int i = 1;i < argc;i++)
+            cout << argv[i] << endl;
+        i为1将只打印命令行参数,为0则打印命令名
+3.命令行参数与命令行系统(UNIX、DOS、Linux)紧密相关
+    很多DOS和Windows IDE都有一个提供命令行参数的选项,通常补习选择一系列菜单,才能够打开可以输入命令行参数的对话框
+    DOS IDE和很多Windows IDE都可以生成可执行文件,这些文件能够在DOS下或以DOS命令行模式在DOS窗口些运行
+    在Metrowerks CodeWarrior for the Macintosh下,可以通过包含console.h来支持命令行参数
+    eg: #include <console.h>//for emulating command-line arguments
+        int main(int argc,char *argv[])
+        {
+            argc = ccommand(&argv);//ccommand
+        }
+        运行时,ccommand()将在屏幕上显示一个对话框,其中包含一个可以输入命令行参数的框
+        并且可以模拟重定向
+4.是否在关闭文件后使用fin.clear()来清除流状态,这取决于将文件与ifstream对象关联时是否自动重置流状态
+    使用fin.clear()是无害的
+    
+
+
 
         
 
