@@ -1051,7 +1051,58 @@
         并且可以模拟重定向
 4.是否在关闭文件后使用fin.clear()来清除流状态,这取决于将文件与ifstream对象关联时是否自动重置流状态
     使用fin.clear()是无害的
-    
+
+17.4.5 文件模式
+1.文件模式是描述文件如何被使用:读、写、追加等
+    将流与文件关联时(构造函数或open方法),都可以提供指定文件模式的第二个参数
+    eg: ifstream fin("banjo",mode1);//constructor woth mode argument
+        ofstream fout();
+        fout.open("harp",mode2);//open with mode argument
+2.ios_base类定义了一个openmode类型,用于表示模式:与fmtflags和iostate类型一样,它也是一种bitmask类型(以前为int)
+    可以选择ios_base类中定义的多个常量来指定模式
+    C++文件I/O做了一些改动,以便于ANSI C文件I/O兼容
+
+                    文件模式常量
+    常量                  含义
+    ios_base::in          打开文件,以便读取
+    ios_base::out         打开文件,以便写入
+    ios_base::ate         打开文件,并移到文件尾
+    ios_base::app         追加到文件尾
+    ios_base::turnc        如果文件存在,则截短文件
+    ios_base::binary      二进制文件
+3.ifstream和ofstream类的构造函数及open()方法都接受两个参数,且为第二个模式参数提供了默认值
+    ifstream open()方法和构造函数使用ios_base::in作为模式参数的默认值
+    ofstream open()方法和构造函数使用ios_base::out|ios_base::trunc作为默认值
+    位操作符用于将两个位值合并成一个可用于同时设置两个位的值
+    fstream类不提供默认的模式值,因此在创建这种类对象时,需显式指定模式
+4.ios_base::trunc意味着打开已有文件将删除其原有内容,极大地降低了磁盘空间耗尽的危险
+    在打开文件时不删除其内容,保留文件内容并在其后追加:ios_base::app
+    eg: ofstream fout("bagels",ios_base::out | ios_base::app);
+        向文件中追加输出
+5.老式C++实现之间有一些差异,有些实现允许省略4中例子的ios_base::out,有些则不允许
+    如果不使用默认模式,则最安全的方法是显式地提供所有的模式元素
+    有些不支持上表中的选项,有些则提供了其他选项,C++标准提供了更高的统一性
+6.标准C++根据ANSI C标准I/O定义了部分文件I/O
+    ifstream fin(filename,c++mode);
+    fopen(filename,cmode);
+    其中C++mode是一个openmode值,如ios_base::in,而cmode是相应的C模式字符串,如"r"
+    下表列出了C++模式和C模式的对应关系
+    注:ios_base::out本身将导致文件被截短,但与ios_base::in配合使用将不会被截短
+        ios_base::in | ios_base::trunc将禁止文件被打开,is_open()将用于检测这种情况
+
+                    C++和C的文件打开模式
+    C++模式                                 C模式                 含义
+    ios_base::in                            "r"                   打开以读取
+    ios_base::out                           "w"                   等价于ios_base::out | ios_base::trunc
+    ios_base::out | ios_base::trunc         "w"                   打开以写入,如果已经存在,则截短文件
+    ios_base::out | ios_base::app           "a"                   打开以写入,只追加
+    ios_base::out | ios_base::in            "r+"                  打开以读写,在文件允许的位置写入
+    ios_base::out | ios_base::in | ios_base::trunc  "w+"          打开以读写,如果已经存在,则首先截短文件
+    ios_base::out | ios_base::binary        "cmodeb"              以C++mode(或相应的Cmode)和二进制模式打开,例如,ios_base::in | ios_base::binary称为"rb"
+    ios_base::out | ios_base::ate           "cmode"               以指定的模式打开,并移动到文件尾,C使用一个独立的函数调用而不是模式编码,例如,ios_base::in | ios_base::ate转换为"r"模式和C函数调用fseek(file,0,SEEK_END);
+    注:ios_base::app和ios_base::ate都将文件指针指向打开文件的末尾,二者的区别在于,ios_base::app只允许将数据添加到文件尾
+        而ios_base::ate模式将指针放到文件尾
+                     
 
 
 
