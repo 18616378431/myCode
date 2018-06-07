@@ -1053,12 +1053,12 @@
     使用fin.clear()是无害的
 
 17.4.5 文件模式
-1.文件模式是描述文件如何被使用:读、写、追加等
+(1).文件模式是描述文件如何被使用:读、写、追加等
     将流与文件关联时(构造函数或open方法),都可以提供指定文件模式的第二个参数
     eg: ifstream fin("banjo",mode1);//constructor woth mode argument
         ofstream fout();
         fout.open("harp",mode2);//open with mode argument
-2.ios_base类定义了一个openmode类型,用于表示模式:与fmtflags和iostate类型一样,它也是一种bitmask类型(以前为int)
+(2).ios_base类定义了一个openmode类型,用于表示模式:与fmtflags和iostate类型一样,它也是一种bitmask类型(以前为int)
     可以选择ios_base类中定义的多个常量来指定模式
     C++文件I/O做了一些改动,以便于ANSI C文件I/O兼容
 
@@ -1070,19 +1070,19 @@
     ios_base::app         追加到文件尾
     ios_base::turnc        如果文件存在,则截短文件
     ios_base::binary      二进制文件
-3.ifstream和ofstream类的构造函数及open()方法都接受两个参数,且为第二个模式参数提供了默认值
+(3).ifstream和ofstream类的构造函数及open()方法都接受两个参数,且为第二个模式参数提供了默认值
     ifstream open()方法和构造函数使用ios_base::in作为模式参数的默认值
     ofstream open()方法和构造函数使用ios_base::out|ios_base::trunc作为默认值
     位操作符用于将两个位值合并成一个可用于同时设置两个位的值
     fstream类不提供默认的模式值,因此在创建这种类对象时,需显式指定模式
-4.ios_base::trunc意味着打开已有文件将删除其原有内容,极大地降低了磁盘空间耗尽的危险
+(4).ios_base::trunc意味着打开已有文件将删除其原有内容,极大地降低了磁盘空间耗尽的危险
     在打开文件时不删除其内容,保留文件内容并在其后追加:ios_base::app
     eg: ofstream fout("bagels",ios_base::out | ios_base::app);
         向文件中追加输出
-5.老式C++实现之间有一些差异,有些实现允许省略4中例子的ios_base::out,有些则不允许
+(5).老式C++实现之间有一些差异,有些实现允许省略4中例子的ios_base::out,有些则不允许
     如果不使用默认模式,则最安全的方法是显式地提供所有的模式元素
     有些不支持上表中的选项,有些则提供了其他选项,C++标准提供了更高的统一性
-6.标准C++根据ANSI C标准I/O定义了部分文件I/O
+(6).标准C++根据ANSI C标准I/O定义了部分文件I/O
     ifstream fin(filename,c++mode);
     fopen(filename,cmode);
     其中C++mode是一个openmode值,如ios_base::in,而cmode是相应的C模式字符串,如"r"
@@ -1102,7 +1102,50 @@
     ios_base::out | ios_base::ate           "cmode"               以指定的模式打开,并移动到文件尾,C使用一个独立的函数调用而不是模式编码,例如,ios_base::in | ios_base::ate转换为"r"模式和C函数调用fseek(file,0,SEEK_END);
     注:ios_base::app和ios_base::ate都将文件指针指向打开文件的末尾,二者的区别在于,ios_base::app只允许将数据添加到文件尾
         而ios_base::ate模式将指针放到文件尾
-                     
+1.追加文件
+(1)在早期,C++的I/O是其最不标准的部分,很多老式C++都不遵循当前标准
+    有些编译器使用nocreate等模式,而这些模式不是当前标准的组成部分
+    只有一部分编译器要求在第二次打开同一个文件进行读取前调用fin.clear()
+2.二进制文件
+(1)将数据存储在文件中时,可以将其存储为文本格式或二进制格式
+    文本格式是将所有内容都存储为文本(包括数字)
+    eg: 将-2.324216e+07存储为文本格式时,将存储包该数字包含的13个字符
+        这需要将浮点数的计算机内部表示转换为字符格式,这正是<<插入操作符完成的工作
+    二进制格式指的是存储值的计算机内部表示
+    eg: 计算机不存储字符串,而是存储这个值的64位double表示
+    对于字符来说,二进制表示与文本表示是一样的,即字符的ASCII码的二进制表示
+    对于数字来说,二进制表示与文本表示有很大差别
+(2)每种格式都有自己的优点
+    文本格式便于读取,可以是用编辑器或字处理器来读取文本文件,可以很方便的将文本文件从一个系统传输到另一个系统
+    二进制格式对于数字来说比较精确,因为它存储的值是数值的内部表示,因此不会有转换误差或舍入误差
+    以二进制格式保存数据更快,因为不需要转换,可以大块地存储数据
+    二进制格式通常占用空间较小,这取决于数据的特征
+    如果另一个系统使用另一种内部表示,则无法互相进行数据传输
+    同一系统上的不同编译器也可能使用不同的内部结构布局表示
+    这种情况下,必须编写一个将一种数据结构转换为另一种的程序
+    eg: const int LIM = 20;
+        struct planet{
+            char name[LIM];
+            double population;
+            double g;
+        };
+        planet pl;
+        要将结构以文本格式保存:
+        ofstream fout("planet.dat",ios_base::out | ios_base::app);
+        fout << pl.name << " " << pl.population << " " << pl.g << "\n";
+        这样必须显式地提供每个结构成员以及将数据区分
+        以二进制格式存储相同的信息:
+        ofstream fout("planet.dat",ios_base::out | ios_base::app | ios_base::binary);
+        fout.write((char *)pl,sizeof(pl));
+        使用计算机的内部数据表示,将结构体做为一个整体保存
+        不能将该文件做为文本文件读取,与文本相比,信息保存的更为紧凑、精确
+        [1]使用二进制文件
+        [2]使用write(data,size)成员函数
+        有些系统DOS支持两种格式:文本格式和二进制格式
+        如果要以二进制格式保存数据,应使用二进制文件格式ios_base::binary
+        
+
+
 
 
 
