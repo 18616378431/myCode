@@ -1178,6 +1178,46 @@
         而是包含一个指向字符串的指针成员,因此将结构复制到文件中,复制的不是字符串数据,而是字符串的地址
         再次运行时,该地址将毫无意义
 
+17.4.6 随机存取
+1.随机存储指的是直接移动到文件的任何位置,而不是依次移动
+2.随机存取常被用于数据库文件,程序维护一个独立的索引文件,该文件指出数据在主数据文件中的位置
+    这样程序便可以直接跳到这个位置,读取或修改其中的数据
+    如果文件由相同长度的记录组成,这种方法实现起来最简单
+    每条记录表示一组相关的数据,文件记录对应与程序结构或类
+3.fstream类是从iostream类派生而来的,而后者是基于istream和ostream两个类的
+    因此iostream和fstream继承了它们的方法,并且继承了两个缓冲区
+    一个用于输入,一个用于输出,并且能够同步化这两个缓冲区的处理
+    当程序读写文件时,它将能够协调地移动输入缓冲区的输入指针和输出缓冲区中的输出指针
+    eg: 范例将完成以下工作
+        [1]显式文件的当前内容
+        [2]询问要修改哪条记录
+        [3]修改该记录
+        [4]显式修改后的文件
+        二进制文件由binary.cpp创建
+        需要使用的文件模式:
+            读取文件:ios_base::in
+            执行二进制I/O:ios_base::binary
+            写入文件:ios_base::out |ios_base::app
+                ios_base::app模式将只允许向文件尾追加数据,其余部分为只读的
+            同时使用in和out模式将得到读写模式,添加ios_base::binary模式获取二进制读写模式
+            finout.open(file,ios_base::in | ios_base::out | ios_base::binary);
+            需要在文件中移动的方式
+            fstream类继承了两个方法:seekg()、seekp()
+            前者将输入指针移动到指定的位置
+            后者将输出指针移动到指定的位置
+            由于fstream类使用缓冲区来存储中间数据,因此指针指向的是缓冲区中的位置,而不是实际的文件
+            可以将seekg()应用于ifstream对象,将seekp()应用于ofstream对象
+            seekg()的原型:
+            basic_istream<charT,traits> & seekg(off_type,ios_base::seekdir);
+            basic_istream<charT,traits> & seekg(pos_type);
+            它们都是模板,使用char具体化,其原型等价于
+            istream & seekg(streamoff,ios_base::seekdir);
+            istream & seekg(streampos);
+            第一个原型定位到离第二个参数指定的文件位置特定距离(单位为字节)的位置
+            第二个原型定位到离文件开头特定距离(单位为字节)的位置
+            
+
+
             
 
 
