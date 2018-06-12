@@ -1215,7 +1215,119 @@
             istream & seekg(streampos);
             第一个原型定位到离第二个参数指定的文件位置特定距离(单位为字节)的位置
             第二个原型定位到离文件开头特定距离(单位为字节)的位置
+4.类型升级
+    C++早期,seekg()方法比较简单,streamoff和streapos类型时一些标准整型(long)的typedef
+    但为了创建可移植性,必须处理这样的现实情况
+    对于有些系统,整数参数无法提供足够的信息,因此streamoff和streapos允许是结构或类类型
+    条件是它们允许一些基本操作,如使用整数值做为初始值
+    随后,老版本的istream类被basic_istream模板取代,streamoff和streampos被basic_istream模板取代
+    不过streamoff和streampos仍然存在,作为pos_type、off_type的char的具体化
+    同样,如果将seekg()应用于wistream对象,则可以使用wstreamoff和wstreampos类型
+5.seekg()的第一个原型的参数
+    streamoff被用来度量相对于文件特定位置的偏移量(单位为字节)
+    streamoff表示相对于三个位置之一的偏移量为特定值(字节单位)的文件位置(类型可为整型或类)
+    seekdir是ios_base定义的另一种整型,有3个可能的值
+    ios_base::beg   //相对于文件开始位置的偏移量
+    ios_base::cur   //相对于当前位置的偏移量
+    ios_base::end   //相对于文件尾的偏移量
+    eg: fin;//ifstream
+        fin.seekg(30,ios_base::beg);//30 bytes beyond the beginning
+        fin.seekg(-1,ios_base::cur);//back up one byte
+        fin.seekg(0,ios_base::end);//go to the end of file
+6.seekg()的第二个原型
+    streampos类型的值定位到文件中的一个位置
+    它可以是类,这个类将包含一个接受streamoff参数和一个整数参数的构造函数
+    以便将两种类型转换为streampos值
+    streampos表示文件中的绝对位置,从文件开始处算起
+    可以将streampos看做是相对于文件开始处的位置
+    eg: fin.seekg(112);
+        文件指针移动112个字节,实际指向的是第113个字节
+7.获取文件指针的当前位置
+    对于输入流可以使用tellg(),对于输出流可以使用tellp()
+    它们都返回一个表示当前位置的streampos值(相对于文件开始的字节数)
+8.创建fstream对象时,输入和输出指针将一前一后地移动,tellg()和tellp()的返回值相同
+    如果使用istream对象来管理输入流,使用ostream对象来管理同一个文件的输出流,则输入和输出指针将彼此独立地移动
+    tellg()和tellp()将返回不同的值
+    eg: [1]打开文件并将指针移动到文件开头显示内容
+        fstream finout;
+        finout.open(file,ios_base::in | ios_base::out | ios_base::binary);
+        int ct = 0;
+        if(finout.is_open())
+        {
+            finout.seekg(0);//go to beginning
+            cout << "Here are the current content of the "
+                << file << "file:\n";
+                while(finout.read((char *)pl,sizeof(pl)))
+                {
+                    cout << ct++ << ":" << setw(LIM) << pl.name
+                        << setprecision(0) << setw(12) << pl.population
+                        << setprecision(2) << setw(6) << pl.g << endl;
+                }
+                if(finout.eof())
+                    finout.clear();//clear eof flag
+                else
+                {
+                    cerr << "Error in reading " << file << ".\n";
+                    exit(EXIT_FAILURE);
+                }
+        }
+        else
+        {
+            cerr << file << " could not be opened -- bye.\n";
+            exit(EXIT_FAILURE);
+        }
+        读取并显示整个文件后,将设置efobit元素,这使得程序认为已处理完文件并禁止进一步读写
+        使用clear()方法重置流状态,打开eofbit,程序便可以再次访问文件
+        [2]修改指定记录编号的记录
+            将编号与记录包含的字节数相乘,得到该记录的第一个字节编号
+            record * sizeof(pl)
+            cout << "Enter the record number you wish to change:";
+            long rec;
+            cin >> rec;
+            eatline();
+            if(rec < 0 || rec >= ct)
+            {
+                cerr << "Invalid record number --bye\n";
+                exit(EXIT_FAILURE);
+            }
+            streampos place = rec * sizeof(pl);//conver to streampos type
+            finout.seekg(streampos);//random access
+            ct表示记录号,超出文件尾程序将终止
+        [3]显示当前的记录
+            finout.read((char *)pl,sizeof(pl));
+            cour << "Your selection:\n";
+            cout << rec << ":" << setw(LIM) << pl.name
+                << setprecision(0) << setw(12) << pl.population
+                << setprecision(2) << setw(6) << pl.g << endl;
+            if(finout.eof())
+                finout.clear();
+        [4]显示当前记录后进行修改
+            cout << "Enter planet name:";
+            cin.get(pl.name,LIM);
+            eatline();
+            cout << "Enter planetary population:";
+            cin >> pl.population;
+            cout << "Enter planet's acceleration of gravity:";
+            cin >> pl.g;
+            finout.seekp(place);//go back
+            finout.write((char *)pl,sizeof(pl)) << flush;
+            if(finput.fail())
+            {
+                cerr << "Error on attempted write\n";
+                exit(EXIT_FAILURE);
+            }
+            程序刷新输出,以便进入下一步之前文件被更新
+            使用seekp()将输出指针指向当前记录的开头
             
+
+
+
+
+
+
+
+
+
 
 
             
