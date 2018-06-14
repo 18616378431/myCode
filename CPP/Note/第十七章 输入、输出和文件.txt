@@ -1318,7 +1318,34 @@
             }
             程序刷新输出,以便进入下一步之前文件被更新
             使用seekp()将输出指针指向当前记录的开头
-            
+9.使用临时文件
+    (1)为临时文件指定唯一的名称,cstdio中的tmpnam()函数
+        char *tmpnam(char *pszName);
+        tmpnam()创建一个临时文件名,将其放置到pszName指定的C风格字符串中
+        常量L_tmpnam和TMP_MAX都是在头文件cstdio中定义的
+        限制了文件名称包含的字符数以及确保在当前目录中不生成重复的文件名的情况下tmpnam()可被调用的最多次数
+        eg: #include <cstdio>
+            #include <iostream>
+
+            int main()
+            {
+                using namespace std;
+
+                cout << "This system can generate up to " << TMP_MAX
+                    << " temporary names of up to " << L_tmpnam
+                    << " characters.\n";
+                char pszName[L_tmpnam] = {'\0'};
+                cout << "Here are ten names:\n";
+                for(int i = 0;i < 10;i++)
+                {
+                    tmpnam(pszName);
+                    cout << pszName << endl;
+                }
+
+                return 0;
+            }
+            tmpnam可以生成TMP_MAX个不同的文件名,其中每个文件名包含的字符不超过L_tmpnam个
+
 
 
 
