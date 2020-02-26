@@ -36,7 +36,7 @@ int main()
 
     while(running)
     {
-        while(shared->written == 1)
+        while(shared->written != 0)
         {
             sleep(1);
             printf("Waiting...\n");
