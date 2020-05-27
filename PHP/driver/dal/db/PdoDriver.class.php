@@ -29,17 +29,19 @@ class PdoDriver
 
         $this->prepareSql();
 
-        if($this->prepare())
+        if($aAffect = $this->prepare('execute'))
         {
             $aResult['status'] = 0;
 
-            $aResult['affectrow'] = $this->oStmt->rowCount();
+            $aResult['affectrow'] = $aAffect;
         }
         else
         {
             //预处理失败
             $aResult['status'] = 2;
         }
+
+        return $aResult;
     }
 
     public function select($aParams, $aConfig)
@@ -52,7 +54,7 @@ class PdoDriver
 
         $this->prepareSql();
 
-        if($this->prepare())
+        if($this->prepare('select'))
         {
             $aResult['status'] = 0;
 
@@ -72,8 +74,10 @@ class PdoDriver
         return $aResult;
     }
 
-    private function prepare()
+    private function prepare($SelectType)
     {
+        $aAffect = [];
+
         foreach($this->aSql as $iKey => $aSql)
         {
             $this->oStmt = $this->oPdo->prepare($aSql[0]);
@@ -96,9 +100,25 @@ class PdoDriver
             }
 
             $this->oStmt->execute();
+
+            if($SelectType == 'select')
+            {
+                break;
+            }
+            else//execute
+            {
+                $aAffect[] =  $this->oStmt->rowCount();
+            }
         }
 
-        return true;
+        if($SelectType == 'select')
+        {
+            return true;
+        }
+        else//execute
+        {
+            return $aAffect;
+        }
     }
 
     private function init($aConfig)
@@ -109,12 +129,14 @@ class PdoDriver
 
         if(!isset(self::$aConnection[$sVerify])) {
             try {
-                $this->oPdo = new \PDO($sDsn, $aConfig['user'], $aConfig['passwd']);
+                //array(PDO::ATTR_PERSISTENT => true)
+                self::$aConnection[$sVerify] = new \PDO($sDsn, $aConfig['user'], $aConfig['passwd']);
             } catch(\PDOException $e) {
-                var_dump($e->getMessage(), $e->getCode(), $e->errorInfo);
+                var_dump($e->getMessage(), $e->getCode(), $e->errorInfo, __FILE__, __LINE__);
             }
-            self::$aConnection[$sVerify] = true;
         }
+
+        $this->oPdo = self::$aConnection[$sVerify];
     }
 
     private function prepareSql()
