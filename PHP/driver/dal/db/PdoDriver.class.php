@@ -77,6 +77,8 @@ class PdoDriver
     private function prepare($SelectType)
     {
         $aAffect = [];
+        
+        $this->oPdo->beginTransaction();
 
         foreach($this->aSql as $iKey => $aSql)
         {
@@ -99,7 +101,13 @@ class PdoDriver
                 }
             }
 
-            $this->oStmt->execute();
+            $bExe = $this->oStmt->execute();
+
+            if($bExe == false)
+            {
+                $this->oPdo->rollBack();
+                break;
+            }
 
             if($SelectType == 'select')
             {
@@ -110,6 +118,8 @@ class PdoDriver
                 $aAffect[] =  $this->oStmt->rowCount();
             }
         }
+
+        $this->oPdo->commit();
 
         if($SelectType == 'select')
         {
