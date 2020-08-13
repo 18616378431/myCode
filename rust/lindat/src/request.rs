@@ -101,7 +101,7 @@ impl<'a> Request<'a> {
 
     ///Set Request HTTP Version
     pub fn version_mut(&mut self, version : &'a str) -> Result<&mut Self, Box<dyn Error>> {
-        if version != "HTTP/1.1" {
+        if version != "HTTP/1.1" && version != "HTTP/1.0" {
             return Err(format!("HTTP version {} is not supported.", version).into());
         }
         self.version = version;

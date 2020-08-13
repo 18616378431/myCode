@@ -28,7 +28,7 @@ impl<'a> error::Error for InvalidMethod<'a> {
 #[derive(Debug, Eq, PartialEq)]
 pub struct Method(Inner);
 
-///Get Head must be implemented unser HTTP/1.1
+///Get Head must be implemented under HTTP/1.1
 #[derive(Debug, Eq, PartialEq)]
 enum Inner {
     Options,

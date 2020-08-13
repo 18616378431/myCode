@@ -3,6 +3,11 @@ use lindat::threadpool::ThreadPool;
 use log::{error, info};
 use std::net::TcpListener;
 
+//cargo build
+//cargo run
+//ab -c 10 -n 10000 http://127.0.0.1:8594/
+//Requests per second:    1902.27 [#/sec] (mean)
+
 fn main() {
     simple_logger::init().unwrap();
     info!("Starting Server...");
