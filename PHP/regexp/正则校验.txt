@@ -1,0 +1,18 @@
+func valid(typ, v string) bool {
+	switch typ {
+	case "email":
+		ok, _ := regexp.MatchString(
+			`^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$`, v)
+		return ok
+	case "phone":
+		ok, _ := regexp.MatchString(
+			`^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$`, v)
+		return ok
+	case "zip":
+		// 六位数
+		i, _ := strconv.ParseInt(v, 10, 64)
+		return i < 1000000
+	default:
+		panic(fmt.Sprintf("unsupported type: %s", typ))
+	}
+}
