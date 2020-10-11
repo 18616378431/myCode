@@ -1,0 +1,3 @@
+The other day I was interviewing at one of the companies, and I was asked the following question, how can you count occurrences of a word in a 50gb file with 4gb of RAM. The trick is to not load the whole file into memory and keep processing each word as we keep on moving the pointer of the file. With this, we can easily process the whole file with a minimal amount of memory resources.
+Now the followup question was how can we speed up this process using multithreading? The solution is we keep multiple pointers at different parts of the file and each thread reads chunks of the file concurrently.
+Finally, the result can be combined.
