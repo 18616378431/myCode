@@ -12,9 +12,11 @@ func OldBubble() {
 	for i := 0; i < len(slice); i++ {
 		for j := 0; j < len(slice); j++ {
 			if slice[i] < slice[j] {
-				temp := slice[i]
-				slice[i] = slice[j]
-				slice[j] = temp
+				slice[i], slice[j] = slice[j], slice[i]
+
+				//temp := slice[i]
+				//slice[i] = slice[j]
+				//slice[j] = temp
 			}
 		}
 	}
@@ -28,9 +30,11 @@ func NewBubble() {
 	for i := 0; i < len(slice) - 1; i++ {
 		for j := i + 1; j < len(slice); j++ {
 			if slice[i] > slice[j] {
-				temp := slice[i]
-				slice[i] = slice[j]
-				slice[j] = temp
+				slice[i], slice[j] = slice[j], slice[i]
+
+				//temp := slice[i]
+				//slice[i] = slice[j]
+				//slice[j] = temp
 			}
 		}
 	}
@@ -45,9 +49,12 @@ func Best() {
 	for i, flag := len(slice) - 1, true; i > 0; i, flag = i - 1, true {
 		for j := 0; j < i; j++ {
 			if slice[j] > slice[j + 1] {
-				temp := slice[j]
-				slice[j] = slice[j + 1]
-				slice[j + 1] = temp
+				slice[j], slice[j + 1] = slice[j + 1], slice[j]
+
+				//temp := slice[j]
+				//slice[j] = slice[j + 1]
+				//slice[j + 1] = temp
+
 				flag = false
 			}
 		}
