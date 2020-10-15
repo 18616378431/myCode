@@ -43,8 +43,8 @@ func NewBubble() {
 }
 
 func Best() {
-	//slice := []int{3, 1, 2, 5, 4}
-	slice := []int{ 5, 4, 3, 2, 1}
+	slice := []int{3, 1, 2, 5, 4}
+	//slice := []int{ 5, 4, 3, 2, 1}
 
 	for i, flag := len(slice) - 1, true; i > 0; i, flag = i - 1, true {
 		for j := 0; j < i; j++ {

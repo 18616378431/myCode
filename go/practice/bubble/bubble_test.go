@@ -19,11 +19,11 @@ ok      _/Users/wangjiankang/Downloads/go/practice/bubble       4.039s
 wangjiankang:bubble wangjiankang$ go test -bench=.
 goos: darwin
 goarch: amd64
-BenchmarkOldBubble-4            30649412                41.9 ns/op
-BenchmarkNewBubble-4            50946187                24.7 ns/op
-BenchmarkBestBubble-4           65954949                18.8 ns/op
+BenchmarkOldBubble-4            30312093                42.7 ns/op
+BenchmarkNewBubble-4            52141754                24.9 ns/op
+BenchmarkBestBubble-4           79796528                14.9 ns/op
 PASS
-ok      _/Users/wangjiankang/Downloads/go/practice/bubble       3.875s
+ok      _/Users/wangjiankang/Downloads/go/practice/bubble       3.870s
 
  */
 
