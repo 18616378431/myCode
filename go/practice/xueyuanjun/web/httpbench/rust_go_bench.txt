@@ -1,0 +1,11 @@
+rust http
+//ab -c 10 -n 10000 http://127.0.0.1:8594/
+//Requests per second:    1902.27 [#/sec] (mean)
+
+
+golang
+ab -c 10 -n 10000 http://127.0.0.1:9091/
+Requests per second:    8504.32 [#/sec] (mean)
+
+
+
