@@ -9,6 +9,7 @@ https://goproxy.io
 
 "github.com/gorilla/csrf"
 "github.com/gorilla/mux"
+github.com/spf13/viper
 
 
 我的系统物理 CPU 核心数是 4 个，逻辑 CPU 核心数是 8 个，所谓物理 CPU 核心数指的是真正插在物理插槽上 CPU 的核心数，逻辑 CPU 核心数指的是结合 CPU 多核以及超线程技术得到的 CPU 核心数，最终核心数以逻辑 CPU 核心数为准。
@@ -18,3 +19,5 @@ hw.physicalcpu: 2
 
 sysctl hw.logicalcpu
 hw.logicalcpu: 4
+
+github.com/spf13/viper
