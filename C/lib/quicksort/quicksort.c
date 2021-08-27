@@ -58,13 +58,13 @@ int partation(int *arr,int start,int end)
         leftValue = arr[leftIndex];
         rightValue = arr[rightIndex];
 
-        //找出比中间值小的元素
+        //从右往左找出比中间值小的元素
         while(rightValue >= midValue && rightIndex > leftIndex)
         {
             rightIndex--;
             rightValue = arr[rightIndex];
         }
-        //找出比中间值大的元素
+        //从左往右找出比中间值大的元素
         while(leftValue <= midValue && leftIndex < rightIndex)
         {
             leftIndex++;
